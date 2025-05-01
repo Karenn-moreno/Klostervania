@@ -2,27 +2,11 @@
 #include <thread>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-
-
+#include "menu.h"
 
 const int NUM_OPCIONES = 4;
 std::string opciones[NUM_OPCIONES] = {"Nueva Partida", "Continuar Partida", "Record", "Salir"};
-
-void actualizarTexto(sf::Text textos[], int opcionSeleccionada)
-{
-    for (int i = 0; i < NUM_OPCIONES; i++)
-    {
-        if (i == opcionSeleccionada)
-        {
-            textos[i].setFillColor(sf::Color::White); // Resaltar opción seleccionada
-        }
-        else
-        {
-            textos[i].setFillColor(sf::Color::Red);
-        }
-    }
-}
-
+std::vector<std::string> opcionesVector(opciones, opciones + NUM_OPCIONES);
 
 int main()
 {
@@ -41,13 +25,6 @@ int main()
     Fondo.setTexture(fondoPrincipal);
     Fondo.setScale({1.6f, 1.2f}); //  factor de escala
 
-    //Cargo la fuente y color
-    sf::Font Texto1;
-    if(!Texto1.loadFromFile("fonts/Hatch.ttf"))
-    {
-        std::cout << "Error al cargar en texto nueva partida" << std::endl;
-        return EXIT_FAILURE;
-    }
     //cargo sonidos
     sf::SoundBuffer _Flecha;
         if (!_Flecha.loadFromFile("audio/flecha.wav"))
@@ -67,19 +44,21 @@ int main()
     sf::Sound Enter;
     Enter.setBuffer(_Enter);
 
-    //armamos el menu dinamico
-    sf::Text textos[NUM_OPCIONES];
+    //Cargo la fuente y color
+    sf::Font Texto1;
+    if(!Texto1.loadFromFile("fonts/Hatch.ttf"))
+    {
+        std::cout << "Error al cargar en texto nueva partida" << std::endl;
+        return EXIT_FAILURE;
+    }
 
+    //armamos el menu dinamico
+    menu menuPrincipal;
+    menuPrincipal.crearMenu(NUM_OPCIONES, Texto1, opcionesVector, 40, 600, 550, 60, sf::Color::Red);
+
+    //sf::Text textos[NUM_OPCIONES];
     int opcionSeleccionada = 0;
 
-    for (int i = 0; i < NUM_OPCIONES; i++)
-    {
-        textos[i].setFont(Texto1);
-        textos[i].setString(opciones[i]);
-        textos[i].setCharacterSize(40);
-        textos[i].setPosition(600, 550 + i * 60);
-        textos[i].setFillColor(sf::Color::Red);
-    }
     // Bucle principal de la ventana
     while (window.isOpen())
     {
@@ -102,7 +81,6 @@ int main()
                 {
                     opcionSeleccionada = (opcionSeleccionada + 1) % NUM_OPCIONES;
                     Flecha.play();
-
                 }
                 else if (event.key.code == sf::Keyboard::Enter)
                 {
@@ -111,18 +89,16 @@ int main()
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                     window.close();
                 }
-                actualizarTexto(textos, opcionSeleccionada);
+                menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::White, sf::Color::Red);
             }
         }
 
         // limpio la ventana con color negro
         window.clear(sf::Color::Black);
 
-
         // Dibujando todo
         window.draw(Fondo);
-        for (int i = 0; i < NUM_OPCIONES; i++)
-            window.draw(textos[i]);
+        menuPrincipal.dibujarMenu(window);
 
         // Mostrar el contenido de la ventana
         window.display();

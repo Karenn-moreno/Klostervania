@@ -1,9 +1,10 @@
 # depslib dependency file v1.0
-1745709779 source:c:\users\leand\desktop\klostervania\main.cpp
+1746112715 source:c:\users\leand\desktop\klostervania\main.cpp
 	<iostream>
 	<thread>
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
+	"menu.h"
 
 1745701554 c:\users\leand\desktop\klostervania\sfml-2.6.0\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -525,5 +526,13 @@
 
 1745701554 c:\users\leand\desktop\klostervania\sfml-2.6.0\include\sfml\audio\soundfilewriter.hpp
 	<SFML/Audio/Export.hpp>
+	<string>
+
+1746112919 source:c:\users\leand\desktop\klostervania\menu.cpp
+	"menu.h"
+	<iostream>
+
+1746112919 c:\users\leand\desktop\klostervania\menu.h
+	<SFML/Graphics.hpp>
 	<string>
 
