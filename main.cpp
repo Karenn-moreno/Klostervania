@@ -78,6 +78,7 @@ int main()
     int opcionSeleccionada = 0;
 
     // Bucle principal de la ventana
+    sf::Clock clock; // Declarar el reloj una vez, antes del loop principal
     bool juegoIniciado = false;  //variable para saber si sigo en menu principal
     while (window.isOpen())
     {
@@ -153,6 +154,38 @@ int main()
                         }
                         menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::White, sf::Color::Red);
                     }
+                }
+                else
+                {
+                    float deltaTime = clock.restart().asSeconds();
+                    bool moviendoArr = false;
+                    bool moviendoAbj = false;
+                    bool moviendoDer = false;
+                    bool moviendoIzq = false;
+
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                    {
+                        personaje.mover(-5, 0);
+                        moviendoIzq = true;
+                    }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                    {
+                        personaje.mover(5, 0);
+                        moviendoDer = true;
+                    }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                    {
+                        personaje.mover(0, -5);
+                        moviendoArr = true;
+                    }
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+                    {
+                        personaje.mover(0, 5);
+                        moviendoAbj = true;
+                    }
+
+                    // Llamamos a `update()` en cada ciclo del juego
+                    personaje.update(deltaTime, moviendoDer, moviendoIzq, moviendoArr, moviendoAbj);
                 }
         }
 
