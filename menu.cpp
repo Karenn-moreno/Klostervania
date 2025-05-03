@@ -1,6 +1,7 @@
 #include "menu.h"
 #include<iostream>
-void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones, int sizeChar, int posX, int posY, int interlineado, sf::Color color){
+void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones, int sizeChar, int posX, int posY, int interlineado, sf::Color color)
+{
     _numeroOpciones = numeroOpciones;
     _fuente = fuente;
     _opciones = opciones;
@@ -18,7 +19,8 @@ void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vect
         textos.push_back(texto);  // Agrega el objeto `sf::Text` al vector
     }
     std::cout <<"Crear Menu de " <<numeroOpciones << " opciones\n";
-    for (int i = 0; i < _numeroOpciones; i++){
+    for (int i = 0; i < _numeroOpciones; i++)
+    {
         std::cout << i+1 << "- " << _opciones[i] << std::endl;
     }
 }
@@ -36,11 +38,13 @@ void menu::actualizarMenu(int opcionSeleccionada, sf::Color colorNuevo, sf::Colo
             textos[i].setFillColor(color);
         }
     }
-                std::cout<< "se presiono una tecla flecha, actualizo los colore del menu" <<std::endl;
+    std::cout<< "se presiono una tecla flecha, actualizo los colore del menu" <<std::endl;
 }
 
-void menu::dibujarMenu(sf::RenderWindow& window) {
-    for (int i = 0; i < _numeroOpciones; i++) {
+void menu::dibujarMenu(sf::RenderWindow& window)
+{
+    for (int i = 0; i < _numeroOpciones; i++)
+    {
         window.draw(textos[i]);
     }
 };

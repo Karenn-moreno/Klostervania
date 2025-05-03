@@ -1,10 +1,12 @@
 # depslib dependency file v1.0
-1746112715 source:c:\users\leand\desktop\klostervania\main.cpp
+1746234952 source:c:\users\leand\desktop\klostervania\main.cpp
 	<iostream>
 	<thread>
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 	"menu.h"
+	"nuevaPartida.h"
+	"personaje.h"
 
 1745701554 c:\users\leand\desktop\klostervania\sfml-2.6.0\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -528,11 +530,35 @@
 	<SFML/Audio/Export.hpp>
 	<string>
 
-1746112919 source:c:\users\leand\desktop\klostervania\menu.cpp
+1746223052 source:c:\users\leand\desktop\klostervania\menu.cpp
 	"menu.h"
 	<iostream>
 
-1746112919 c:\users\leand\desktop\klostervania\menu.h
+1746228742 c:\users\leand\desktop\klostervania\menu.h
 	<SFML/Graphics.hpp>
 	<string>
+
+1746113087 source:c:\users\leand\desktop\klostervania\creditos.cpp
+
+1746233736 source:c:\users\leand\desktop\klostervania\nuevapartida.cpp
+	"nuevaPartida.h"
+	"personaje.h"
+
+1746226497 c:\users\leand\desktop\klostervania\nuevapartida.h
+	<iostream>
+	<thread>
+	<SFML/Graphics.hpp>
+	<SFML/Audio.hpp>
+
+1746227570 source:c:\users\leand\desktop\klostervania\enemigo.cpp
+
+1746227610 source:c:\users\leand\desktop\klostervania\item.cpp
+
+1746234770 source:c:\users\leand\desktop\klostervania\personaje.cpp
+	"personaje.h"
+
+1746234952 c:\users\leand\desktop\klostervania\personaje.h
+	<SFML/Graphics.hpp>
+	<string>
+	<iostream>
 

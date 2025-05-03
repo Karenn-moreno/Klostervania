@@ -18,10 +18,7 @@ void crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std
 
 void actualizarMenu(int opcionSeleccionada, sf::Color colorNuevo, sf::Color color);
 
-void mostrarMenu();
-
 void dibujarMenu(sf::RenderWindow& window);
-
 
 
 };
