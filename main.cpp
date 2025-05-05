@@ -5,12 +5,14 @@
 #include "menu.h"
 #include "nuevaPartida.h"
 #include "personaje.h"
+#include "enemigo.h"
 
 
 
 int main()
 {
     personaje personaje;
+    enemigo demonio;
     const int NUM_OPCIONES = 5;
     std::string opciones[NUM_OPCIONES] = {"Nueva Partida", "Continuar Partida", "Record", "creditos", "Salir"};
     std::vector<std::string> opcionesVector(opciones, opciones + NUM_OPCIONES);
@@ -78,12 +80,17 @@ int main()
     int opcionSeleccionada = 0;
 
     // Bucle principal de la ventana
-    sf::Clock clock; // Declarar el reloj una vez, antes del loop principal
+    sf::Clock clock;
+    sf::Clock clockEnemigos; // Declarar el reloj una vez, antes del loop principal
     bool juegoIniciado = false;  //variable para saber si sigo en menu principal
     while (window.isOpen())
     {
         //  Revisa todos los eventos de la ventana que se activaron desde la última iteración del bucle.
         sf::Event event;
+        sf::Time elapsed = clockEnemigos.restart();
+        float deltaTime = elapsed.asSeconds(); // Delta Time en segundos
+
+        demonio.update(deltaTime);
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
@@ -201,6 +208,7 @@ int main()
         else
         {
             window.draw(FondoNuevaPartida);
+            demonio.draw(window);
             personaje.draw(window);
         }
         // Mostrar el contenido de la ventana
