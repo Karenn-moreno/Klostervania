@@ -30,7 +30,7 @@ int main()
     }
     sf::Sprite Fondo;
     Fondo.setTexture(fondoPrincipal);
-    Fondo.setScale({1.5f, 0.9f}); //  factor de escala
+    Fondo.setScale({0.95f, 0.95f}); //  factor de escala
 
     // Cargar la textura nueva partida
     sf::Texture fondoNuevaPartida;
@@ -41,7 +41,7 @@ int main()
     }
     sf::Sprite FondoNuevaPartida;
     FondoNuevaPartida.setTexture(fondoNuevaPartida);
-    FondoNuevaPartida.setScale({1.6f, 1.1f});
+    FondoNuevaPartida.setScale({2.0f, 2.0f});
 
     //cargo sonidos
     sf::SoundBuffer _Flecha;

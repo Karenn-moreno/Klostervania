@@ -34,26 +34,33 @@ int personaje::getHabilidadEspecial()
     return _habilidadEspecial;
 };
 
+
 void personaje::update(float deltaTime, bool moviendoDer, bool moviendoIzq, bool moviendoArr, bool moviendoAbj) {
-    tiempoAnimacion += deltaTime;
+    bool caminando = moviendoDer || moviendoIzq;
 
-    if (moviendoDer) {
-        if (tiempoAnimacion >= 0.1f) {
-            frameActual.left = 500; // Cambiar a la imagen de movimiento a la derecha
+    if (caminando) {
+        frameTimer += deltaTime;
+        if (frameTimer >= frameTime) {
+            frameTimer = 0.02f; //modificando aca aumento el tiempo con el que cambian la velocidad de frames
+            currentFrame = (currentFrame + 1) % 3;  // Se usa para decirle a SFML quÃ© parte del spritesheet dibujar:3 frames en la fila 0
         }
-        sprite.move(0, std::sin(tiempoAnimacion * 10) * 2); //Ondulación v
-    }
-    else if (moviendoIzq) {
-        if (tiempoAnimacion >= 0.1f) {
-            frameActual.left = 1000; // Cambiar a la imagen de movimiento a la izquierda
-        }
-        sprite.move(0, std::sin(tiempoAnimacion * 10) * 2); // Ondulación v
-    }
-    else {
-        frameActual.left = 0; // Imagen de quieto
-    }
+        // Calcular la posiciÃ³n del frame en la fila 0
+        int left = currentFrame * frameWidth;//cuanto me muevo a la derecha
+        int top = 0;  // fila 0, para abajo no me muevo no me muevo
+        sprite.setTextureRect(sf::IntRect(left, top, frameWidth, frameHeight));//seteo el nuevo cuadro del la textura
 
-    sprite.setTextureRect(frameActual); // Aplicar el cambio
+        if (moviendoIzq) {
+            sprite.setScale(-0.15f, 0.15f);//mantengo el escalado que use en el constructor
+            sprite.setOrigin(frameWidth, 0);//frameWidth â†’ el origen se mueve al borde derecho del sprite (horizontalmente).
+        }
+        if (moviendoDer ){
+            sprite.setScale(0.15f, 0.15f);
+            sprite.setOrigin(0, 0);
+        }
+    } else {
+        currentFrame = 0;
+        sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+    }
 }
 
 
@@ -64,18 +71,19 @@ void personaje::mover(float offsetX, float offsetY)
 
 void personaje::detener()
 {
-    frameActual.left = 0; // Ajusta el frame al de "quieto"
+    currentFrame = 0;
+    frameTimer = 0.0f; // Reinicia la animaciÃ³n
     sprite.setTextureRect(frameActual);
 }
 
 void personaje::draw(sf::RenderWindow& window)
 {
-    if (sprite.getTexture() != nullptr)    // Verifica que la textura esté asignada
+    if (sprite.getTexture() != nullptr)    // Verifica que la textura estÃ© asignada
     {
         window.draw(sprite);// Renderiza el personaje
     }
     else
     {
-        std::cout << "Error: La textura del personaje no está cargada" << std::endl;
+        std::cout << "Error: La textura del personaje no estÃ¡ cargada" << std::endl;
     }
 };

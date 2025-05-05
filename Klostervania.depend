@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1746308149 source:c:\users\leand\desktop\klostervania\main.cpp
+1746460162 source:c:\users\leand\desktop\klostervania\main.cpp
 	<iostream>
 	<thread>
 	<SFML/Graphics.hpp>
@@ -554,12 +554,11 @@
 
 1746227610 source:c:\users\leand\desktop\klostervania\item.cpp
 
-1746308149 source:c:\users\leand\desktop\klostervania\personaje.cpp
+1746456959 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 
-1746305778 c:\users\leand\desktop\klostervania\personaje.h
+1746462071 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<string>
 	<iostream>
-	<cmath>
 
