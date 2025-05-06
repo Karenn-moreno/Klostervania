@@ -41,8 +41,8 @@ void personaje::update(float deltaTime, bool moviendoDer, bool moviendoIzq, bool
     if (caminando) {
         frameTimer += deltaTime;
         if (frameTimer >= frameTime) {
-            frameTimer = 0.02f; //modificando aca aumento el tiempo con el que cambian la velocidad de frames
-            currentFrame = (currentFrame + 1) % 3;  // Se usa para decirle a SFML qué parte del spritesheet dibujar:3 frames en la fila 0
+            frameTimer = 0.f; //modificando aca aumento el tiempo con el que cambian la velocidad de frames
+            currentFrame = (currentFrame + 1) % totalFrames;  // Se usa para decirle a SFML qué parte del spritesheet dibujar:3 frames en la fila 0
         }
         // Calcular la posición del frame en la fila 0
         int left = currentFrame * frameWidth;//cuanto me muevo a la derecha
@@ -50,11 +50,11 @@ void personaje::update(float deltaTime, bool moviendoDer, bool moviendoIzq, bool
         sprite.setTextureRect(sf::IntRect(left, top, frameWidth, frameHeight));//seteo el nuevo cuadro del la textura
 
         if (moviendoIzq) {
-            sprite.setScale(-0.15f, 0.15f);//mantengo el escalado que use en el constructor
+            sprite.setScale(-0.25f, 0.25f);//mantengo el escalado que use en el constructor
             sprite.setOrigin(frameWidth, 0);//frameWidth → el origen se mueve al borde derecho del sprite (horizontalmente).
         }
         if (moviendoDer ){
-            sprite.setScale(0.15f, 0.15f);
+            sprite.setScale(0.25f, 0.25f);
             sprite.setOrigin(0, 0);
         }
     } else {

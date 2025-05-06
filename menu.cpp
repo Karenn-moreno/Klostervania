@@ -1,6 +1,6 @@
 #include "menu.h"
 #include<iostream>
-void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones, int sizeChar, int posX, int posY, int interlineado, sf::Color color)
+void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones, int sizeChar, int posX, int posY, int interlineado, sf::Color color, sf::Color colorInicial)
 {
     _numeroOpciones = numeroOpciones;
     _fuente = fuente;
@@ -15,7 +15,12 @@ void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vect
         texto.setString(_opciones[i]);
         texto.setCharacterSize(sizeChar);
         texto.setPosition(posX, posY + i * interlineado);
+        if (i==0){
+        texto.setFillColor(colorInicial);
+        }
+        else{
         texto.setFillColor(color);
+        }
         textos.push_back(texto);  // Agrega el objeto `sf::Text` al vector
     }
     std::cout <<"Crear Menu de " <<numeroOpciones << " opciones\n";

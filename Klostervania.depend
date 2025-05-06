@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1746468514 source:c:\users\leand\desktop\klostervania\main.cpp
+1746550094 source:c:\users\leand\desktop\klostervania\main.cpp
 	<iostream>
 	<thread>
 	<SFML/Graphics.hpp>
@@ -531,11 +531,11 @@
 	<SFML/Audio/Export.hpp>
 	<string>
 
-1746223052 source:c:\users\leand\desktop\klostervania\menu.cpp
+1746550441 source:c:\users\leand\desktop\klostervania\menu.cpp
 	"menu.h"
 	<iostream>
 
-1746228742 c:\users\leand\desktop\klostervania\menu.h
+1746550094 c:\users\leand\desktop\klostervania\menu.h
 	<SFML/Graphics.hpp>
 	<string>
 
@@ -551,22 +551,21 @@
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 
-1746469668 source:c:\users\leand\desktop\klostervania\enemigo.cpp
+1746483969 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
 
 1746227610 source:c:\users\leand\desktop\klostervania\item.cpp
 
-1746462235 source:c:\users\leand\desktop\klostervania\personaje.cpp
+1746545655 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 
-1746467894 c:\users\leand\desktop\klostervania\personaje.h
+1746550584 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<string>
 	<iostream>
 
-1746469804 c:\users\leand\desktop\klostervania\enemigo.h
+1746484116 c:\users\leand\desktop\klostervania\enemigo.h
 	<SFML/Graphics.hpp>
 	<string>
 	<iostream>
-	<cmath>
 

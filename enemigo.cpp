@@ -35,43 +35,88 @@ int enemigo::getHabilidadEspecial()
 };
 
 
-void enemigo::update(float deltaTime) {
-    frameTimer += deltaTime; // Acumulamos el tiempo
+void enemigo::update(float deltaTime)
+{
+    bool caminando = false;
+    tiempoDesdeUltimoMovimiento += deltaTime;
 
-    int totalFrames = 3; // El enemigo tiene 3 frames para camina
+    if (tiempoDesdeUltimoMovimiento >= 0.7f)
+    {
+        int direccion = rand() % 8 + 1;  // 1 a 8
+        float offsetX = 0.f;
+        float offsetY = 0.f;
+        const float diag = 2.8f; // Aproximadamente 4 / √2, para hacer las diagonales
 
-    if (frameTimer >= velocidadCambio) {
-        frameTimer =0.2f; // Reducimos en lugar de reiniciar abruptamente
-        currentFrame = (currentFrame + 1) % totalFrames; // Alternar entre los 3 frames
-        int left = currentFrame * frameWidth; // Ajustar el cuadro en el spritesheet
-        sprite.setTextureRect(sf::IntRect(left, 0, frameWidth, frameHeight)); // Aplicar nuevo frame
+        switch (direccion)
+        {
+        case 1:
+            offsetY = -4.f;
+            break; // Arriba
+        case 2:
+            offsetY =  4.f;
+            break; // Abajo
+        case 3:
+            offsetX =  4.f;
+            break; // Derecha
+        case 4:
+            offsetX = -4.f;
+            break; // Izquierda
+
+        case 5:
+            offsetX =  diag;
+            offsetY = -diag;
+            break;
+        case 6:
+            offsetX =  diag;
+            offsetY =  diag;
+            break;
+        case 7:
+            offsetX = -diag;
+            offsetY =  diag;
+            break;
+        case 8:
+            offsetX = -diag;
+            offsetY = -diag;
+            break;
+        }
+        sprite.move(offsetX, offsetY);
+        tiempoDesdeUltimoMovimiento = 0.f;
+    // Detectar si se está "moviendo hacia la derecha o izquierda" para la escala
+        if (offsetX > 0) {
+            sprite.setScale(0.15f, 0.15f);  // mirando a la derecha
+            sprite.setOrigin(0, 0);
+        } else if (offsetX < 0) {
+            sprite.setScale(-0.15f, 0.15f); // mirando a la izquierda
+            sprite.setOrigin(frameWidth, 0);
+        }
+        caminando = true;
     }
+    // Animación de frames como en personaje
+    if (caminando) {
+        frameTimer += deltaTime;
+        if (frameTimer >= frameTime) {
+            frameTimer = 0.f; // igual que en personaje
+            currentFrame = (currentFrame + 1) % totalFrames;
+        }
 
-    // **Movimiento aleatorio dentro del radio**
-    sf::Vector2f nuevaPosicion = sprite.getPosition() + direccion * velocidad;
-    sf::Vector2f diferencia = nuevaPosicion - posicionInicial;
-
-    if (std::sqrt(diferencia.x * diferencia.x + diferencia.y * diferencia.y) > radioMovimiento) {
-        direccion = generarDireccionAleatoria(); // Si se sale del radio, cambia direcci�n
-    }
-
-    sprite.move(direccion * velocidad);
-}
-
-sf::Vector2f enemigo::generarDireccionAleatoria() {
-    float angulo = static_cast<float>(std::rand() % 360);
-    float radianes = angulo * 3.14159265359f / 180.0f;
-    return sf::Vector2f(std::cos(radianes), std::sin(radianes));
+        int left = currentFrame * frameWidth;
+        int top = 0;  // aún en la fila 0
+        sprite.setTextureRect(sf::IntRect(left, top, frameWidth, frameHeight));
+    } /*else {
+        // si no está caminando, volver al frame quieto
+        currentFrame = 0;
+        sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+    }*/
 }
 
 void enemigo::draw(sf::RenderWindow& window)
 {
-    if (sprite.getTexture() != nullptr)    // Verifica que la textura est� asignada
+    if (sprite.getTexture() != nullptr)    // Verifica que la textura esté asignada
     {
         window.draw(sprite);// Renderiza el personaje
     }
     else
     {
-        std::cout << "Error: La textura del personaje no est� cargada" << std::endl;
+        std::cout << "Error: La textura del personaje no está cargada" << std::endl;
     }
 };

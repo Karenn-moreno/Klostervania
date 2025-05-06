@@ -32,7 +32,7 @@ int main()
     }
     sf::Sprite Fondo;
     Fondo.setTexture(fondoPrincipal);
-    Fondo.setScale({0.95f, 0.95f}); //  factor de escala
+    Fondo.setScale({1.5f, 1.1f}); //  factor de escala
 
     // Cargar la textura nueva partida
     sf::Texture fondoNuevaPartida;
@@ -74,7 +74,7 @@ int main()
 
     //armamos el menu dinamico
     menu menuPrincipal;
-    menuPrincipal.crearMenu(NUM_OPCIONES, Texto1, opcionesVector, 40, 600, 550, 60, sf::Color::Red);
+    menuPrincipal.crearMenu(NUM_OPCIONES, Texto1, opcionesVector, 40, 600, 400, 55, sf::Color::Black, sf::Color::Red);
 
     //sf::Text textos[NUM_OPCIONES];
     int opcionSeleccionada = 0;
@@ -130,7 +130,7 @@ int main()
                                     window.draw(FondoNuevaPartida);
                                     window.draw(pantallaNegra);
                                     window.display();
-                                    opacidad -= 5;
+                                    opacidad -= 8;
                                     sf::sleep(sf::milliseconds(100));
                                 }
                                 nuevaPartida();
@@ -159,7 +159,7 @@ int main()
                                 std::cout << "Opción no válida." << std::endl;
                             }
                         }
-                        menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::White, sf::Color::Red);
+                        menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::Red, sf::Color::Black);
                     }
                 }
                 else
