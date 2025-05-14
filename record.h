@@ -1,6 +1,3 @@
-#ifndef RECORD_H_INCLUDED
-#define RECORD_H_INCLUDED
+#pragma once
 
-
-
-#endif // RECORD_H_INCLUDED
+void record();

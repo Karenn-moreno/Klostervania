@@ -90,11 +90,7 @@ void personaje::draw(sf::RenderWindow& window) {
 }
 
 // --- Lógica de actualización: animación, movimiento y respiración ---
-void personaje::update(float deltaTime,
-                       bool moviendoDer,
-                       bool moviendoIzq,
-                       bool moviendoArr,
-                       bool moviendoAbj) {
+void personaje::update(float deltaTime, bool moviendoDer, bool moviendoIzq, bool moviendoArr, bool moviendoAbj) {
     // 1) Animación de caminata
     bool caminando = moviendoDer || moviendoIzq;
     if (caminando) {
@@ -119,7 +115,7 @@ void personaje::update(float deltaTime,
     } else {
         // En reposo, resetear a primer frame
         currentFrame = 0;
-        sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+        sprite.setTextureRect(sf::IntRect(0, 3000, frameWidth, frameHeight));
     }
 
     // 2) Efecto de respiración (pulso suave)

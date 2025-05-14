@@ -27,7 +27,7 @@ private:
     float baseScaleX    = 0.1f;
     float baseScaleY    = 0.1f;
     float pulseAmplitude = 0.05f;
-    float pulseSpeed     = 1.f;
+    float pulseSpeed     = 0.5f;
     sf::Clock pulseClock;
 
 public:

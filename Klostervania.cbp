@@ -41,12 +41,20 @@
 			<Add library="sfml-system" />
 			<Add directory="SFML-2.6.0/lib" />
 		</Linker>
+		<Unit filename="continuarPartida.cpp" />
+		<Unit filename="continuarPartida.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="creditos.cpp" />
 		<Unit filename="creditos.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="enemigo.cpp" />
 		<Unit filename="enemigo.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="gamePlay.cpp" />
+		<Unit filename="gamePlay.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="item.cpp" />
@@ -66,9 +74,7 @@
 		<Unit filename="personaje.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="record.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="record.cpp" />
 		<Unit filename="record.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
