@@ -1,5 +1,7 @@
 #include "menu.h"
 #include<iostream>
+
+menu::menu(){};
 void menu::crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones, int sizeChar, int posX, int posY, int interlineado, sf::Color color, sf::Color colorInicial)
 {
     _numeroOpciones = numeroOpciones;

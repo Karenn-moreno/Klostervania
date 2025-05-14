@@ -20,8 +20,8 @@ private:
 
     // Gestión de vida del ítem
     sf::Clock lifeClock;
-    sf::Time  lifetime = sf::seconds(120.f);
-    bool      active   = false;
+    sf::Time  lifetime = sf::seconds(120.f); // vive 2 min el item
+    bool active = false;
 
     // Parámetros de pulso (latido)
     float baseScaleX    = 0.1f;

@@ -1,24 +1,36 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <string>
+
+#include <vector>            // Para std::vector
+#include <string>            // Para std::string
+#include <SFML/Graphics.hpp> // Para sf::Font, sf::Text, sf::RenderWindow
+
 class menu {
 
 private:
-    int _numeroOpciones;
-    sf::Font _fuente;
-    int _opcionSeleccionada;
-    std::vector<std::string> _opciones;  // Cambio de array estático a vector dinámico
-    std::vector<sf::Text> textos;
+    // --- Datos del menú ---
+    int _numeroOpciones;                     // Número total de opciones
+    int _opcionSeleccionada;                 // Índice de la opción actualmente activa
+    sf::Font _fuente;                        // Fuente utilizada para los textos
+    std::vector<std::string> _opciones;      // Textos de cada opción
+    std::vector<sf::Text> textos;            // Objetos de texto para renderizar cada opción
 
 public:
 
-    Menu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones);  // Constructor
+    menu ();
 
-void crearMenu(int numeroOpciones, const sf::Font& fuente, const std::vector<std::string>& opciones, int sizeChar, int posX, int posY, int interlineado, sf::Color color, sf::Color colorInicial);
+    void crearMenu(int numeroOpciones,
+                   const sf::Font& fuente,
+                   const std::vector<std::string>& opciones,
+                   int sizeChar,
+                   int posX,
+                   int posY,
+                   int interlineado,
+                   sf::Color color,
+                   sf::Color colorInicial);
 
-void actualizarMenu(int opcionSeleccionada, sf::Color colorNuevo, sf::Color color);
+    void actualizarMenu(int opcionSeleccionada,
+                       sf::Color colorNuevo,
+                       sf::Color color);
 
-void dibujarMenu(sf::RenderWindow& window);
-
-
+    void dibujarMenu(sf::RenderWindow& window);
 };
