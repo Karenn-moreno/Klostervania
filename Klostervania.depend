@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1746550094 source:c:\users\leand\desktop\klostervania\main.cpp
+1747185142 source:c:\users\leand\desktop\klostervania\main.cpp
 	<iostream>
 	<thread>
 	<SFML/Graphics.hpp>
@@ -8,6 +8,7 @@
 	"nuevaPartida.h"
 	"personaje.h"
 	"enemigo.h"
+	"item.h"
 
 1745701554 c:\users\leand\desktop\klostervania\sfml-2.6.0\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -554,12 +555,15 @@
 1746483969 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
 
-1746227610 source:c:\users\leand\desktop\klostervania\item.cpp
+1747185982 source:c:\users\leand\desktop\klostervania\item.cpp
+	"item.h"
+	<cstdlib>
+	<cmath>
 
 1746545655 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 
-1746550584 c:\users\leand\desktop\klostervania\personaje.h
+1747185493 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<string>
 	<iostream>
@@ -567,5 +571,10 @@
 1746484116 c:\users\leand\desktop\klostervania\enemigo.h
 	<SFML/Graphics.hpp>
 	<string>
+	<iostream>
+
+1747185982 c:\users\leand\desktop\klostervania\item.h
+	<SFML/Graphics.hpp>
+	<ctime>
 	<iostream>
 

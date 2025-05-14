@@ -6,13 +6,14 @@
 #include "nuevaPartida.h"
 #include "personaje.h"
 #include "enemigo.h"
-
+#include "item.h"
 
 
 int main()
 {
     personaje personaje;
     enemigo demonio;
+    item miItem;
     const int NUM_OPCIONES = 5;
     std::string opciones[NUM_OPCIONES] = {"Nueva Partida", "Continuar Partida", "Record", "creditos", "Salir"};
     std::vector<std::string> opcionesVector(opciones, opciones + NUM_OPCIONES);
@@ -196,25 +197,41 @@ int main()
                 }
         }
 
-        // limpio la ventana con color negro
-        window.clear(sf::Color::Black);
+        if (juegoIniciado) {
+    // 2.a) Actualiza enemigos y personaje
+    demonio.update(deltaTime);
+    // 2.b) Actualiza el ítem cada frame
+    miItem.update();
+    // 2.c) Si expiró, lo reapareces
+    if (!miItem.isActive())
+        miItem.spawn(window.getSize());
+}
 
-        // Dibujando todo
-        if (!juegoIniciado)
-        {
-            window.draw(Fondo);
-            menuPrincipal.dibujarMenu(window);  //Solo dibuja el menú si el juego no ha empezado
-        }
-        else
-        {
-            window.draw(FondoNuevaPartida);
-            demonio.draw(window);
-            personaje.draw(window);
-        }
-        // Mostrar el contenido de la ventana
-        window.display();
 
+    // 3) Dibujo
+    window.clear(sf::Color::Black);
+
+    if (!juegoIniciado)
+    {
+        window.draw(Fondo);
+        menuPrincipal.dibujarMenu(window);
     }
+    else
+    {
+        window.draw(FondoNuevaPartida);
+        demonio.draw(window);
+        personaje.draw(window);
+
+        // ¡Dibujamos el item NUNCA DENTRO del pollEvent!
+        miItem.draw(window);
+    }
+
+    window.display();
+}
+
+
+
+
     return 0;
 }
 
