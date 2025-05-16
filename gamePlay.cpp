@@ -3,13 +3,15 @@
 #include "continuarPartida.h"
 #include "creditos.h"
 #include "record.h"
+#include "batalla.h"
+
 
 gamePlay::gamePlay()
     : window            (sf::VideoMode(1500, 900), "KLOSTERVANIA")
     , ejecutando        (true)
     , pantallaNegra     ({1500.f, 900.f})
-    , flecha            (bufferFlecha)
-    , enter             (bufferEnter)
+, flecha            (bufferFlecha)
+, enter             (bufferEnter)
 {
     window.setFramerateLimit(60);
 
@@ -78,6 +80,7 @@ void gamePlay::procesarEventos()
                     std::cout<<"\nIniciando una nueva partida";
                     juegoIniciado = true;
                     {
+                        //  transicion de pantalla
                         int opacidad = 255;
                         while (opacidad > 0)
                         {
@@ -137,7 +140,7 @@ void gamePlay::updatePersonaje(sf::Time dt)
 
     if (juegoIniciado)
     {
-        // — Movimiento continuo —
+//  Movimiento continuo —
         bool movDer = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
         bool movIzq = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
         bool movArr = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
@@ -149,7 +152,7 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (movArr) jugador.mover(0.f, -speed);
         if (movAbj) jugador.mover(0.f,  speed );
 
-        // — Actualización de entidades —
+//   Actualización de entidades —
         jugador.update(deltaTime, movDer, movIzq, movArr, movAbj);
         demonio.update(deltaTime);
 
@@ -157,24 +160,37 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (!itemRecolectable.isActive())
             itemRecolectable.spawn(window.getSize());
     }
+
+//  Detectar colisión solo en exploración
+    if (estado == EstadoJuego::Exploracion && !batallaIniciada)
+    {
+        if (jugador.getBounds().intersects(demonio.getBounds()))
+        {
+            std::cout<<"\nSe choco un enemigo!";
+            estado = EstadoJuego::Batalla;
+        }
+    }
 }
 
-
-void gamePlay::draw()
+void gamePlay::drawExploracion()
 {
     window.clear(sf::Color::Black);
+
     if (!juegoIniciado)
     {
+// Menú principal
         window.draw(spriteFondo);
         menuPrincipal.dibujarMenu(window);
     }
     else
     {
+// Mundo: fondo de partida y entidades
         window.draw(spriteNuevaPartida);
-        jugador.draw(window);
         demonio.draw(window);
+        jugador.draw(window);
         itemRecolectable.draw(window);
     }
+
     window.display();
 }
 
@@ -184,7 +200,38 @@ void gamePlay::ejecutar()
     {
         procesarEventos();
         sf::Time dt = reloj.restart();
-        updatePersonaje(dt);
-        draw();
+
+        if (estado == EstadoJuego::Exploracion)
+        {
+            updatePersonaje(dt);
+            drawExploracion();
+        }
+        else if (estado == EstadoJuego::Batalla)
+        {
+            if (!batallaIniciada)
+            {
+                std::cout << "\nSe inició una batalla";
+                batallaIniciada = true;
+                batallaGamePlay = new batalla(jugador, demonio, flecha);
+                batallaGamePlay->iniciarBatalla();
+            }
+            // ————— transicion de pantalla  —————
+        for (int opacidad = 255; opacidad >= 0; opacidad -= 5) {
+        pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
+        window.clear();
+            // ————— DIBUJO DE BATALLA —————
+
+            batallaGamePlay->drawBatalla(window);
+            window.draw(pantallaNegra);
+            window.display();
+        }
+            if (batallaGamePlay->finBatalla())
+            {
+                delete batallaGamePlay;
+                batallaGamePlay   = nullptr;
+                batallaIniciada   = false;
+                estado            = EstadoJuego::Exploracion;
+            }
+        }
     }
-}
+};

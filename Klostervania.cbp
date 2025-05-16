@@ -41,6 +41,10 @@
 			<Add library="sfml-system" />
 			<Add directory="SFML-2.6.0/lib" />
 		</Linker>
+		<Unit filename="batalla.cpp" />
+		<Unit filename="batalla.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="continuarPartida.cpp" />
 		<Unit filename="continuarPartida.h">
 			<Option target="&lt;{~None~}&gt;" />

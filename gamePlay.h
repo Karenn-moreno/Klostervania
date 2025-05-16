@@ -4,6 +4,7 @@
 #include "enemigo.h"
 #include "menu.h"
 #include "item.h"
+#include "batalla.h"
 #include <SFML/Audio.hpp>
 
 class gamePlay
@@ -16,6 +17,8 @@ private:
     void manejarEntradaJugador();    // Teclas mantenidas (movimiento)
     void updatePersonaje(sf::Time dt);    // Lógica de juego
     void draw();                  // Renderizado
+    void drawExploracion();
+
     sf::Clock reloj;     // Para delta time
 
     // ————— Ventana principal —————
@@ -49,5 +52,13 @@ private:
     bool ejecutando     = false;
     bool juegoIniciado  = false;
     int  opcionSeleccionada = 0;
+
+// Nuevo enum para controlar en que estado de juego estoy
+    enum class EstadoJuego { Exploracion, pause, Batalla,dialogoItem };
+    EstadoJuego estado = EstadoJuego::Exploracion;
+    batalla* batallaGamePlay = nullptr;     // puntero, hasta que empiece la pelea
+    bool     batallaIniciada = false;
+
+
 
 };

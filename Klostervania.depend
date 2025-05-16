@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1747246696 source:c:\users\leand\desktop\klostervania\main.cpp
+1747266900 source:c:\users\leand\desktop\klostervania\main.cpp
 	"gamePlay.h"
 	<thread>
 	<SFML/Graphics.hpp>
@@ -554,7 +554,7 @@
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 
-1747240004 source:c:\users\leand\desktop\klostervania\enemigo.cpp
+1747269663 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
 	<iostream>
 	<cstdlib>
@@ -564,17 +564,17 @@
 	<cstdlib>
 	<cmath>
 
-1747265088 source:c:\users\leand\desktop\klostervania\personaje.cpp
+1747269615 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 	<cmath>
 
-1747234358 c:\users\leand\desktop\klostervania\personaje.h
+1747269615 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<string>
 	<iostream>
 
-1747265604 c:\users\leand\desktop\klostervania\enemigo.h
+1747269663 c:\users\leand\desktop\klostervania\enemigo.h
 	<SFML/Graphics.hpp>
 	<string>
 	<iostream>
@@ -584,19 +584,21 @@
 	<ctime>
 	<iostream>
 
-1747266599 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1747358212 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"nuevaPartida.h"
 	"continuarPartida.h"
 	"creditos.h"
 	"record.h"
+	"batalla.h"
 
-1747266103 c:\users\leand\desktop\klostervania\gameplay.h
+1747330975 c:\users\leand\desktop\klostervania\gameplay.h
 	<SFML/Graphics.hpp>
 	"personaje.h"
 	"enemigo.h"
 	"menu.h"
 	"item.h"
+	"batalla.h"
 	<SFML/Audio.hpp>
 
 1747266487 source:c:\users\leand\desktop\klostervania\continuarpartida.cpp
@@ -610,4 +612,14 @@
 
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
+
+1747354607 source:c:\users\leand\desktop\klostervania\batalla.cpp
+	"batalla.h"
+
+1747358530 c:\users\leand\desktop\klostervania\batalla.h
+	<SFML/Graphics.hpp>
+	<SFML/Audio.hpp>
+	"personaje.h"
+	"enemigo.h"
+	"menu.h"
 

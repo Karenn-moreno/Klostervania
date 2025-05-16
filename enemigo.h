@@ -21,6 +21,8 @@ public:
     int getAtaqueLigero();     //    Devuelve el daño de ataque ligero
     int getAtaquePesado();     //    Devuelve el daño de ataque pesado
     int getHabilidadEspecial();//    Devuelve el poder de la habilidad especial
+    const sf::Sprite& getSprite() const;   // Devuelve el sprite para poder consultar sus bounds o dibujarlo
+    sf::FloatRect getBounds() const;
 
     // --- Lógica de juego ---
     void update(float deltaTime);

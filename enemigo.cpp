@@ -44,6 +44,16 @@ int enemigo::getHabilidadEspecial()
     return _habilidadEspecial;  // Devuelve el poder de la habilidad especial
 }
 
+const sf::Sprite& enemigo::getSprite() const{
+    return sprite;
+};
+
+sf::FloatRect enemigo::getBounds() const
+    {
+        return sprite.getGlobalBounds();
+    };
+
+
 // Constructor: carga textura, configura sprite, frame
 enemigo::enemigo()
     : _salud(500)

@@ -35,6 +35,15 @@ int personaje::getHabilidadEspecial() const {
     return _habilidadEspecial;  // Devuelve valor de habilidad especial
 }
 
+const sf::Sprite& personaje::getSprite() const{
+    return sprite;
+};
+
+sf::FloatRect personaje::getBounds() const
+    {
+        return sprite.getGlobalBounds();
+    };
+
 // Constructor: carga textura, configura sprite, frame y respiración
 personaje::personaje()
     : _salud(1000)
