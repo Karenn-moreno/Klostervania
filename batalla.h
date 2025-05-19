@@ -37,9 +37,12 @@ private:
 
     enum class Turno { Jugador, Enemigo };
     Turno turnoActual;
+    int _opcionSeleccionada = 0; // se conserva entre frames
 
     int vidaJugador;          // copia de la vida para el combate
     int vidaAdversario;       // copia de la vida para el combate
+    int _rondaTurno=1;
+    int _rondaCarga = 0;      // para activar los diferentes ataques y habilidades
 
     bool terminado;           // indica si acabó la batalla
     bool jugadorGanoFlag;     // resultado final

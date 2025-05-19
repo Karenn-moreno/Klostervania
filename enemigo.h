@@ -17,24 +17,34 @@ public:
     void setHabilidadEspecial(int habilidadEspecial); //     Establece el poder de la habilidad especial
 
     // --- Getters de estadísticas ---
+    void setActivo(bool activo);//   Lo creo y lo elimino con esto
     int getSalud();            //    Devuelve los puntos de vida actuales
     int getAtaqueLigero();     //    Devuelve el daño de ataque ligero
     int getAtaquePesado();     //    Devuelve el daño de ataque pesado
     int getHabilidadEspecial();//    Devuelve el poder de la habilidad especial
     const sf::Sprite& getSprite() const;   // Devuelve el sprite para poder consultar sus bounds o dibujarlo
     sf::FloatRect getBounds() const;
-
+        void setPosition(float x, float y);
+    int  _maxSalud;            //   Puntos de vida maximo
     // --- Lógica de juego ---
     void update(float deltaTime);
-
+    bool estaActivo() const;
     void draw(sf::RenderWindow& window);
 
 private:
     // --- Estadísticas del enemigo ---
     int _salud;               //    Puntos de vida
+
     int _ataqueLigero;        //    Daño de ataques ligeros
     int _ataquePesado;        //    Daño de ataques pesados
     int _habilidadEspecial;   //    Poder de habilidad especial
+    bool _activo = true;  // empieza vivo
+
+    int  getMaxSalud() const;
+     // Para que reviva
+  sf::Clock _respawnClock;
+  sf::Time  _respawnDelay = sf::seconds(10.0f); // 0.5 minutos = 30 s
+  sf::Vector2f _posInicial;                   // guarda dónde nació
 
     // --- Gráficos ---
     sf::Sprite sprite;        //    Sprite que representa al enemigo

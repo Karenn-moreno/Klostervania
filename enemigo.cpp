@@ -44,22 +44,25 @@ int enemigo::getHabilidadEspecial()
     return _habilidadEspecial;  // Devuelve el poder de la habilidad especial
 }
 
-const sf::Sprite& enemigo::getSprite() const{
+const sf::Sprite& enemigo::getSprite() const
+{
     return sprite;
 };
 
 sf::FloatRect enemigo::getBounds() const
-    {
-        return sprite.getGlobalBounds();
-    };
+{
+    return sprite.getGlobalBounds();
+};
 
 
 // Constructor: carga textura, configura sprite, frame
 enemigo::enemigo()
     : _salud(500)
+    , _maxSalud(500)   // guarda el máximo, asi cuando avanzo en niveles cuesta mas
     , _ataqueLigero(10)
     , _ataquePesado(15)
     , _habilidadEspecial(25)
+
 {
     if (!textura.loadFromFile("img/spritsheep_demonio_derecha.png"))    // Carga la imagen completa
     {
@@ -74,13 +77,25 @@ enemigo::enemigo()
     // Variables de control para el cambio de frames
 
     sprite.setPosition(500, 500);  // Posición inicial
+    _posInicial = sprite.getPosition();
 }
 
 // --- Actualización del enemigo: movimiento aleatorio y animación de frames ---
 void enemigo::update(float deltaTime)
 {
+    if (!_activo) {
+        // si lleva ya más de _respawnDelay, reaparecer
+        if (_respawnClock.getElapsedTime() >= _respawnDelay) {
+            _activo = true;
+            _salud  = _maxSalud;
+            // opcional: reposicionar
+            //sprite.setPosition( /* x */, /* y */ );
+        }
+        return;
+    }
     bool caminando = false;
     tiempoDesdeUltimoMovimiento += deltaTime;  // Acumula tiempo desde último movimiento
+
 
     // Cada 0.7s, el enemigo elige una dirección aleatoria
     if (tiempoDesdeUltimoMovimiento >= 0.7f)
@@ -160,6 +175,7 @@ void enemigo::update(float deltaTime)
 // --- Renderizado del enemigo ---
 void enemigo::draw(sf::RenderWindow& window)
 {
+    if (!_activo) return;
     if (sprite.getTexture() != nullptr)
     {
         window.draw(sprite);  // Dibuja el sprite en la ventana
@@ -168,4 +184,28 @@ void enemigo::draw(sf::RenderWindow& window)
     {
         std::cout << "Error: La textura del enemigo no está cargada" << std::endl;
     }
+}
+
+void enemigo::setActivo(bool activo)
+{
+     _activo = activo;
+    if (!activo) {
+        // arrancar el reloj cuando muere
+        _respawnClock.restart();
+    }
+};
+
+bool enemigo::estaActivo() const
+{
+    return _activo;
+}
+
+void enemigo::setPosition(float x, float y)
+{
+    sprite.setPosition(x,y);
+}
+
+int  enemigo::getMaxSalud() const
+{
+    return _maxSalud;
 }

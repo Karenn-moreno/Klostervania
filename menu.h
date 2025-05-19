@@ -33,4 +33,6 @@ public:
                        sf::Color color);
 
     void dibujarMenu(sf::RenderWindow& window);
+
+    void setOptionColor(int index, sf::Color color);
 };

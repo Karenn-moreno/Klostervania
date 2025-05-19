@@ -15,7 +15,7 @@ gamePlay::gamePlay()
 {
     window.setFramerateLimit(60);
 
-    // — Fondos —
+    // â€” Fondos â€”
     if (!fondoPrincipal.loadFromFile("img/Klostervania_fondo.jpg"))
         std::cout << "Error al cargar fondo principal\n";
     spriteFondo.setTexture(fondoPrincipal);
@@ -26,15 +26,15 @@ gamePlay::gamePlay()
     spriteNuevaPartida.setTexture(fondoNuevaPartida);
     spriteNuevaPartida.setScale(2.0f, 2.0f);
 
-    // — Transición —
+    // â€” TransiciÃ³n â€”
     pantallaNegra.setFillColor(sf::Color(0,0,0,255));
 
-    // — Fuente y menú —
+    // â€” Fuente y menÃº â€”
     if (!fuente.loadFromFile("fonts/Hatch.ttf"))
-        std::cout << "Error al cargar fuente del menú\n";
+        std::cout << "Error al cargar fuente del menÃº\n";
     menuPrincipal.crearMenu( numOpcionesMenuPrincipal, fuente, opcionesVector, 40, 600, 400, 55, sf::Color::Black, sf::Color::Red);
 
-    // — Sonidos —
+    // â€” Sonidos â€”
     if (!bufferFlecha.loadFromFile("audio/flecha.wav") ||
             !bufferEnter .loadFromFile("audio/enter.wav"))
     {
@@ -43,7 +43,7 @@ gamePlay::gamePlay()
     flecha.setBuffer(bufferFlecha);
     enter.setBuffer(bufferEnter);
 
-    // — Arrancamos el reloj de deltaTime —
+    // â€” Arrancamos el reloj de deltaTime â€”
     reloj.restart();
 }
 
@@ -52,95 +52,107 @@ void gamePlay::procesarEventos()
     sf::Event event;
     while (window.pollEvent(event))
     {
-        // 1) Salida de la aplicación
+        itemRecolectable.handleEvent(event);
+        // 1) Salida de la aplicaciÃ³n
         if (event.type == sf::Event::Closed)
         {
             ejecutando = false;
             window.close();
         }
 
-        // 2) Navegación del menú antes de iniciar el juego
+        // 2) Pausa tras recoger Ã­tem (RecompensaItem)
+        if (estado == EstadoJuego::dialogoItem)
+        {
+            if (event.type == sf::Event::KeyPressed &&
+                event.key.code == sf::Keyboard::Enter)
+            {
+                estado = EstadoJuego::Exploracion;
+            }
+            // No procesar mÃ¡s eventos mientras estÃ© en pausa
+            continue;
+        }
+
+        // 3) NavegaciÃ³n del menÃº antes de iniciar el juego
         if (!juegoIniciado && event.type == sf::Event::KeyPressed)
         {
             switch (event.key.code)
             {
-            case sf::Keyboard::Up:
-                opcionSeleccionada = (opcionSeleccionada - 1 + numOpcionesMenuPrincipal) % numOpcionesMenuPrincipal;
-                flecha.play();
-                break;
-            case sf::Keyboard::Down:
-                opcionSeleccionada = (opcionSeleccionada + 1) % numOpcionesMenuPrincipal;
-                flecha.play();
-                break;
-            case sf::Keyboard::Enter:
-                enter.play();
-                switch (opcionSeleccionada)
-                {
-                case 0:  // Nueva Partida
-                    std::cout<<"\nIniciando una nueva partida";
-                    juegoIniciado = true;
+                case sf::Keyboard::Up:
+                    opcionSeleccionada = (opcionSeleccionada - 1 + numOpcionesMenuPrincipal) % numOpcionesMenuPrincipal;
+                    flecha.play();
+                    break;
+                case sf::Keyboard::Down:
+                    opcionSeleccionada = (opcionSeleccionada + 1) % numOpcionesMenuPrincipal;
+                    flecha.play();
+                    break;
+                case sf::Keyboard::Enter:
+                    enter.play();
+                    switch (opcionSeleccionada)
                     {
-                        //  transicion de pantalla
-                        int opacidad = 255;
-                        while (opacidad > 0)
-                        {
-                            pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
-                            window.clear();
-                            window.draw(spriteNuevaPartida);
-                            window.draw(pantallaNegra);
-                            window.display();
-                            opacidad -= 8;
-                            sf::sleep(sf::milliseconds(100));
-                        }
+                        case 0:  // Nueva Partida
+                            std::cout << "\nIniciando una nueva partida";
+                            juegoIniciado = true;
+                            {
+                                // TransiciÃ³n de pantalla
+                                int opacidad = 255;
+                                while (opacidad > 0)
+                                {
+                                    pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
+                                    window.clear();
+                                    window.draw(spriteNuevaPartida);
+                                    window.draw(pantallaNegra);
+                                    window.display();
+                                    opacidad -= 8;
+                                    sf::sleep(sf::milliseconds(100));
+                                }
+                            }
+                            nuevaPartida();
+                            break;
+                        case 1:  // Continuar Partida
+                            std::cout << "\nEntrando a Continuar partida";
+                            continuarPartida();
+                            break;
+                        case 2:  // Record
+                            std::cout << "\nEntrando a records";
+                            record();
+                            break;
+                        case 3:  // CrÃ©ditos
+                            std::cout << "\nEntrando a los creditos";
+                            creditos();
+                            break;
+                        case 4:  // Salir
+                            std::this_thread::sleep_for(std::chrono::seconds(1));
+                            ejecutando = false;
+                            window.close();
+                            break;
+                        default:
+                            break;
                     }
-                    nuevaPartida();
-                    break;
-
-                case 1: //  continuar partida
-                    std::cout<<"\nEntrando a Continuar partida";
-                    continuarPartida();
-
-                    break;
-
-                case 2: //  record
-                    std::cout<<"\nEntrando a records";
-                    record();
-
-                    break;
-
-                case 3: //  Creditos
-                    std::cout<<"\nEntrando a los creditos";
-                    creditos();
-
-                    break;
-
-                case 4:  // Salir
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
-                    ejecutando = false;
-                    window.close();
                     break;
                 default:
-
                     break;
-                }
-
-                break;
-            default:
-                break;
             }
-            // Actualiza colores del menú tras pulsar Enter
+            // Actualiza colores del menÃº tras Up/Down/Enter
             menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::Red, sf::Color::Black);
+            continue;
         }
+        itemRecolectable.handleEvent(event); //loop hasta aceptar item
+
+        // 4) AquÃ­ puedes manejar otros eventos cuando el juego ya estÃ¡ iniciado
     }
 }
+
 
 void gamePlay::updatePersonaje(sf::Time dt)
 {
     float deltaTime = dt.asSeconds();
-
+  //    Pausa si el panel de recompensa estÃ¡ activo
+   if (itemRecolectable.isPanelActive()) return;
+  //    Actualiza el Ã­tem (respawn, pulso, etc.)
+  itemRecolectable.update();
     if (juegoIniciado)
     {
-//  Movimiento continuo —
+//  Movimiento continuo â€”
         bool movDer = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
         bool movIzq = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
         bool movArr = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
@@ -152,17 +164,20 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (movArr) jugador.mover(0.f, -speed);
         if (movAbj) jugador.mover(0.f,  speed );
 
-//   Actualización de entidades —
+//   ActualizaciÃ³n de entidades â€”
         jugador.update(deltaTime, movDer, movIzq, movArr, movAbj);
-        demonio.update(deltaTime);
+         if (juegoIniciado)
+        {
+            demonio.update(deltaTime);
+        }
 
         itemRecolectable.update();
         if (!itemRecolectable.isActive())
             itemRecolectable.spawn(window.getSize());
     }
 
-//  Detectar colisión solo en exploración
-    if (estado == EstadoJuego::Exploracion && !batallaIniciada)
+//  Detectar colisiÃ³n solo en exploraciÃ³n
+    if (estado == EstadoJuego::Exploracion && !batallaIniciada&& demonio.estaActivo() )
     {
         if (jugador.getBounds().intersects(demonio.getBounds()))
         {
@@ -170,68 +185,124 @@ void gamePlay::updatePersonaje(sf::Time dt)
             estado = EstadoJuego::Batalla;
         }
     }
+    if (estado == EstadoJuego::Exploracion && itemRecolectable.tryPickup(jugador))
+{
+    // Entramos en â€œpausa por recompensaâ€
+    estado = EstadoJuego::dialogoItem;
+    // (Opcional) guarda en un atributo lo que recogiste para mostrarlo luego
+    return;  // Salimos de updatePersonaje sin mover ni actualizar nada mÃ¡s
+}
+
 }
 
 void gamePlay::drawExploracion()
 {
     window.clear(sf::Color::Black);
 
+    // Si no ha iniciado el juego, muestra menÃº
     if (!juegoIniciado)
     {
-// Menú principal
         window.draw(spriteFondo);
         menuPrincipal.dibujarMenu(window);
     }
     else
-    {
-// Mundo: fondo de partida y entidades
+{
+        // Fondo de nivel
         window.draw(spriteNuevaPartida);
-        demonio.draw(window);
-        jugador.draw(window);
-        itemRecolectable.draw(window);
-    }
 
+        // Entidades (si el demonio sigue activo)
+        if (demonio.estaActivo())
+            demonio.draw(window);
+
+        // Jugador siempre
+        jugador.draw(window);
+
+        // Ãtem texto
+
+    itemRecolectable.draw(window);
+}
     window.display();
 }
+
 
 void gamePlay::ejecutar()
 {
     while (window.isOpen() && ejecutando)
     {
+        // Captura y maneja eventos (incluye pausa por recompensa)
         procesarEventos();
+
+        // Tiempo delta
         sf::Time dt = reloj.restart();
 
-        if (estado == EstadoJuego::Exploracion)
+        // Dispara la lÃ³gica segÃºn el estado del juego
+        switch (estado)
         {
-            updatePersonaje(dt);
-            drawExploracion();
-        }
-        else if (estado == EstadoJuego::Batalla)
-        {
-            if (!batallaIniciada)
-            {
-                std::cout << "\nSe inició una batalla";
-                batallaIniciada = true;
-                batallaGamePlay = new batalla(jugador, demonio, flecha);
-                batallaGamePlay->iniciarBatalla();
-            }
-            // ————— transicion de pantalla  —————
-        for (int opacidad = 255; opacidad >= 0; opacidad -= 5) {
-        pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
-        window.clear();
-            // ————— DIBUJO DE BATALLA —————
+            case EstadoJuego::Exploracion:
+                // ExploraciÃ³n normal
+                updatePersonaje(dt);
+                drawExploracion();
+                break;
 
-            batallaGamePlay->drawBatalla(window);
-            window.draw(pantallaNegra);
-            window.display();
-        }
-            if (batallaGamePlay->finBatalla())
-            {
-                delete batallaGamePlay;
-                batallaGamePlay   = nullptr;
-                batallaIniciada   = false;
-                estado            = EstadoJuego::Exploracion;
-            }
+            case EstadoJuego::dialogoItem:
+                // Pausa tras recoger Ã­tem: dibuja sÃ³lo el paisaje o futura ventana de recompensa
+                drawExploracion();
+                break;
+
+            case EstadoJuego::Batalla:
+                // Iniciar batalla si aÃºn no lo hemos hecho
+                if (!batallaIniciada)
+                {
+                    std::cout << "\nSe iniciÃ³ una batalla";
+                    batallaGamePlay = new batalla(jugador, demonio, flecha);
+                    batallaGamePlay->iniciarBatalla();
+                    // TransiciÃ³n de pantalla
+                    for (int opacidad = 255; opacidad >= 0; opacidad -= 5)
+                    {
+                        pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
+                        window.clear();
+                        batallaGamePlay->drawBatalla(window);
+                        window.draw(pantallaNegra);
+                        window.display();
+                    }
+                    batallaIniciada = true;
+                }
+
+                // Turno del jugador
+                batallaGamePlay->manejarInput();
+                // Turno del enemigo
+                batallaGamePlay->actualizar(dt.asSeconds());
+                // Dibujo de batalla
+                batallaGamePlay->drawBatalla(window);
+                window.draw(pantallaNegra);
+                window.display();
+
+                // Si la batalla terminÃ³, procesar resultado
+                if (batallaGamePlay->finBatalla())
+                {
+                    if (batallaGamePlay->ganador())
+                    {
+                        std::cout << "\nÂ¡Has vencido al enemigo!\n";
+                        demonio.setActivo(false);
+                    }
+                    else
+                    {
+                        std::cout << "\nHas sido derrotadoâ€¦\n";
+                    }
+
+                    // Limpieza de la batalla
+                    delete batallaGamePlay;
+                    batallaGamePlay = nullptr;
+                    batallaIniciada = false;
+
+                    // Volver a exploraciÃ³n
+                    estado = EstadoJuego::Exploracion;
+                }
+                break;
+
+            default:
+                break;
         }
     }
-};
+}
+

@@ -2,47 +2,68 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include <iostream>
+#include "personaje.h"
 
-class item {
+class item
+{
+public:
+    item();
+
+    // Spawnea en posición aleatoria y asigna un bonus fijo
+    void spawn(const sf::Vector2u& windowSize);
+
+    // Llama esto cada frame para animar y gestionar respawn
+    void update();
+    void handleEvent(const sf::Event& event);
+
+    // Dibuja sólo si está activo
+    void draw(sf::RenderWindow& window);
+
+    // Indica si aún está en el mapa
+    bool isActive() const
+    {
+        return active;
+    }
+
+    // Intenta recoger el ítem: si colisiona, aplica bonus y devuelve true
+    bool tryPickup(personaje& jugador);
+
+    bool isPanelActive() const;
+
 private:
-    int _salud;
-    int _ataqueLigero;
-    int _ataquePesado;
-    int _habilidadEspecial;
+    // Bonus que guarda este item
+    enum BonusType { Salud, Ligero, Pesado, Especial, ataques, todos };
+    int _tipoItem; //le asigno el dibujo y su recompensa
+    BonusType bonusTipo;
 
+    static constexpr int BONUS_VAL[] = { 50, 30, 20, 50,30, 25 };  //salud, lijero, pesado, especial, ataques, todos
+
+    // Spritesheet y frame
     sf::Sprite   sprite;
     sf::Texture  textura;
-
     static constexpr int totalFrames = 6;
-    int frameWidth;
-    int frameHeight;
+    int frameWidth  = 500;
+    int frameHeight = 500;
     sf::IntRect frameActual;
 
-    // Gestión de vida del ítem
+    // Control de vida y respawn
     sf::Clock lifeClock;
-    sf::Time  lifetime = sf::seconds(120.f); // vive 2 min el item
-    bool active = false;
+    sf::Time  lifetime   = sf::seconds(120.f);
+    bool      active     = false;
 
-    // Parámetros de pulso (latido)
-    float baseScaleX    = 0.1f;
-    float baseScaleY    = 0.1f;
+    // Latido
+    float baseScaleX     = 0.1f;
+    float baseScaleY     = 0.1f;
     float pulseAmplitude = 0.05f;
     float pulseSpeed     = 0.5f;
     sf::Clock pulseClock;
 
-public:
-    // Constructor por defecto: carga spritesheet, define frame base y escala
-    item();
-
-    // Spawnea el ítem en una posición y frame aleatorio
-    void spawn(const sf::Vector2u& windowSize);
-
-    // Actualiza latido y desactiva tras expirar el tiempo
-    void update();
-
-    // Dibuja el ítem si está activo
-    void draw(sf::RenderWindow& window) const;
-
-    // ¿Está aún activo?
-    bool isActive() const { return active; }
+    // Semilla única
+    static bool seeded;
+    // --- Para el panel de recompensa ---
+    sf::Texture panelTexture;
+    sf::Sprite  panelSprite;
+    sf::Font    panelFont;
+    sf::Text    panelText;
+    bool        panelActive = false;
 };

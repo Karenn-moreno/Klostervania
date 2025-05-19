@@ -56,3 +56,6 @@ void menu::dibujarMenu(sf::RenderWindow& window)
     }
 };
 
+void menu::setOptionColor(int index, sf::Color color) {
+  textos[index].setFillColor(color);
+}
