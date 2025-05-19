@@ -7,7 +7,7 @@ batalla::batalla(personaje& jugador, enemigo& adversario, sf::Sound& soundFlecha
     , soundFlecha   (soundFlecha)
     , turnoActual(Turno::Jugador)
     , vidaJugador(jugador.getSalud())
-    , vidaAdversario(adversario.getSalud()-495)
+    , vidaAdversario(adversario.getSalud()-495) //le resto para matarlo rapido y seguir porbando
     , terminado(false)
     , jugadorGanoFlag(false)
     , fondo({1500.f, 900.f})
@@ -199,14 +199,19 @@ void batalla::drawBatalla(sf::RenderWindow& window)
     }
 
     menuBatalla.dibujarMenu(window);
+// ——— Jugador ———
     sf::Sprite copiaJugador = _jugador.getSprite();
+    // Resetear origen y escala limpias SIN ESTO EL DIBUJO ME PODIA QUEDAR AFUERA DE LA PANTALLA CUANDO MIRABA A LA IZQUIERDA
+    copiaJugador.setOrigin(0.f, 0.f);
     copiaJugador.setScale(0.3f, 0.3f);
-
     copiaJugador.setPosition(70.f, 600.f);
-    sf::Sprite copiaAdversario = _adversario.getSprite();
-    copiaAdversario.setPosition(1000.f, 550.f);
-    copiaAdversario.setScale(0.2f, 0.2f);
     window.draw(copiaJugador);
+
+    // ——— Enemigo ———
+    sf::Sprite copiaAdversario = _adversario.getSprite();
+    copiaAdversario.setOrigin(0.f, 0.f);
+    copiaAdversario.setScale(0.2f, 0.2f);
+    copiaAdversario.setPosition(1000.f, 550.f);
     window.draw(copiaAdversario);
 };
 

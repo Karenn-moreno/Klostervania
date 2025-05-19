@@ -52,14 +52,13 @@ void gamePlay::procesarEventos()
     sf::Event event;
     while (window.pollEvent(event))
     {
-        itemRecolectable.handleEvent(event);
         // 1) Salida de la aplicación
         if (event.type == sf::Event::Closed)
         {
             ejecutando = false;
             window.close();
         }
-
+        itemRecolectable.handleEvent(event);
         // 2) Pausa tras recoger ítem (RecompensaItem)
         if (estado == EstadoJuego::dialogoItem)
         {
@@ -136,9 +135,6 @@ void gamePlay::procesarEventos()
             menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::Red, sf::Color::Black);
             continue;
         }
-        itemRecolectable.handleEvent(event); //loop hasta aceptar item
-
-        // 4) Aquí puedes manejar otros eventos cuando el juego ya está iniciado
     }
 }
 
@@ -146,13 +142,25 @@ void gamePlay::procesarEventos()
 void gamePlay::updatePersonaje(sf::Time dt)
 {
     float deltaTime = dt.asSeconds();
-  //    Pausa si el panel de recompensa está activo
-   if (itemRecolectable.isPanelActive()) return;
-  //    Actualiza el ítem (respawn, pulso, etc.)
-  itemRecolectable.update();
+
+    // 1) Si el panel está abierto, no hacemos nada más
+    if (itemRecolectable.isPanelActive())
+        return;
+
+    // 2) Actualizamos el ítem (respawn, pulso…)
+    itemRecolectable.update();
+
+    // 3) Detectar recogida: SIEMPRE antes de mover o iniciar batalla
+    if (estado == EstadoJuego::Exploracion &&
+        itemRecolectable.tryPickup(jugador))
+    {
+        estado = EstadoJuego::dialogoItem;
+        return;  // salimos sin tocar nada más
+    }
+
+    // 4) Movimiento y animación del jugador
     if (juegoIniciado)
     {
-//  Movimiento continuo —
         bool movDer = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
         bool movIzq = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
         bool movArr = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
@@ -162,38 +170,24 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (movIzq) jugador.mover(-speed, 0.f);
         if (movDer) jugador.mover( speed, 0.f);
         if (movArr) jugador.mover(0.f, -speed);
-        if (movAbj) jugador.mover(0.f,  speed );
+        if (movAbj) jugador.mover(0.f,  speed);
 
-//   Actualización de entidades —
         jugador.update(deltaTime, movDer, movIzq, movArr, movAbj);
-         if (juegoIniciado)
-        {
-            demonio.update(deltaTime);
-        }
+        demonio.update(deltaTime);
 
-        itemRecolectable.update();
         if (!itemRecolectable.isActive())
             itemRecolectable.spawn(window.getSize());
     }
 
-//  Detectar colisión solo en exploración
-    if (estado == EstadoJuego::Exploracion && !batallaIniciada&& demonio.estaActivo() )
+    // 5) Colisión para iniciar batalla
+    if (estado == EstadoJuego::Exploracion && !batallaIniciada &&
+        demonio.estaActivo() &&
+        jugador.getBounds().intersects(demonio.getBounds()))
     {
-        if (jugador.getBounds().intersects(demonio.getBounds()))
-        {
-            std::cout<<"\nSe choco un enemigo!";
-            estado = EstadoJuego::Batalla;
-        }
+        estado = EstadoJuego::Batalla;
     }
-    if (estado == EstadoJuego::Exploracion && itemRecolectable.tryPickup(jugador))
-{
-    // Entramos en “pausa por recompensa”
-    estado = EstadoJuego::dialogoItem;
-    // (Opcional) guarda en un atributo lo que recogiste para mostrarlo luego
-    return;  // Salimos de updatePersonaje sin mover ni actualizar nada más
 }
 
-}
 
 void gamePlay::drawExploracion()
 {
@@ -273,6 +267,7 @@ void gamePlay::ejecutar()
                 // Turno del enemigo
                 batallaGamePlay->actualizar(dt.asSeconds());
                 // Dibujo de batalla
+                window.clear(sf::Color::Black);
                 batallaGamePlay->drawBatalla(window);
                 window.draw(pantallaNegra);
                 window.display();

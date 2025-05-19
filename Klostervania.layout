@@ -2,42 +2,9 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="nuevaPartida.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="personaje.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="141" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="gamePlay.cpp" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="8685" topLine="239" />
-		</Cursor>
-	</File>
-	<File name="item.cpp" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3551" topLine="115" />
-		</Cursor>
-	</File>
-	<File name="menu.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="enemigo.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2100" topLine="54" />
-		</Cursor>
-	</File>
-	<File name="batalla.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="775" topLine="30" />
-		</Cursor>
-		<Folding>
-			<Collapse line="38" />
-		</Folding>
-	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="220" topLine="0" />
+			<Cursor1 position="3676" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="record.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -45,44 +12,31 @@
 			<Cursor1 position="32" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="item.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="batalla.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1218" topLine="18" />
+			<Cursor1 position="6883" topLine="115" />
 		</Cursor>
+		<Folding>
+			<Collapse line="38" />
+		</Folding>
 	</File>
-	<File name="nuevaPartida.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="gamePlay.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="119" topLine="0" />
+			<Cursor1 position="3989" topLine="130" />
 		</Cursor>
-	</File>
-	<File name="creditos.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="51" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="personaje.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3676" topLine="108" />
-		</Cursor>
-	</File>
-	<File name="creditos.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="16" topLine="0" />
-		</Cursor>
+		<Folding>
+			<Collapse line="14" />
+			<Collapse line="142" />
+		</Folding>
 	</File>
 	<File name="enemigo.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1819" topLine="23" />
 		</Cursor>
 	</File>
-	<File name="batalla.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="menu.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="136" topLine="26" />
-		</Cursor>
-	</File>
-	<File name="menu.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1780" topLine="19" />
+			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="gamePlay.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -90,9 +44,63 @@
 			<Cursor1 position="2111" topLine="35" />
 		</Cursor>
 	</File>
+	<File name="menu.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1780" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="nuevaPartida.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="169" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="batalla.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="136" topLine="26" />
+		</Cursor>
+	</File>
 	<File name="personaje.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="134" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="creditos.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="51" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="item.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1906" topLine="42" />
+		</Cursor>
+	</File>
+	<File name="item.cpp" open="1" top="1" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9535" topLine="153" />
+		</Cursor>
+		<Folding>
+			<Collapse line="7" />
+			<Collapse line="221" />
+		</Folding>
+	</File>
+	<File name="nuevaPartida.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="119" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="enemigo.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2100" topLine="54" />
+		</Cursor>
+	</File>
+	<File name="creditos.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="16" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="220" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

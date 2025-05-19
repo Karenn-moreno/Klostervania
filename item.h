@@ -66,4 +66,6 @@ private:
     sf::Font    panelFont;
     sf::Text    panelText;
     bool        panelActive = false;
+        // Para controlar la animación de pop-up
+    float _popupScale = 0.f;
 };

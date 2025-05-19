@@ -48,6 +48,8 @@ item::item()
 
 void item::spawn(const sf::Vector2u& windowSize)
 {
+// Asegura que al reaparecer el panel quede cerrado (ESTO CAUSO MUCHOS DOLORES DE CABEZA ALEATORIAMENTE!!)
+   panelActive = false;
     //  Elige frame de sprite
     _tipoItem = std::rand() % totalFrames;
     frameActual.left = _tipoItem * frameWidth;
@@ -88,6 +90,8 @@ bool item::tryPickup(personaje& jugador)
     {
         active = false;  // desaparece del mapa
         panelActive = true; // activo el panel
+            // Reinicia la animación de “pop”
+    _popupScale = 0.f;
 
         // Aplica bonus según bonusTipo
         int valor = BONUS_VAL[bonusTipo];
@@ -194,6 +198,13 @@ void item::draw(sf::RenderWindow& window)
 
     if (panelActive)
     {
+        // —–– Pop-up  –––
+        const float targetScale = 0.8f; //la escala máxima a la que queremos que llegue
+        const float step        = 0.1f; //la escala en cada frame
+        _popupScale = std::min(_popupScale + step, targetScale);    //std::min asi nunca supera el valor
+        panelSprite.setScale(_popupScale, _popupScale);
+        panelText  .setScale(_popupScale, _popupScale);
+
         panelSprite.setPosition(
             window.getSize().x/2.f,
             window.getSize().y/2.f
