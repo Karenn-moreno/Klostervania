@@ -57,7 +57,7 @@ private:
     sf::RectangleShape pantallaNegra;
     menu               menuBatalla;
     static constexpr int numOpcionesMenuBatalla = 3;
-    std::vector<std::string> opcionesVectorBatalla = {"Ataque lijero", "Ataque Pesado", "Habilidad Especial"};
+    std::vector<std::string> opcionesVectorBatalla = {"Ataque ligero", "Ataque Pesado", "Habilidad Especial"};
 
 // ————— Sonidos —————
     sf::Sound& soundFlecha;

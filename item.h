@@ -36,7 +36,7 @@ private:
     int _tipoItem; //le asigno el dibujo y su recompensa
     BonusType bonusTipo;
 
-    static constexpr int BONUS_VAL[] = { 50, 30, 20, 50,30, 25 };  //salud, lijero, pesado, especial, ataques, todos
+    static constexpr int BONUS_VAL[] = { 50, 30, 20, 50,30, 25 };  //salud, ligero, pesado, especial, ataques, todos
 
     // Spritesheet y frame
     sf::Sprite   sprite;

@@ -7,7 +7,7 @@ batalla::batalla(personaje& jugador, enemigo& adversario, sf::Sound& soundFlecha
     , soundFlecha   (soundFlecha)
     , turnoActual(Turno::Jugador)
     , vidaJugador(jugador.getSalud())
-    , vidaAdversario(adversario.getSalud()-495) //le resto para matarlo rapido y seguir porbando
+    , vidaAdversario(adversario.getSalud()-450) //le resto para matarlo rapido y seguir porbando
     , terminado(false)
     , jugadorGanoFlag(false)
     , fondo({1500.f, 900.f})
@@ -62,13 +62,14 @@ void batalla::manejarInput()
 
         switch (_opcionSeleccionada)
         {
-        case 0:  // Ataque lijero
+        case 0:  // Ataque ligero
             // 1) Aplico daño
             vidaAdversario -= _jugador.getAtaqueLigero();
 
             // 2) Refresco el texto de vidas
             //actualizarTexto();
             std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
+            _jugador.ataqueLigero({1000.f, 500.f});
             turnoActual = Turno::Enemigo;
             _rondaCarga++;
             break;
@@ -140,11 +141,11 @@ void batalla::actualizar(float /*deltaTime*/)
                   << bonusHabilidadEspecial << "\n";
         // NUEVAS estadísticas tras el bonus
         std::cout << "Nuevas estadísticas -> "
-              << "Salud: " << _jugador.getSalud()
-              << ", Ataque Ligero: " << _jugador.getAtaqueLigero()
-              << ", Ataque Pesado: " << _jugador.getAtaquePesado()
-              << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
-              << "\n";
+                  << "Salud: " << _jugador.getSalud()
+                  << ", Ataque Ligero: " << _jugador.getAtaqueLigero()
+                  << ", Ataque Pesado: " << _jugador.getAtaquePesado()
+                  << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
+                  << "\n";
         return;
     }
 
@@ -204,7 +205,7 @@ void batalla::drawBatalla(sf::RenderWindow& window)
     // Resetear origen y escala limpias SIN ESTO EL DIBUJO ME PODIA QUEDAR AFUERA DE LA PANTALLA CUANDO MIRABA A LA IZQUIERDA
     copiaJugador.setOrigin(0.f, 0.f);
     copiaJugador.setScale(0.3f, 0.3f);
-    copiaJugador.setPosition(70.f, 600.f);
+    //copiaJugador.setPosition(70.f, 600.f);
     window.draw(copiaJugador);
 
     // ——— Enemigo ———

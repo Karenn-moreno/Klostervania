@@ -99,39 +99,99 @@ void personaje::draw(sf::RenderWindow& window) {
 }
 
 // --- Lógica de actualización: animación, movimiento y respiración ---
-void personaje::update(float deltaTime, bool moviendoDer, bool moviendoIzq, bool moviendoArr, bool moviendoAbj) {
-    // 1) Animación de caminata
-    bool caminando = moviendoDer || moviendoIzq;
-    if (caminando) {
-        // Incrementar temporizador
+void personaje::update(float deltaTime,
+                       bool movDer,
+                       bool movIzq,
+                       bool movArr,
+                       bool movAbj)
+{
+    // A) Secuencia de ataque ligero
+    if (estadoPersonaje == estadoPersonaje::ataqueLigero) {
+            // 2) Interpolación de posición
+        ataqueProgreso += deltaTime;
+        float t = std::min(ataqueProgreso / ataqueDuracion, 1.f);
+        sprite.setPosition(
+            ataqueStartPos + (ataqueTargetPos - ataqueStartPos) * t
+        );
+        // 1) Avanzar frames de animación
         frameTimer += deltaTime;
         if (frameTimer >= frameTime) {
-            frameTimer = 0.f;
-            // Ciclo de frames
-            currentFrame = (currentFrame + 1) % totalFrames;
+            frameTimer -= frameTime;
+            currentFrame++;
+            // si ya mostramos los 6 frames, volvemos a reposo
+            if (currentFrame >= cantidadFrameAtaqueLigero) {
+                estadoPersonaje = estadoPersonaje::quieto;
+                currentFrame    = 0;
+                sprite.setPosition(ataqueStartPos);
+            }
         }
+
+        // 3) Selecciona el frame correspondiente
+        frameActual = {
+            currentFrame * frameWidth,
+            filaFrameAtaqueLigero * frameHeight,
+            frameWidth,
+            frameHeight
+        };
+        sprite.setTextureRect(frameActual);
+        return; // no procesamos caminar ni respiración mientras atacamos
+    }
+
+    // B) Animación de caminata
+    bool caminando = movDer || movIzq;
+    if (caminando) {
+        estadoPersonaje = estadoPersonaje::caminando;
+        // Incrementar temporizador
+        frameTimer += deltaTime;
+if (frameTimer >= frameTime) {
+    frameTimer = 0.f;       // descartas el exceso
+    currentFrame = (currentFrame + 1) % totalFrames;
+}
         // Seleccionar frame en spritesheet (fila 0)
         int left = currentFrame * frameWidth;
         sprite.setTextureRect(sf::IntRect(left, 0, frameWidth, frameHeight));
         // Ajustar orientación según dirección
-        if (moviendoIzq) {
+
+        //sprite.setTextureRect(frameActual);
+
+        // Flip horizontal
+        if (movIzq) {
             sprite.setScale(-baseScaleX, baseScaleY);
             sprite.setOrigin(frameWidth, 0);
-        } else if (moviendoDer) {
+        } else {
             sprite.setScale(baseScaleX, baseScaleY);
             sprite.setOrigin(0, 0);
         }
-    } else {
-        // En reposo, resetear a primer frame
-        currentFrame = 0;
-        sprite.setTextureRect(sf::IntRect(0, 3000, frameWidth, frameHeight));
+    }
+    else {
+        // C) Estado quieto
+        estadoPersonaje = estadoPersonaje::quieto;
+        currentFrame    = 0;
+        frameActual     = {
+            0,
+            filaFrameQuieto * frameHeight,
+            frameWidth,
+            frameHeight
+        };
+        sprite.setTextureRect(frameActual);
     }
 
-    // 2) Efecto de respiración (pulso suave)
+    // D) Respiración / pulso
     float t = breathClock.getElapsedTime().asSeconds();
     float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
-    // Preservar flip horizontal
-    float signX = sprite.getScale().x < 0 ? -1.f : 1.f;
+    float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
     sprite.setScale(signX * baseScaleX * factor,
                     baseScaleY * factor);
+}
+void personaje::ataqueLigero(const sf::Vector2f& destino) {
+    if (estadoPersonaje == estadoPersonaje::quieto) {
+        estadoPersonaje = estadoPersonaje::ataqueLigero;
+        currentFrame    = 0;
+        frameTimer      = 0.f;
+                // Preparamos el desplazamiento
+        ataqueStartPos    = sprite.getPosition();
+        ataqueTargetPos   = destino;
+        ataqueProgreso    = 0.f;
+        ataqueDuracion    = frameTime * cantidadFrameAtaqueLigero;
+    }
 }

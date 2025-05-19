@@ -23,7 +23,7 @@ public:
     int getHabilidadEspecial() const;      // Devuelve el valor de la habilidad especial
     const sf::Sprite& getSprite() const;   // Devuelve el sprite para poder consultar sus bounds o dibujarlo
     sf::FloatRect getBounds() const;       // Devuelve el rectángulo global (para colisiones)
-
+    void ataqueLigero(const sf::Vector2f& destino); //le paso la coordenada donde hacer el ataque
 
     // --- Lógica de juego ---
     void update(float deltaTime,
@@ -37,6 +37,8 @@ public:
     // --- Renderizado ---
     void draw(sf::RenderWindow& window);    // Dibuja el personaje en la ventana
 
+
+
 private:
     // --- Estadísticas del personaje ---
     int _salud = 1000;           // Puntos de vida actuales
@@ -48,8 +50,18 @@ private:
     sf::Sprite sprite;           // Sprite que representa al personaje
     sf::Texture textura;         // Textura completa del spritesheet
 
+    // --- Respiración / pulso suave ---
+    sf::Clock breathClock;       // Reloj para medir el ciclo de respiración
+    float baseScaleX;            // Escala X original del sprite
+    float baseScaleY;            // Escala Y original del sprite
+    float breathAmplitude;       // Amplitud de variación de escala (e.g. 0.005 = ±0.5%)
+    float breathSpeed;           // Velocidad de ciclo (ciclos por segundo)
+
+    // ---  estado de animación ---
+    enum class estadoPersonaje { quieto, caminando, ataqueLigero, ataquePesado, habilidadEspecial, muerto};
+    estadoPersonaje estadoPersonaje = estadoPersonaje::quieto;
+
     // --- Animación de sprites ---
-    const int totalFrames = 6;   // Número de frames por fila en el spritesheet
     int currentFrame = 0;        // Índice del frame actual
     float frameTime = 0.15f;     // Duración de cada frame (segundos)
     float frameTimer = 0.f;      // Acumulador de tiempo para cambiar frame
@@ -57,10 +69,24 @@ private:
     int frameHeight = 500;       // Alto de cada frame (píxeles)
     sf::IntRect frameActual;     // Rectángulo que selecciona el frame en la textura
 
-    // --- Respiración / pulso suave ---
-    sf::Clock breathClock;       // Reloj para medir el ciclo de respiración
-    float baseScaleX;            // Escala X original del sprite
-    float baseScaleY;            // Escala Y original del sprite
-    float breathAmplitude;       // Amplitud de variación de escala (e.g. 0.005 = ±0.5%)
-    float breathSpeed;           // Velocidad de ciclo (ciclos por segundo)
+    // Constantes de filas y contadores
+    int totalFrames = 6;
+    static constexpr int filaFrameQuieto               = 6;
+    static constexpr int cantidadFrameQuieto           = 1;
+    static constexpr int filaFramecaminar              = 0;
+    static constexpr int cantidadFrameCaminar          = 1;
+    static constexpr int filaFrameAtaqueLigero         = 1;
+    static constexpr int cantidadFrameAtaqueLigero     = 6;
+    static constexpr int filaFrameAtaquePesado         = 2;
+    static constexpr int cantidadFrameAtaquePesado     = 6;
+    static constexpr int filaFrameHabilidadEspecial    = 3;
+    static constexpr int cantidadFrameHabilidadEspecial= 6;
+
+    // Para interpolar desplazamiento
+    sf::Vector2f ataqueStartPos;
+    sf::Vector2f ataqueTargetPos;
+    float        ataqueProgreso = 0.f;
+    float        ataqueDuracion = 0.f;  // lo inicializas al arrancar el ataque
+
+
 };
