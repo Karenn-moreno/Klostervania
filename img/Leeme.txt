@@ -1,0 +1,33 @@
+Pendientes:
+
+
+
+definir el mapa para las coliciones 
+
+generar los spriteesshep  de los personajes
+
+pos del ataque lijero =>trasladar a los ataques
+
+
+guardar los archivos
+
+créditos
+
+records
+
+
+
+
+
+
+
+
+
+
+
+
+Dudas:
+
+
+
+
