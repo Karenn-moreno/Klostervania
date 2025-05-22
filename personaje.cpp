@@ -106,36 +106,49 @@ void personaje::update(float deltaTime,
                        bool movAbj)
 {
     // A) Secuencia de ataque ligero
-    if (estadoPersonaje == estadoPersonaje::ataqueLigero) {
-            // 2) Interpolación de posición
-        ataqueProgreso += deltaTime;
-        float t = std::min(ataqueProgreso / ataqueDuracion, 1.f);
-        sprite.setPosition(
-            ataqueStartPos + (ataqueTargetPos - ataqueStartPos) * t
-        );
-        // 1) Avanzar frames de animación
+if (estadoPersonaje == estadoPersonaje::ataqueLigero) {
+    // — Fase de movimiento —
+    if (!ataqueLlegado) {
+        // siempre dibuja el primer frame de la fila de ataque:
+        frameActual = { 0,
+                       filaFrameAtaqueLigero * frameHeight,
+                       frameWidth, frameHeight };
+        sprite.setTextureRect(frameActual);
+
+        // mueve hacia el target a velocidad constante
+        sf::Vector2f dir = ataqueTargetPos - sprite.getPosition();
+        float dist       = std::hypot(dir.x, dir.y);
+        if (dist > ataqueSpeed * deltaTime) {
+            dir /= dist;  // normalizar
+            sprite.move(dir * ataqueSpeed * deltaTime);
+        } else {
+            // llegó definitivamente
+            sprite.setPosition(ataqueTargetPos);
+            ataqueLlegado = true;
+            currentFrame  = 0;    // arrancamos los frames
+            frameTimer    = 0.f;
+        }
+    }
+    // — Fase de animación de frames —
+    else if (currentFrame < cantidadFrameAtaqueLigero) {
         frameTimer += deltaTime;
         if (frameTimer >= frameTime) {
             frameTimer -= frameTime;
             currentFrame++;
-            // si ya mostramos los 6 frames, volvemos a reposo
-            if (currentFrame >= cantidadFrameAtaqueLigero) {
-                estadoPersonaje = estadoPersonaje::quieto;
-                currentFrame    = 0;
-                sprite.setPosition(ataqueStartPos);
-            }
         }
-
-        // 3) Selecciona el frame correspondiente
-        frameActual = {
-            currentFrame * frameWidth,
-            filaFrameAtaqueLigero * frameHeight,
-            frameWidth,
-            frameHeight
-        };
+        frameActual = { currentFrame * frameWidth,
+                        filaFrameAtaqueLigero * frameHeight,
+                        frameWidth, frameHeight };
         sprite.setTextureRect(frameActual);
-        return; // no procesamos caminar ni respiración mientras atacamos
     }
+    // — Fase de reset —
+    else {
+        sprite.setPosition(ataqueStartPos);
+        estadoPersonaje = estadoPersonaje::quieto;
+    }
+
+    return; // ya procesamos ataque completo
+}
 
     // B) Animación de caminata
     bool caminando = movDer || movIzq;
@@ -184,14 +197,16 @@ if (frameTimer >= frameTime) {
                     baseScaleY * factor);
 }
 void personaje::ataqueLigero(const sf::Vector2f& destino) {
-    if (estadoPersonaje == estadoPersonaje::quieto) {
-        estadoPersonaje = estadoPersonaje::ataqueLigero;
-        currentFrame    = 0;
-        frameTimer      = 0.f;
-                // Preparamos el desplazamiento
-        ataqueStartPos    = sprite.getPosition();
-        ataqueTargetPos   = destino;
-        ataqueProgreso    = 0.f;
-        ataqueDuracion    = frameTime * cantidadFrameAtaqueLigero;
+    if (estadoPersonaje != estadoPersonaje::ataqueLigero) {
+        estadoPersonaje   = estadoPersonaje::ataqueLigero;
+        currentFrame      = 0;
+        frameTimer        = 0.f;
+        ataqueFase        = 0;                    // empezamos fase de movimiento
+        ataqueTargetPos   = destino;              // destino fijo
+        ataqueLlegado     = false;   // <-- reiniciamos aquí
     }
+}
+
+void personaje::setPosition(float x, float y) {
+    sprite.setPosition(x, y);
 }

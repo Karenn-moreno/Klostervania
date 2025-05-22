@@ -69,7 +69,7 @@ void batalla::manejarInput()
             // 2) Refresco el texto de vidas
             //actualizarTexto();
             std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
-            _jugador.ataqueLigero({1000.f, 500.f});
+            _jugador.ataqueLigero({900.f, 600.f});
             turnoActual = Turno::Enemigo;
             _rondaCarga++;
             break;
@@ -78,7 +78,7 @@ void batalla::manejarInput()
             if(_rondaCarga>=2)
             {
                 vidaAdversario -= _jugador.getAtaquePesado();
-                std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
+                std::cout << "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " << vidaAdversario << " de vida\n";
                 _rondaCarga=0;
                 turnoActual = Turno::Enemigo;
             }
@@ -116,12 +116,23 @@ void batalla::actualizar(float /*deltaTime*/)
     // Si no es el turno del enemigo, no hacemos nada
     if (turnoActual != Turno::Enemigo)
         return;
+    // Si ya vencimos y hemos arrancado el reloj, espera 3s
+    if (victoriaIniciada)
+    {
+        if (victoriaClock.getElapsedTime() >= sf::seconds(3.f))
+        {
+            terminado = true;
+        }
+        return;
+    }
     if (vidaAdversario <= 0 )
     {
-        terminado       = true;
+        // 1) Marcar victoria y desactivar enemigo
+        victoriaIniciada = true;
         _adversario.setActivo(false);
-        jugadorGanoFlag = (vidaAdversario <= 0);
-        // —— RECOMPENSA AL JUGADOR ——
+        jugadorGanoFlag = true;
+
+        // 2)—— RECOMPENSA AL JUGADOR ——
         const int bonusSalud        = 50;
         const int bonusAtaqueLigero    =  5;
         const int bonusAtaquePesado    =  3;
@@ -132,6 +143,15 @@ void batalla::actualizar(float /*deltaTime*/)
         _jugador.setAtaqueLigero( _jugador.getAtaqueLigero() + bonusAtaqueLigero );
         _jugador.setAtaquePesado( _jugador.getAtaquePesado() + bonusAtaquePesado );
         _jugador.setHabilidadEspecial( _jugador.getHabilidadEspecial() + bonusHabilidadEspecial );
+
+        // —— POP UP DE VENTANA DE VICTORIA ——
+            popupFinBatalla.cargarRecursos("img/panel_item.png", "fonts/Rochester-Regular.ttf");
+            mensajeFinBatalla  = "¡HAS VENCIDO AL ENEMIGO!!\n\n";
+            mensajeFinBatalla += "AUMENTO DE TUS ESTADISTICAS:\n";
+            mensajeFinBatalla += "Salud +"+std::to_string(bonusSalud)+"\n";
+            mensajeFinBatalla += "Atauqe Ligero +"+std::to_string(bonusAtaqueLigero)+"\n";
+            mensajeFinBatalla += "Ataque Pesado +"+std::to_string(bonusAtaquePesado)+"\n";
+            mensajeFinBatalla += "Habilidad Especial +"+std::to_string(bonusHabilidadEspecial)+"\n";
 
         // consola la nueva estadística
         std::cout << "¡Recompensa! Salud +"
@@ -146,6 +166,8 @@ void batalla::actualizar(float /*deltaTime*/)
                   << ", Ataque Pesado: " << _jugador.getAtaquePesado()
                   << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
                   << "\n";
+        // 3) Arranca el reloj de espera
+        victoriaClock.restart();
         return;
     }
 
@@ -200,13 +222,18 @@ void batalla::drawBatalla(sf::RenderWindow& window)
     }
 
     menuBatalla.dibujarMenu(window);
-// ——— Jugador ———
-    sf::Sprite copiaJugador = _jugador.getSprite();
-    // Resetear origen y escala limpias SIN ESTO EL DIBUJO ME PODIA QUEDAR AFUERA DE LA PANTALLA CUANDO MIRABA A LA IZQUIERDA
-    copiaJugador.setOrigin(0.f, 0.f);
-    copiaJugador.setScale(0.3f, 0.3f);
-    //copiaJugador.setPosition(70.f, 600.f);
-    window.draw(copiaJugador);
+///  ——— Jugador ———
+sf::Sprite copiaJugador = _jugador.getSprite();
+copiaJugador.setOrigin(0.f, 0.f);
+copiaJugador.setScale(0.3f, 0.3f);
+
+// Si no está en animación de ataque, lo pintamos siempre en battlePlayerPos
+if (_jugador.getEstado() != personaje::estadoPersonaje::ataqueLigero)
+{
+    copiaJugador.setPosition(100.f, 600.f);
+}
+ // en caso de animar el ataque, getSprite() ya va moviéndose solo
+window.draw(copiaJugador);
 
     // ——— Enemigo ———
     sf::Sprite copiaAdversario = _adversario.getSprite();
@@ -214,6 +241,15 @@ void batalla::drawBatalla(sf::RenderWindow& window)
     copiaAdversario.setScale(0.2f, 0.2f);
     copiaAdversario.setPosition(1000.f, 550.f);
     window.draw(copiaAdversario);
+
+//  Si la batalla ya terminó y ganaste, lanza el popup
+   if (jugadorGanoFlag && !popupFinMostrado) {
+        popupFinBatalla.mostrar(mensajeFinBatalla, window.getSize());
+        popupFinMostrado = true;
+    }
+
+    // Dibuja el popup (si está activo)
+    popupFinBatalla.draw(window);
 };
 
 bool batalla::ganador() const

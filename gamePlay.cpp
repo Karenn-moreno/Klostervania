@@ -4,7 +4,7 @@
 #include "creditos.h"
 #include "record.h"
 #include "batalla.h"
-
+#include "popUpCartel.h"
 
 gamePlay::gamePlay()
     : window            (sf::VideoMode(1500, 900), "KLOSTERVANIA")
@@ -135,15 +135,20 @@ void gamePlay::procesarEventos()
             menuPrincipal.actualizarMenu(opcionSeleccionada, sf::Color::Red, sf::Color::Black);
             continue;
         }
+        if (estado == EstadoJuego::Batalla && batallaGamePlay)
+        {
+            if (batallaGamePlay->popupFinBatalla.handleEvent(event))
+                ; // el popup se cerró con Enter
+        }
     }
 }
 
 void gamePlay::updatePersonaje(sf::Time dt)
 {
-    float deltaTime = dt.asSeconds();
+      float deltaTime = dt.asSeconds();
 
-    // 1) Si el panel está abierto, no hacemos nada más
-    if (itemRecolectable.isPanelActive())
+    // 1) Si el popup del ítem está abierto, no hacemos nada más
+    if (itemRecolectable.isPopupActive())
         return;
 
     // 2) Actualizamos el ítem (respawn, pulso…)
@@ -151,7 +156,7 @@ void gamePlay::updatePersonaje(sf::Time dt)
 
     // 3) Detectar recogida: SIEMPRE antes de mover o iniciar batalla
     if (estado == EstadoJuego::Exploracion &&
-            itemRecolectable.tryPickup(jugador))
+        itemRecolectable.tryPickup(jugador))
     {
         estado = EstadoJuego::dialogoItem;
         return;  // salimos sin tocar nada más
@@ -245,7 +250,13 @@ void gamePlay::ejecutar()
             if (!batallaIniciada)
             {
                 std::cout << "\nSe inició una batalla";
+                // 1) Creamos la batalla
                 batallaGamePlay = new batalla(jugador, demonio, flecha);
+                // 2) Guardamos la posición de exploración asi volvemos.
+                posicionPreBatalla = jugador.getSprite().getPosition();
+                // 3) Teletransportamos al jugador al punto de batalla
+                jugador.setPosition(100.f, 600.f);
+                // 4) Iniciamos la batalla
                 batallaGamePlay->iniciarBatalla();
                 // Transición de pantalla
                 for (int opacidad = 255; opacidad >= 0; opacidad -= 5)
@@ -272,31 +283,28 @@ void gamePlay::ejecutar()
             window.display();
 
             // Si la batalla terminó, procesar resultado
-            if (batallaGamePlay->finBatalla())
-            {
-                if (batallaGamePlay->ganador())
-                {
-                    std::cout << "\n¡Has vencido al enemigo!\n";
-                    demonio.setActivo(false);
-                }
-                else
-                {
-                    std::cout << "\nHas sido derrotado…\n";
-                }
-
-                // Limpieza de la batalla
-                delete batallaGamePlay;
-                batallaGamePlay = nullptr;
-                batallaIniciada = false;
-
-                // Volver a exploración
-                estado = EstadoJuego::Exploracion;
-            }
+            if (batallaGamePlay->finBatalla()) {
+        if (!batallaGamePlay->popupFinBatalla.isActive()) {
+            // El usuario ya pulsó Enter para cerrar el popup
+            // Restaurar posición del jugador
+            jugador.setPosition(posicionPreBatalla.x, posicionPreBatalla.y);
+            // Limpiar la batalla
+            delete batallaGamePlay;
+            batallaGamePlay   = nullptr;
+            batallaIniciada   = false;
+            // Volver a exploración
+            estado = EstadoJuego::Exploracion;
+        }
             break;
-
+            }
         default:
             break;
-        }
+
     }
+}
+}
+
+bool gamePlay::batallaPopupActive() const {
+    return batallaGamePlay && batallaGamePlay->popupFinBatalla.isActive();
 }
 

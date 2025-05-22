@@ -5,6 +5,7 @@
 #include "personaje.h"
 #include "enemigo.h"
 #include "menu.h"
+#include "popUpCartel.h"
 
 //      Gestiona un combate por turnos entre un jugador y un enemigo.
 class batalla {
@@ -25,11 +26,18 @@ public:
     /// Dibuja la pantalla de batalla (fondo, vidas, menú de acciones).
     void drawBatalla(sf::RenderWindow& ventana);
 
+    /// Para no cerrar la batalla hasta dar enter al pop up
+
+    bool batallaPopupActive() const;
+
     /// Devuelve true cuando la batalla ha terminado.
     bool finBatalla() const;
 
     /// Indica si el jugador ha ganado (true) o perdido (false).
     bool ganador() const;
+
+    //   Pop up fin de batalla
+        PopUpCartel popupFinBatalla;
 
 private:
     personaje& _jugador;      // referencia al jugador original
@@ -70,4 +78,11 @@ private:
 
     /// Resetea el texto de estado (vidas y acciones disponibles).
     void actualizarTexto();
+
+    sf::Clock     victoriaClock;       // medir el tiempo tras la victoria
+bool          victoriaIniciada = false;
+
+
+        std::string mensajeFinBatalla;
+        bool popupFinMostrado = false;
 };

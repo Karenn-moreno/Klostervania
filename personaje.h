@@ -36,10 +36,20 @@ public:
 
     // --- Renderizado ---
     void draw(sf::RenderWindow& window);    // Dibuja el personaje en la ventana
+    void setPosition(float x, float y);
+
+    // ---  estado de animación ---
+    enum class estadoPersonaje { quieto, caminando, ataqueLigero, ataquePesado, habilidadEspecial, muerto};
+
+    // Getter para el estado actual
+    estadoPersonaje getEstado() const {
+        return estadoPersonaje;
+    }
 
 
 
 private:
+        estadoPersonaje estadoPersonaje = estadoPersonaje::quieto;
     // --- Estadísticas del personaje ---
     int _salud = 1000;           // Puntos de vida actuales
     int _ataqueLigero = 10;      // Daño de ataque ligero
@@ -57,9 +67,6 @@ private:
     float breathAmplitude;       // Amplitud de variación de escala (e.g. 0.005 = ±0.5%)
     float breathSpeed;           // Velocidad de ciclo (ciclos por segundo)
 
-    // ---  estado de animación ---
-    enum class estadoPersonaje { quieto, caminando, ataqueLigero, ataquePesado, habilidadEspecial, muerto};
-    estadoPersonaje estadoPersonaje = estadoPersonaje::quieto;
 
     // --- Animación de sprites ---
     int currentFrame = 0;        // Índice del frame actual
@@ -83,10 +90,13 @@ private:
     static constexpr int cantidadFrameHabilidadEspecial= 6;
 
     // Para interpolar desplazamiento
-    sf::Vector2f ataqueStartPos;
-    sf::Vector2f ataqueTargetPos;
-    float        ataqueProgreso = 0.f;
-    float        ataqueDuracion = 0.f;  // lo inicializas al arrancar el ataque
+    // controla en qué fase del ataque estamos: 0=mover, 1=animar, 2=volver
+int   ataqueFase        = 0;
+sf::Vector2f ataqueStartPos= {100.f, 600.f};
+sf::Vector2f ataqueTargetPos;
+// velocidad en px/seg al desplazarse
+static constexpr float ataqueSpeed = 900.f;
+bool ataqueLlegado = false;
 
 
 };

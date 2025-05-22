@@ -58,7 +58,8 @@ private:
     EstadoJuego estado = EstadoJuego::Exploracion;
     batalla* batallaGamePlay = nullptr;     // puntero, hasta que empiece la pelea
     bool     batallaIniciada = false;
-
-
+sf::Vector2f posicionPreBatalla;
+PopUpCartel popupCartel;
+bool batallaPopupActive() const;
 
 };

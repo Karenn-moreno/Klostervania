@@ -1,69 +1,55 @@
 #include "item.h"
 #include <cstdlib>
 #include <cmath>
+
 // Inicializar flag de semilla una sola vez en el juego
 bool item::seeded = false;
 
 item::item()
+  : _popup()   // construye su PopUpCartel propio
 {
-    // Carga de la textura
+    // 1) texturas del ítem
     if (!textura.loadFromFile("img/spritesheet_items.png"))
-        std::cerr << "Error al cargar textura items" << std::endl;
+        std::cerr << "Error cargando spritesheet_items.png\n";
     sprite.setTexture(textura);
 
-    // Tamaño fijo de frame de 500x500
-    frameWidth  = 500;
-    frameHeight = 500;
-    frameActual = sf::IntRect(0, 0, frameWidth, frameHeight);
+    frameActual = {0,0,frameWidth,frameHeight};
     sprite.setTextureRect(frameActual);
-
-    // Escala base
     sprite.setScale(baseScaleX, baseScaleY);
 
-    // Seed aleatorio (solo una vez)
-    if (!seeded)
-    {
-        std::srand(static_cast<unsigned>(std::time(nullptr)));
+    // 2) inicializar semilla
+    if (!seeded) {
+        std::srand((unsigned)std::time(nullptr));
         seeded = true;
     }
-    // Carga panel de recompensa
-    if (!panelTexture.loadFromFile("img/panel_item.png"))
-        std::cout << "Error al cargar panel_item.png\n";
-    panelSprite.setTexture(panelTexture);
-    panelSprite.scale(0.8f, 0.8f);
-    // Centrar origen para fácil posicionamiento
-    panelSprite.setOrigin(
-        panelTexture.getSize().x/2.f,
-        panelTexture.getSize().y/2.f
-    );
 
-    // Carga fuente y configura texto
-    if (!panelFont.loadFromFile("fonts/Rochester-Regular.ttf"))
-        std::cout << "Error al cargar fuente de letra carte del item\n";
-    panelText.setFont(panelFont);
-    panelText.setCharacterSize(20);
-    panelText.setFillColor(sf::Color::Black);
-    panelText.setStyle(sf::Text::Bold);
+    // 3) cargar recursos del popup (fondo + fuente)
+    _popup.cargarRecursos("img/panel_item.png",
+                          "fonts/Rochester-Regular.ttf");
 }
 
 void item::spawn(const sf::Vector2u& windowSize)
 {
-// Asegura que al reaparecer el panel quede cerrado (ESTO CAUSO MUCHOS DOLORES DE CABEZA ALEATORIAMENTE!!)
-   panelActive = false;
-    //  Elige frame de sprite
+    // Guardamos para el popup
+    _windowSize = windowSize;
+
+    // Reseteamos
+    active = true;
+
+    // Frame aleatorio
     _tipoItem = std::rand() % totalFrames;
     frameActual.left = _tipoItem * frameWidth;
     sprite.setTextureRect(frameActual);
-    //  Asigna tipo de bonus y guarda en bonusTipo
+
     bonusTipo = static_cast<BonusType>(_tipoItem);
-    // Elige posición
+
+    // Posición aleatoria en pantalla
     float x = static_cast<float>(std::rand() % (windowSize.x - frameWidth));
     float y = static_cast<float>(std::rand() % (windowSize.y - frameHeight));
     sprite.setPosition(x, y);
-    //  Arranca reloj de vida y pulso
+
     lifeClock.restart();
     pulseClock.restart();
-    active = true;
 }
 
 void item::update()
@@ -71,13 +57,12 @@ void item::update()
     if (!active) return;
 
     // Caducidad
-    if (lifeClock.getElapsedTime() >= lifetime)
-    {
+    if (lifeClock.getElapsedTime() >= lifetime) {
         active = false;
         return;
     }
-    // animacion del itel (latido)
-    float t = pulseClock.getElapsedTime().asSeconds();
+    // pulso de latido
+    float t      = pulseClock.getElapsedTime().asSeconds();
     float factor = 1.f + pulseAmplitude * std::sin(2.f * 3.14159265f * pulseSpeed * t);
     sprite.setScale(baseScaleX * factor, baseScaleY * factor);
 }
@@ -89,9 +74,7 @@ bool item::tryPickup(personaje& jugador)
     if (sprite.getGlobalBounds().intersects(jugador.getBounds()))
     {
         active = false;  // desaparece del mapa
-        panelActive = true; // activo el panel
             // Reinicia la animación de “pop”
-    _popupScale = 0.f;
 
         // Aplica bonus según bonusTipo
         int valor = BONUS_VAL[bonusTipo];
@@ -106,9 +89,7 @@ bool item::tryPickup(personaje& jugador)
             mensajeItem  = "¡HAS ENCONTRADO UN CORAZÓN SAGRADO, AUMENTA TU SALUD!!\n\n";
             mensajeItem += "Te otorga " +std::to_string(valor)+" de salud\n";
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getSalud())+ "!\n";
-
-// Asigna al text
-            panelText.setString(mensajeItem);
+            _popup.mostrar(mensajeItem, _windowSize);
             break;
         case Ligero:
             std::cout << "\n¡!HAS ENCONTRADO UNA GEMA COMUN, POTENCIA EL ATAQUE LIJERO!! \n";
@@ -118,7 +99,7 @@ bool item::tryPickup(personaje& jugador)
             mensajeItem  = "¡HAS ENCONTRADO UNA GEMA COMUN, POTENCIA EL ATAQUE LIJERO!!\n\n";
             mensajeItem += "Te otorga " +std::to_string(valor)+" de ataque lijero\n";
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getAtaqueLigero())+ "!\n";
-            panelText.setString(mensajeItem);
+            _popup.mostrar(mensajeItem, _windowSize);
             break;
         case Pesado:
             std::cout << "\n¡!HAS ENCONTRADO UNA GEMA RARA, POTENCIA EL ATAQUE PESADO!! \n";
@@ -128,7 +109,7 @@ bool item::tryPickup(personaje& jugador)
             mensajeItem  = "¡HAS ENCONTRADO UNA GEMA COMUN, POTENCIA EL ATAQUE PESADO!!\n\n";
             mensajeItem += "Te otorga " +std::to_string(valor)+" de ataque pesado\n";
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getAtaquePesado())+ "!\n";
-            panelText.setString(mensajeItem);
+            _popup.mostrar(mensajeItem, _windowSize);
             break;
         case Especial:
             std::cout << "\n¡!HAS ENCONTRADO UNA GEMA DE HABILIDAD!! \n";
@@ -138,7 +119,7 @@ bool item::tryPickup(personaje& jugador)
             mensajeItem  = "¡HAS ENCONTRADO UNA GEMA DE HABILIDAD!!\n\n";
             mensajeItem += "Te otorga " +std::to_string(valor)+" de habilidad especial\n";
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getHabilidadEspecial())+ "!\n";
-            panelText.setString(mensajeItem);
+            _popup.mostrar(mensajeItem, _windowSize);
             break;
         case ataques:
             std::cout << "\n¡!HAS ENCONTRADO UNA GEMA MITICA, POTENCIADOR DE ATAQUES!! \n";
@@ -153,7 +134,7 @@ bool item::tryPickup(personaje& jugador)
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getAtaqueLigero())+ "!\n";
             mensajeItem += "Te otorga " +std::to_string(valor)+" de ataque pesado\n";
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getAtaquePesado())+ "!\n";
-            panelText.setString(mensajeItem);
+            _popup.mostrar(mensajeItem, _windowSize);
             break;
         case todos:
             std::cout << "\n¡!HAS ENCONTRADO UNA ESFERA MITICA DE PODER, SUBE TODAS TUS ESTADISTICAS!! \n";
@@ -178,14 +159,11 @@ bool item::tryPickup(personaje& jugador)
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getAtaquePesado())+ "!\n";
             mensajeItem += "Te otorga " +std::to_string(valor)+" de habilidad especial\n";
             mensajeItem += "¡Ahora tienes " + std::to_string(jugador.getHabilidadEspecial())+ "!\n";
-            panelText.setString(mensajeItem);
+            _popup.mostrar(mensajeItem, _windowSize);
             break;
         }
-        // Texto centrado
-        std::string msg = mensajeItem;
-        panelText.setString(msg);
-        sf::FloatRect tb = panelText.getLocalBounds();
-        panelText.setOrigin(tb.width/2.f, tb.height/2.f);
+        // Mostramos el mensaje centrado
+        _popup.mostrar(mensajeItem, _windowSize);
         return true;
     }
     return false;
@@ -196,41 +174,19 @@ void item::draw(sf::RenderWindow& window)
     if (active)
         window.draw(sprite);
 
-    if (panelActive)
-    {
-        // —–– Pop-up  –––
-        const float targetScale = 0.8f; //la escala máxima a la que queremos que llegue
-        const float step        = 0.1f; //la escala en cada frame
-        _popupScale = std::min(_popupScale + step, targetScale);    //std::min asi nunca supera el valor
-        panelSprite.setScale(_popupScale, _popupScale);
-        panelText  .setScale(_popupScale, _popupScale);
+    if (_popup.isActive())
+        _popup.draw(window);
+}
 
-        panelSprite.setPosition(
-            window.getSize().x/2.f,
-            window.getSize().y/2.f
-        );
-        panelText.setPosition(
-            window.getSize().x/2.f,
-            window.getSize().y/2.f - 20.f
-        );
-        window.draw(panelSprite);
-        window.draw(panelText);
-    }
+bool item::isPopupActive() const
+{
+    return _popup.isActive();
 }
 
 void item::handleEvent(const sf::Event& event)
 {
-    if (!panelActive)
-        return;
+    // Si el pop-up está activo y procesa un Enter, handleEvent() devuelve true
+    if (_popup.handleEvent(event)) {
 
-    if (event.type == sf::Event::KeyPressed &&
-            event.key.code == sf::Keyboard::Enter)
-    {
-        panelActive = false;
     }
-}
-
-bool item::isPanelActive() const
-{
-    return panelActive;
 }

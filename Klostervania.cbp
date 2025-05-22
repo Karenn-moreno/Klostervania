@@ -78,6 +78,10 @@
 		<Unit filename="personaje.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="popUpCartel.cpp" />
+		<Unit filename="popUpCartel.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="record.cpp" />
 		<Unit filename="record.h">
 			<Option target="&lt;{~None~}&gt;" />
