@@ -39,6 +39,8 @@ public:
     //   Pop up fin de batalla
         PopUpCartel popupFinBatalla;
 
+    void mostrarMensaje(const std::string& msg);
+
 private:
     personaje& _jugador;      // referencia al jugador original
     enemigo&    _adversario;  // referencia al enemigo original
@@ -82,7 +84,13 @@ private:
     sf::Clock     victoriaClock;       // medir el tiempo tras la victoria
 bool          victoriaIniciada = false;
 
-
+        // ——— mensaje de victoria ———
         std::string mensajeFinBatalla;
         bool popupFinMostrado = false;
+
+        // ——— Nuevo: recuadro de mensaje durante la batalla ———
+sf::RectangleShape cuadroMensaje;
+sf::Text            textoMensaje;
+sf::Font            fuenteMensaje;
+bool                mensajeActivo = false;
 };

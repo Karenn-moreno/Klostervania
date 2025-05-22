@@ -31,8 +31,22 @@ void batalla::iniciarBatalla()
 
     menuBatalla.crearMenu(numOpcionesMenuBatalla, fuente, opcionesVectorBatalla, 20, 120, 760, 20, sf::Color::White, sf::Color::Red);
     //actualizarTexto();
+//****************************************        NUEVO       **************************
+    // Configuración del recuadro de mensaje
+    if (!fuenteMensaje.loadFromFile("fonts/Rochester-Regular.ttf"))
+        std::cout << "Error al cargar fuenteMensaje\n";
+
+    textoMensaje.setFont(fuenteMensaje);
+    textoMensaje.setCharacterSize(20);
+    textoMensaje.setFillColor(sf::Color::White);
+
+    // El recuadro ocupará el ancho de la ventana y 100 px de alto en la parte inferior
+    cuadroMensaje.setSize({ 600.f, 100.f });
+    cuadroMensaje.setFillColor(sf::Color(0, 0, 0, 180)); // semitransparente
+    cuadroMensaje.setPosition(100.f, 50.f);
 
 
+//**********************************************************************************************************************************
 };
 
 void batalla::manejarInput()
@@ -63,12 +77,9 @@ void batalla::manejarInput()
         switch (_opcionSeleccionada)
         {
         case 0:  // Ataque ligero
-            // 1) Aplico daño
+            mostrarMensaje("\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "+ std::to_string(vidaAdversario));
             vidaAdversario -= _jugador.getAtaqueLigero();
-
-            // 2) Refresco el texto de vidas
-            //actualizarTexto();
-            std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
+           std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
             _jugador.ataqueLigero({900.f, 600.f});
             turnoActual = Turno::Enemigo;
             _rondaCarga++;
@@ -220,8 +231,16 @@ void batalla::drawBatalla(sf::RenderWindow& window)
             }
         }
     }
-
+    //ataques
     menuBatalla.dibujarMenu(window);
+    //mensajes durante la batalla
+   if (mensajeActivo)
+    {
+        window.draw(cuadroMensaje);
+        window.draw(textoMensaje);
+    }
+
+
 ///  ——— Jugador ———
 sf::Sprite copiaJugador = _jugador.getSprite();
 copiaJugador.setOrigin(0.f, 0.f);
@@ -261,3 +280,16 @@ bool batalla::finBatalla() const
 {
     return terminado;
 };
+
+void batalla::mostrarMensaje(const std::string& msg)
+{
+    textoMensaje.setString(msg);
+    // centrar el texto horizontalmente dentro del recuadro
+    sf::FloatRect tb = textoMensaje.getLocalBounds();
+    textoMensaje.setOrigin(tb.width/2.f, tb.height/2.f);
+    textoMensaje.setPosition(
+        cuadroMensaje.getPosition().x + cuadroMensaje.getSize().x/2.f,
+        cuadroMensaje.getPosition().y + cuadroMensaje.getSize().y/2.f - 10.f
+    );
+    mensajeActivo = true;
+}

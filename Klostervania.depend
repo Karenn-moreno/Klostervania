@@ -616,10 +616,10 @@
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
 
-1747879384 source:c:\users\leand\desktop\klostervania\batalla.cpp
+1747935895 source:c:\users\leand\desktop\klostervania\batalla.cpp
 	"batalla.h"
 
-1747879384 c:\users\leand\desktop\klostervania\batalla.h
+1747935555 c:\users\leand\desktop\klostervania\batalla.h
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 	"personaje.h"
