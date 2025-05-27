@@ -40,12 +40,6 @@ void batalla::iniciarBatalla()
     textoMensaje.setCharacterSize(20);
     textoMensaje.setFillColor(sf::Color::White);
 
-    // El recuadro ocupará el ancho de la ventana y 100 px de alto en la parte inferior
-    cuadroMensaje.setSize({ 600.f, 100.f });
-    cuadroMensaje.setFillColor(sf::Color(0, 0, 0, 180)); // semitransparente
-    cuadroMensaje.setPosition(100.f, 50.f);
-
-
 //**********************************************************************************************************************************
 };
 
@@ -77,8 +71,9 @@ void batalla::manejarInput()
         switch (_opcionSeleccionada)
         {
         case 0:  // Ataque ligero
-            mostrarMensaje("\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "+ std::to_string(vidaAdversario));
             vidaAdversario -= _jugador.getAtaqueLigero();
+            msj += "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "+ std::to_string(vidaAdversario);
+            mostrarMensaje(msj);
            std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
             _jugador.ataqueLigero({900.f, 600.f});
             turnoActual = Turno::Enemigo;
@@ -89,6 +84,8 @@ void batalla::manejarInput()
             if(_rondaCarga>=2)
             {
                 vidaAdversario -= _jugador.getAtaquePesado();
+                 msj +="\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " + std::to_string(vidaAdversario);
+                 mostrarMensaje(msj);
                 std::cout << "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " << vidaAdversario << " de vida\n";
                 _rondaCarga=0;
                 turnoActual = Turno::Enemigo;
@@ -104,6 +101,8 @@ void batalla::manejarInput()
             if (_rondaCarga>=3)
             {
                 vidaAdversario -= _jugador.getHabilidadEspecial();
+                 msj += "\nEl jugador ha usado la habilida especial Enemigo tiene " + std::to_string(vidaAdversario);
+                 mostrarMensaje(msj);
                 std::cout << "\nEl jugador ha usado la habilida especial";
                 _rondaCarga=0;
                 turnoActual = Turno::Enemigo;
@@ -185,6 +184,8 @@ void batalla::actualizar(float /*deltaTime*/)
     // 1) Inteligencia básica: siempre usa ataque ligero
     int dano = _adversario.getAtaqueLigero();
     vidaJugador -= dano;
+    msj +="\n¡Enemigo ataca! Jugador recibe " +std::to_string(dano);
+     mostrarMensaje(msj);
     std::cout << "\n¡Enemigo ataca! Jugador recibe " << dano
               << " de daño. Vida jugador: " << vidaJugador << "\n";
 
@@ -236,7 +237,6 @@ void batalla::drawBatalla(sf::RenderWindow& window)
     //mensajes durante la batalla
    if (mensajeActivo)
     {
-        window.draw(cuadroMensaje);
         window.draw(textoMensaje);
     }
 
@@ -284,12 +284,7 @@ bool batalla::finBatalla() const
 void batalla::mostrarMensaje(const std::string& msg)
 {
     textoMensaje.setString(msg);
-    // centrar el texto horizontalmente dentro del recuadro
-    sf::FloatRect tb = textoMensaje.getLocalBounds();
-    textoMensaje.setOrigin(tb.width/2.f, tb.height/2.f);
-    textoMensaje.setPosition(
-        cuadroMensaje.getPosition().x + cuadroMensaje.getSize().x/2.f,
-        cuadroMensaje.getPosition().y + cuadroMensaje.getSize().y/2.f - 10.f
-    );
+    sf::FloatRect b = textoMensaje.getLocalBounds();
+    textoMensaje.setPosition(15.f, 90.f - b.height);
     mensajeActivo = true;
 }

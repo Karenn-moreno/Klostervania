@@ -89,7 +89,7 @@ bool          victoriaIniciada = false;
         bool popupFinMostrado = false;
 
         // ——— Nuevo: recuadro de mensaje durante la batalla ———
-sf::RectangleShape cuadroMensaje;
+std::string msj;
 sf::Text            textoMensaje;
 sf::Font            fuenteMensaje;
 bool                mensajeActivo = false;
