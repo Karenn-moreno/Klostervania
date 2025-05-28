@@ -44,6 +44,7 @@ public:
 private:
     personaje& _jugador;      // referencia al jugador original
     enemigo&    _adversario;  // referencia al enemigo original
+    sf::Vector2f  _posEnemigoInicial;
 
     enum class Turno { Jugador, Enemigo };
     Turno turnoActual;

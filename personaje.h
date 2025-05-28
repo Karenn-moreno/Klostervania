@@ -7,8 +7,8 @@
 
 class personaje {
 public:
-
     personaje();
+    virtual ~personaje() = default;  // Destructor virtual para herencia segura
 
     // --- Setters de estadísticas ---
     void setSalud(int salud);               // Establece los puntos de vida
@@ -21,35 +21,42 @@ public:
     int getAtaqueLigero() const;           // Devuelve el daño de ataque ligero
     int getAtaquePesado() const;           // Devuelve el daño de ataque pesado
     int getHabilidadEspecial() const;      // Devuelve el valor de la habilidad especial
-    const sf::Sprite& getSprite() const;   // Devuelve el sprite para poder consultar sus bounds o dibujarlo
+    sf::Vector2f getPosition() const;
+    const sf::Sprite& getSprite() const;   // Devuelve el sprite para consultar bounds o dibujarlo
     sf::FloatRect getBounds() const;       // Devuelve el rectángulo global (para colisiones)
-    void ataqueLigero(const sf::Vector2f& destino); //le paso la coordenada donde hacer el ataque
 
-    // --- Lógica de juego ---
-    void update(float deltaTime,
-                bool moviendoDer,
-                bool moviendoIzq,
-                bool moviendoArr,
-                bool moviendoAbj);        // Actualiza animación, movimiento y respiración
-    void mover(float offsetX, float offsetY); // Mueve el sprite en pantalla
-    void detener();                         // Detiene la animación y resetea frame
+    // --- Acciones de combate (pueden sobrescribirse) ---
+    virtual void ataqueLigero(const sf::Vector2f& destino);
+    virtual void ataquePesado(const sf::Vector2f& destino);
+    virtual void habilidadEspecial(const sf::Vector2f& destino);
 
-    // --- Renderizado ---
-    void draw(sf::RenderWindow& window);    // Dibuja el personaje en la ventana
+    // --- Lógica de juego (puede sobrescribirse) ---
+    virtual void update(float deltaTime,
+                        bool moviendoDer=false,
+                        bool moviendoIzq=false,
+                        bool moviendoArr=false,
+                        bool moviendoAbj=false);
+    virtual void mover(float offsetX, float offsetY); // Mueve el sprite en pantalla
+    virtual void detener();                         // Detiene la animación y resetea frame
+
+    // --- Renderizado (puede sobrescribirse) ---
+    virtual void draw(sf::RenderWindow& window);    // Dibuja el personaje en la ventana
+
     void setPosition(float x, float y);
+    void setPosition(const sf::Vector2f& pos);
+    void setOrigin(float x, float y);
+    void setScale(float x, float y);
 
-    // ---  estado de animación ---
-    enum class estadoPersonaje { quieto, caminando, ataqueLigero, ataquePesado, habilidadEspecial, muerto};
+    // --- Estado de animación ---
+    enum class estadoPersonaje { quieto, caminando, ataqueLigero, ataquePesado, habilidadEspecial, muerto };
 
-    // Getter para el estado actual
-    estadoPersonaje getEstado() const {
-        return estadoPersonaje;
-    }
+    // --- Acceso al estado ---
+    estadoPersonaje getEstado() const { return estado; }
+    void setEstado(estadoPersonaje nuevoEstado) { estado = nuevoEstado; }
+    bool estaAtacando();
 
-
-
-private:
-        estadoPersonaje estadoPersonaje = estadoPersonaje::quieto;
+protected:
+    estadoPersonaje estado = estadoPersonaje::quieto;
     // --- Estadísticas del personaje ---
     int _salud = 1000;           // Puntos de vida actuales
     int _ataqueLigero = 10;      // Daño de ataque ligero
@@ -59,28 +66,26 @@ private:
     // --- Gráficos ---
     sf::Sprite sprite;           // Sprite que representa al personaje
     sf::Texture textura;         // Textura completa del spritesheet
+    sf::Sprite spriteProyectil;
 
     // --- Respiración / pulso suave ---
-    sf::Clock breathClock;       // Reloj para medir el ciclo de respiración
+    sf::Clock breathClock;       // Reloj para medir ciclo de respiración
     float baseScaleX;            // Escala X original del sprite
     float baseScaleY;            // Escala Y original del sprite
-    float breathAmplitude;       // Amplitud de variación de escala (e.g. 0.005 = ±0.5%)
-    float breathSpeed;           // Velocidad de ciclo (ciclos por segundo)
-
+    float breathAmplitude;       // Amplitud de variación de escala
+    float breathSpeed;           // Velocidad de ciclo
 
     // --- Animación de sprites ---
-    int currentFrame = 0;        // Índice del frame actual
-    float frameTime = 0.15f;     // Duración de cada frame (segundos)
-    float frameTimer = 0.f;      // Acumulador de tiempo para cambiar frame
-    int frameWidth = 500;        // Ancho de cada frame (píxeles)
-    int frameHeight = 500;       // Alto de cada frame (píxeles)
-    sf::IntRect frameActual;     // Rectángulo que selecciona el frame en la textura
-
-    // Constantes de filas y contadores
+    int currentFrame = 0;
+    float frameTime = 0.15f;
+    float frameTimer = 0.f;
+    int frameWidth = 500;
+    int frameHeight = 500;
+    sf::IntRect frameActual;
     int totalFrames = 6;
     static constexpr int filaFrameQuieto               = 6;
     static constexpr int cantidadFrameQuieto           = 1;
-    static constexpr int filaFramecaminar              = 0;
+    static constexpr int filaFrameCaminar              = 0;
     static constexpr int cantidadFrameCaminar          = 1;
     static constexpr int filaFrameAtaqueLigero         = 1;
     static constexpr int cantidadFrameAtaqueLigero     = 6;
@@ -89,14 +94,16 @@ private:
     static constexpr int filaFrameHabilidadEspecial    = 3;
     static constexpr int cantidadFrameHabilidadEspecial= 6;
 
-    // Para interpolar desplazamiento
-    // controla en qué fase del ataque estamos: 0=mover, 1=animar, 2=volver
-int   ataqueFase        = 0;
-sf::Vector2f ataqueStartPos= {100.f, 600.f};
-sf::Vector2f ataqueTargetPos;
-// velocidad en px/seg al desplazarse
-static constexpr float ataqueSpeed = 900.f;
-bool ataqueLlegado = false;
+    // --- Control de ataque ---
+    int ataqueFase = 0;
+    sf::Vector2f ataqueStartPos = {100.f, 600.f};
+    sf::Vector2f ataqueTargetPos;
+    static constexpr float ataqueSpeed = 1200.f;
+    bool ataqueLlegado = false;
+    bool atacando = false;
 
+    // --- Proyectil ---
+    bool proyectilActivo = false;
+    int projectileFrame = 0;
 
 };

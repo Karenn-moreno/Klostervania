@@ -255,7 +255,12 @@ void gamePlay::ejecutar()
                 // 2) Guardamos la posición de exploración asi volvemos.
                 posicionPreBatalla = jugador.getSprite().getPosition();
                 // 3) Teletransportamos al jugador al punto de batalla
-                jugador.setPosition(100.f, 600.f);
+                jugador.setPosition(100.f, 630.f);
+                jugador.setOrigin(0.f, 0.f);
+                jugador.setScale (0.3f, 0.3f);
+
+
+
                 // 4) Iniciamos la batalla
                 batallaGamePlay->iniciarBatalla();
                 // Transición de pantalla

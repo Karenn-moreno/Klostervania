@@ -554,30 +554,31 @@
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 
-1747577143 source:c:\users\leand\desktop\klostervania\enemigo.cpp
+1748448132 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
 	<iostream>
 	<cstdlib>
+	<cmath>
 
 1747873796 source:c:\users\leand\desktop\klostervania\item.cpp
 	"item.h"
 	<cstdlib>
 	<cmath>
 
-1748284861 source:c:\users\leand\desktop\klostervania\personaje.cpp
+1748446543 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 	<cmath>
 
-1748284861 c:\users\leand\desktop\klostervania\personaje.h
+1748443990 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<string>
 	<iostream>
 
-1748284861 c:\users\leand\desktop\klostervania\enemigo.h
-	<SFML/Graphics.hpp>
-	<string>
-	<iostream>
+1748447739 c:\users\leand\desktop\klostervania\enemigo.h
+	"personaje.h"
+	<SFML/System.hpp>
+	<vector>
 
 1747872203 c:\users\leand\desktop\klostervania\item.h
 	<SFML/Graphics.hpp>
@@ -586,7 +587,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1748277660 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1748441105 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"nuevaPartida.h"
 	"continuarPartida.h"
@@ -616,10 +617,10 @@
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
 
-1748299861 source:c:\users\leand\desktop\klostervania\batalla.cpp
+1748447085 source:c:\users\leand\desktop\klostervania\batalla.cpp
 	"batalla.h"
 
-1748297655 c:\users\leand\desktop\klostervania\batalla.h
+1748438362 c:\users\leand\desktop\klostervania\batalla.h
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 	"personaje.h"

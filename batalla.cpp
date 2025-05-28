@@ -1,13 +1,12 @@
 #include "batalla.h"
 
-
 batalla::batalla(personaje& jugador, enemigo& adversario, sf::Sound& soundFlecha)
     : _jugador(jugador)
     , _adversario(adversario)
     , soundFlecha   (soundFlecha)
     , turnoActual(Turno::Jugador)
     , vidaJugador(jugador.getSalud())
-    , vidaAdversario(adversario.getSalud()-450) //le resto para matarlo rapido y seguir porbando
+    , vidaAdversario(adversario.getSalud()-400) //le resto para matarlo rapido y seguir porbando
     , terminado(false)
     , jugadorGanoFlag(false)
     , fondo({1500.f, 900.f})
@@ -30,8 +29,7 @@ void batalla::iniciarBatalla()
         std::cout << "Error al cargar fuente de batalla\n";
 
     menuBatalla.crearMenu(numOpcionesMenuBatalla, fuente, opcionesVectorBatalla, 20, 120, 760, 20, sf::Color::White, sf::Color::Red);
-    //actualizarTexto();
-//****************************************        NUEVO       **************************
+
     // Configuración del recuadro de mensaje
     if (!fuenteMensaje.loadFromFile("fonts/Rochester-Regular.ttf"))
         std::cout << "Error al cargar fuenteMensaje\n";
@@ -39,8 +37,10 @@ void batalla::iniciarBatalla()
     textoMensaje.setFont(fuenteMensaje);
     textoMensaje.setCharacterSize(20);
     textoMensaje.setFillColor(sf::Color::White);
+    _adversario.setOrigin(0.f, 0.f);
+    _adversario.setPosition(1100.f, 630.f);
+    _adversario.setModoBatalla(true);
 
-//**********************************************************************************************************************************
 };
 
 void batalla::manejarInput()
@@ -72,10 +72,10 @@ void batalla::manejarInput()
         {
         case 0:  // Ataque ligero
             vidaAdversario -= _jugador.getAtaqueLigero();
-            msj += "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "+ std::to_string(vidaAdversario);
+            msj += "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "+ std::to_string(vidaAdversario)+" de salud";
             mostrarMensaje(msj);
            std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
-            _jugador.ataqueLigero({900.f, 600.f});
+            _jugador.ataqueLigero({1100.f, 630.f});
             turnoActual = Turno::Enemigo;
             _rondaCarga++;
             break;
@@ -84,14 +84,17 @@ void batalla::manejarInput()
             if(_rondaCarga>=2)
             {
                 vidaAdversario -= _jugador.getAtaquePesado();
-                 msj +="\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " + std::to_string(vidaAdversario);
+                 msj +="\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " + std::to_string(vidaAdversario)+" de salud";
                  mostrarMensaje(msj);
                 std::cout << "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " << vidaAdversario << " de vida\n";
+                _jugador.ataquePesado({1100.f, 630.f});
                 _rondaCarga=0;
                 turnoActual = Turno::Enemigo;
             }
             else
             {
+                msj += "\nNo se cargo el golpe pesado ";
+                mostrarMensaje(msj);
                 std::cout << "\nNo se cargo el golpe pesado ";
             }
 
@@ -101,14 +104,17 @@ void batalla::manejarInput()
             if (_rondaCarga>=3)
             {
                 vidaAdversario -= _jugador.getHabilidadEspecial();
-                 msj += "\nEl jugador ha usado la habilida especial Enemigo tiene " + std::to_string(vidaAdversario);
+                 msj += "\nEl jugador ha usado la habilida especial Enemigo tiene " + std::to_string(vidaAdversario)+" de salud";
                  mostrarMensaje(msj);
                 std::cout << "\nEl jugador ha usado la habilida especial";
+                _jugador.habilidadEspecial({1000.f, 600.f});
                 _rondaCarga=0;
                 turnoActual = Turno::Enemigo;
             }
             else
             {
+                msj += "\nNo se cargo la habilidad especial";
+                mostrarMensaje (msj);
                 std::cout << "\nNo se cargo la habilidad ";
             }
 
@@ -121,8 +127,13 @@ void batalla::manejarInput()
     }
 }
 
-void batalla::actualizar(float /*deltaTime*/)
+void batalla::actualizar(float deltaTime)
 {
+    _adversario.update(deltaTime,
+                       /*movDer*/ false,
+                       /*movIzq*/ false,
+                       /*movArr*/ false,
+                       /*movAbj*/ false);
     // Si no es el turno del enemigo, no hacemos nada
     if (turnoActual != Turno::Enemigo)
         return;
@@ -137,6 +148,7 @@ void batalla::actualizar(float /*deltaTime*/)
     }
     if (vidaAdversario <= 0 )
     {
+        if(!_jugador.estaAtacando()){
         // 1) Marcar victoria y desactivar enemigo
         victoriaIniciada = true;
         _adversario.setActivo(false);
@@ -177,30 +189,30 @@ void batalla::actualizar(float /*deltaTime*/)
                   << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
                   << "\n";
         // 3) Arranca el reloj de espera
-        victoriaClock.restart();
+        //victoriaClock.restart();
+        }
         return;
     }
+if (!_jugador.estaAtacando()) {
+    // El enemigo ataca de forma aleatoria y devuelve el daño
+    sf::Vector2f posJugador = _jugador.getSprite().getPosition();
+    int danio = _adversario.ataque(posJugador);
+    vidaJugador -= danio;
+    msj += "\n¡Enemigo ataca! Jugador recibe "+ std::to_string(danio)+ " de danio";
+    mostrarMensaje(msj);
+    std::cout << msj << ". Vida jugador: " << vidaJugador << "\n";
 
-    // 1) Inteligencia básica: siempre usa ataque ligero
-    int dano = _adversario.getAtaqueLigero();
-    vidaJugador -= dano;
-    msj +="\n¡Enemigo ataca! Jugador recibe " +std::to_string(dano);
-     mostrarMensaje(msj);
-    std::cout << "\n¡Enemigo ataca! Jugador recibe " << dano
-              << " de daño. Vida jugador: " << vidaJugador << "\n";
-
-    // 2) Actualizar la UI de vidas
-    //actualizarTexto();
 
     // 3) Pasar turno de nuevo al jugador y aumentar ronda
     turnoActual   = Turno::Jugador;
     _rondaTurno++;
-
+    }
     // 4) Compruebo fin de batalla
     if (vidaJugador <= 0)
     {
         terminado       = true;
         jugadorGanoFlag = (vidaJugador <= 0);
+        _adversario.setModoBatalla(false);
     }
 }
 
@@ -241,25 +253,11 @@ void batalla::drawBatalla(sf::RenderWindow& window)
     }
 
 
-///  ——— Jugador ———
-sf::Sprite copiaJugador = _jugador.getSprite();
-copiaJugador.setOrigin(0.f, 0.f);
-copiaJugador.setScale(0.3f, 0.3f);
-
-// Si no está en animación de ataque, lo pintamos siempre en battlePlayerPos
-if (_jugador.getEstado() != personaje::estadoPersonaje::ataqueLigero)
-{
-    copiaJugador.setPosition(100.f, 600.f);
-}
  // en caso de animar el ataque, getSprite() ya va moviéndose solo
-window.draw(copiaJugador);
+_jugador.draw(window);
 
     // ——— Enemigo ———
-    sf::Sprite copiaAdversario = _adversario.getSprite();
-    copiaAdversario.setOrigin(0.f, 0.f);
-    copiaAdversario.setScale(0.2f, 0.2f);
-    copiaAdversario.setPosition(1000.f, 550.f);
-    window.draw(copiaAdversario);
+_adversario.draw(window);
 
 //  Si la batalla ya terminó y ganaste, lanza el popup
    if (jugadorGanoFlag && !popupFinMostrado) {
@@ -285,6 +283,6 @@ void batalla::mostrarMensaje(const std::string& msg)
 {
     textoMensaje.setString(msg);
     sf::FloatRect b = textoMensaje.getLocalBounds();
-    textoMensaje.setPosition(15.f, 90.f - b.height);
+    textoMensaje.setPosition(15.f, 110.f - b.height);
     mensajeActivo = true;
 }

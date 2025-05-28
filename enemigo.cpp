@@ -1,211 +1,128 @@
 #include "enemigo.h"
 #include <iostream>
-#include <cstdlib>  // Para rand()
+#include <cstdlib>   // Para rand()
+#include <cmath>     // Para std::sqrt
 
-// --- Setters de estadísticas del enemigo ---
-void enemigo::setSalud(int salud)
+enemigo::enemigo(const sf::Vector2f& posInicial,
+                 const std::string& rutaSpritesheet,
+                 const sf::Vector2f& escala)
+: personaje()
+, _posInicial(posInicial)
 {
-    _salud = salud;  // Actualiza los puntos de vida del enemigo
-}
+    // Inicializar estadísticas base
+    setSalud(_maxSalud);
 
-void enemigo::setAtaqueLigero(int ataqueLigero)
-{
-    _ataqueLigero = ataqueLigero;  // Actualiza el daño de ataque ligero
-}
-
-void enemigo::setAtaquePesado(int ataquePesado)
-{
-    _ataquePesado = ataquePesado;  // Actualiza el daño de ataque pesado
-}
-
-void enemigo::setHabilidadEspecial(int habilidadEspecial)
-{
-    _habilidadEspecial = habilidadEspecial;  // Actualiza el poder de la habilidad especial
-}
-
-// --- Getters de estadísticas del enemigo ---
-int enemigo::getSalud()
-{
-    return _salud;  // Devuelve los puntos de vida actuales
-}
-
-int enemigo::getAtaqueLigero()
-{
-    return _ataqueLigero;  // Devuelve el daño de ataque ligero
-}
-
-int enemigo::getAtaquePesado()
-{
-    return _ataquePesado;  // Devuelve el daño de ataque pesado
-}
-
-int enemigo::getHabilidadEspecial()
-{
-    return _habilidadEspecial;  // Devuelve el poder de la habilidad especial
-}
-
-const sf::Sprite& enemigo::getSprite() const
-{
-    return sprite;
-};
-
-sf::FloatRect enemigo::getBounds() const
-{
-    return sprite.getGlobalBounds();
-};
-
-
-// Constructor: carga textura, configura sprite, frame
-enemigo::enemigo()
-    : _salud(500)
-    , _maxSalud(500)   // guarda el máximo, asi cuando avanzo en niveles cuesta mas
-    , _ataqueLigero(10)
-    , _ataquePesado(15)
-    , _habilidadEspecial(25)
-
-{
-    if (!textura.loadFromFile("img/spritsheep_demonio_derecha.png"))    // Carga la imagen completa
-    {
-        std::cout << "Error al cargar la imagen del personaje" << std::endl;
+    // Carga de textura desde ruta proporcionada
+    if (!textura.loadFromFile(rutaSpritesheet)) {
+        std::cerr << "Error cargando textura: " << rutaSpritesheet << std::endl;
     }
-    sprite.setTexture(textura);  // Asocia la textura al sprite
+    sprite.setTexture(textura);
 
-    // Definimos el primer frame de la animación (ejemplo: cada frame mide 64x64 píxeles)
-    frameActual = sf::IntRect(0, 0, 590, 1000);  // X=0, Y=0, Ancho=500, Alto=550
-    sprite.setTextureRect(frameActual);  // Aplicamos la selección del primer frame
-    sprite.setScale(0.15f, 0.15f); // Reduce el tamaño
-    // Variables de control para el cambio de frames
+    // Configurar frame inicial y escala
+    sprite.setTextureRect({0, 0, frameWidth, frameHeight});
+    sprite.setScale(escala);
+    sprite.setPosition(_posInicial);
 
-    sprite.setPosition(500, 500);  // Posición inicial
-    _posInicial = sprite.getPosition();
+    // Definir puntos de patrulla
+    _puntosPatrulla = {{100.f, 200.f}, {300.f, 200.f}};
 }
 
-// --- Actualización del enemigo: movimiento aleatorio y animación de frames ---
-void enemigo::update(float deltaTime)
-{
+void enemigo::setActivo(bool activo) {
+    _activo = activo;
     if (!_activo) {
-        // si lleva ya más de _respawnDelay, reaparecer
-        if (_respawnClock.getElapsedTime() >= _respawnDelay) {
-            _activo = true;
-            _salud  = _maxSalud;
-            // opcional: reposicionar
-            //sprite.setPosition( /* x */, /* y */ );
-        }
-        return;
-    }
-    bool caminando = false;
-    tiempoDesdeUltimoMovimiento += deltaTime;  // Acumula tiempo desde último movimiento
-
-
-    // Cada 0.7s, el enemigo elige una dirección aleatoria
-    if (tiempoDesdeUltimoMovimiento >= 0.7f)
-    {
-        int direccion = rand() % 8 + 1;  // Valores de 1 a 8
-        float offsetX = 0.f;
-        float offsetY = 0.f;
-        const float diag = 2.8f;  // Aproximadamente 4 / √2 para diagonales
-
-        // Determina el desplazamiento según la dirección elegida
-        switch (direccion)
-        {
-        case 1:
-            offsetY = -4.f;
-            break;          // Arriba
-        case 2:
-            offsetY =  4.f;
-            break;          // Abajo
-        case 3:
-            offsetX =  4.f;
-            break;          // Derecha
-        case 4:
-            offsetX = -4.f;
-            break;          // Izquierda
-        case 5:
-            offsetX =  diag;
-            offsetY = -diag;
-            break; // Arriba-Derecha
-        case 6:
-            offsetX =  diag;
-            offsetY =  diag;
-            break; // Abajo-Derecha
-        case 7:
-            offsetX = -diag;
-            offsetY =  diag;
-            break; // Abajo-Izquierda
-        case 8:
-            offsetX = -diag;
-            offsetY = -diag;
-            break; // Arriba-Izquierda
-        }
-
-        // Mover el sprite
-        sprite.move(offsetX, offsetY);
-        tiempoDesdeUltimoMovimiento = 0.f;  // Reiniciar contador
-
-        // Ajustar orientación horizontal del sprite
-        if (offsetX > 0)
-        {
-            sprite.setScale(0.15f, 0.15f);  // Mirando a la derecha
-            sprite.setOrigin(0, 0);
-        }
-        else if (offsetX < 0)
-        {
-            sprite.setScale(-0.15f, 0.15f); // Mirando a la izquierda
-            sprite.setOrigin(frameWidth, 0);
-        }
-        caminando = true;
-    }
-
-    // --- Animación de frames cuando está caminando ---
-    if (caminando)
-    {
-        frameTimer += deltaTime;  // Acumula tiempo para cambio de frame
-        if (frameTimer >= frameTime)
-        {
-            frameTimer = 0.f;  // Reiniciar temporizador de frame
-            currentFrame = (currentFrame + 1) % totalFrames;  // Siguiente frame
-        }
-        // Selecciona el rectángulo correcto en el spritesheet
-        int left = currentFrame * frameWidth;
-        sprite.setTextureRect(sf::IntRect(left, 0, frameWidth, frameHeight));
-    }
-    // Si no está caminando, se mantiene el frame actual (se podría resetear a 0 aquí)
-}
-
-// --- Renderizado del enemigo ---
-void enemigo::draw(sf::RenderWindow& window)
-{
-    if (!_activo) return;
-    if (sprite.getTexture() != nullptr)
-    {
-        window.draw(sprite);  // Dibuja el sprite en la ventana
-    }
-    else
-    {
-        std::cout << "Error: La textura del enemigo no está cargada" << std::endl;
-    }
-}
-
-void enemigo::setActivo(bool activo)
-{
-     _activo = activo;
-    if (!activo) {
-        // arrancar el reloj cuando muere
         _respawnClock.restart();
     }
-};
+}
 
-bool enemigo::estaActivo() const
-{
+bool enemigo::estaActivo() const {
     return _activo;
 }
 
-void enemigo::setPosition(float x, float y)
+void enemigo::update(float deltaTime,
+                     bool movDer,
+                     bool movIzq,
+                     bool movArr,
+                     bool movAbj)
 {
-    sprite.setPosition(x,y);
+    // 1) Respawn (si está inactivo)
+    if (!_activo) {
+        if (_respawnClock.getElapsedTime() >= _respawnDelay) {
+            _activo          = true;
+            setSalud(_maxSalud);
+            sprite.setPosition(_posInicial);
+
+            // **Limpia aquí todos los flags de ataque**:
+            estado           = estadoPersonaje::quieto;
+            atacando         = false;
+            proyectilActivo  = false;
+            ataqueLlegado    = false;
+            ataqueFase       = 0;
+
+            // Si usas modo batalla, desactívalo para que pueda patrullar o atacar de nuevo:
+            _modoBatalla     = false;
+        }
+        // Salimos antes de hacer cualquier otra cosa
+        return;
+    }
+
+    // 2) Si estamos en combate, sólo animamos (no patrullar)
+    if (_modoBatalla) {
+        personaje::update(deltaTime, movDer, movIzq, movArr, movAbj);
+        return;
+    }
+
+    // 3) Movimiento aleatorio fuera de combate
+    _tiempoDesdeUltimoMovimiento += deltaTime;
+    float offsetX = 0.f, offsetY = 0.f;
+    movDer = movIzq = false;
+
+    if (_tiempoDesdeUltimoMovimiento >= 0.7f) {
+        int dir = std::rand() % 8;
+        const float speed = 4.f;
+        const float diag  = speed / std::sqrt(2.f);
+        // … tu lógica de switch() …
+        sprite.move(offsetX, offsetY);
+        _tiempoDesdeUltimoMovimiento = 0.f;
+    }
+
+    // 4) Animación base usando esos flags
+    personaje::update(deltaTime, movDer, movIzq, movArr, movAbj);
+}
+void enemigo::draw(sf::RenderWindow& window) {
+    if (_activo) {
+        personaje::draw(window);
+    }
 }
 
-int  enemigo::getMaxSalud() const
-{
-    return _maxSalud;
+// Realiza un ataque aleatorio: ligero, pesado o especial
+int enemigo::ataque(const sf::Vector2f& destino) {
+    // 1) Orientación según destino
+    float escX = std::abs(sprite.getScale().x);
+    float escY = sprite.getScale().y;
+    if (destino.x > sprite.getPosition().x) {
+        // Target a la derecha -> escala positiva
+        sprite.setScale( escX, escY );
+        sprite.setOrigin(0.f, 0.f);
+    } else {
+        // Target a la izquierda → espejo horizontal
+        sprite.setScale(-escX, escY);
+        sprite.setOrigin(static_cast<float>(frameWidth), 0.f);
+    }
+    int r = std::rand() % 3;    // 0=ligero, 1=pesado, 2=especial
+    int danio = 0;
+    switch (r) {
+        case 0:
+            danio = getAtaqueLigero();
+            ataqueLigero(destino);
+            break;
+        case 1:
+            danio = getAtaquePesado();
+            ataquePesado(destino);
+            break;
+        case 2:
+            danio = getHabilidadEspecial();
+            habilidadEspecial(destino);
+            break;
+    }
+    return danio;
 }

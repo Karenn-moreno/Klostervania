@@ -1,64 +1,50 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <string>
-#include <iostream>
+#include "personaje.h"
+#include <SFML/System.hpp>
+#include <vector>
 
-class enemigo
-{
+class enemigo : public personaje {
 public:
+    // Constructor recibe posición inicial, ruta al spritesheet y escala opcional
+    enemigo(const sf::Vector2f& posInicial = {100.f, 100.f},
+            const std::string& rutaSpritesheet = "img/spritesheet_guerreroespejo.png",
+            const sf::Vector2f& escala = {0.3f, 0.3f});
+    ~enemigo() override = default;
 
-    enemigo();
-
-    // --- Setters de estadísticas ---
-    void setSalud(int salud);               //  Establece los puntos de vida del enemigo
-    void setAtaqueLigero(int ataqueLigero); //   Establece el daño de ataque ligero
-    void setAtaquePesado(int ataquePesado); //   Establece el daño de ataque pesado
-    void setHabilidadEspecial(int habilidadEspecial); //     Establece el poder de la habilidad especial
-
-    // --- Getters de estadísticas ---
-    void setActivo(bool activo);//   Lo creo y lo elimino con esto
-    int getSalud();            //    Devuelve los puntos de vida actuales
-    int getAtaqueLigero();     //    Devuelve el daño de ataque ligero
-    int getAtaquePesado();     //    Devuelve el daño de ataque pesado
-    int getHabilidadEspecial();//    Devuelve el poder de la habilidad especial
-    const sf::Sprite& getSprite() const;   // Devuelve el sprite para poder consultar sus bounds o dibujarlo
-    sf::FloatRect getBounds() const;
-        void setPosition(float x, float y);
-    int  _maxSalud;            //   Puntos de vida maximo
-    // --- Lógica de juego ---
-    void update(float deltaTime);
+    // Spawn / respawn
+    void setActivo(bool activo);
     bool estaActivo() const;
-    void draw(sf::RenderWindow& window);
+
+    // Realiza un ataque aleatorio: ligero, pesado o especial
+    // destino: posición donde dirigir el ataque (p.ej. posición del jugador)
+    int ataque(const sf::Vector2f& destino);
+
+    // IA y animación (usa lógica de personaje para animar)
+    void update(float deltaTime,
+                bool moviendoDer = false,
+                bool moviendoIzq = false,
+                bool moviendoArr = false,
+                bool moviendoAbj = false) override;
+    void draw(sf::RenderWindow& window) override;
+
+    // Indica si el enemigo está en combate por turnos
+    void setModoBatalla(bool activo) { _modoBatalla = activo; }
 
 private:
-    // --- Estadísticas del enemigo ---
-    int _salud;               //    Puntos de vida
+    bool _modoBatalla = false;
+    // Estadísticas avanzadas
+    int _maxSalud = 500;
 
-    int _ataqueLigero;        //    Daño de ataques ligeros
-    int _ataquePesado;        //    Daño de ataques pesados
-    int _habilidadEspecial;   //    Poder de habilidad especial
-    bool _activo = true;  // empieza vivo
+    // Spawn / estado
+    bool _activo = true;
+    sf::Clock _respawnClock;
+    sf::Time  _respawnDelay = sf::seconds(10.f);//segundos
+    sf::Vector2f _posInicial;
 
-    int  getMaxSalud() const;
-     // Para que reviva
-  sf::Clock _respawnClock;
-  sf::Time  _respawnDelay = sf::seconds(10.0f); // 0.5 minutos = 30 s
-  sf::Vector2f _posInicial;                   // guarda dónde nació
-
-    // --- Gráficos ---
-    sf::Sprite sprite;        //    Sprite que representa al enemigo
-    sf::Texture textura;      //    Textura del spritesheet completo
-
-    // --- Control de movimiento y animación ---
-    float tiempoDesdeUltimoMovimiento = 0.f; // Acumula tiempo para elegir movimiento aleatorio
-    float tiempoAnimacion = 0.f;             // (no usado directamente) acumulador general
-
-    const int totalFrames = 3;  //  Número de frames en la animación de caminar
-    int currentFrame = 0;       //  Frame actual mostrado
-    float frameTimer = 0.f;     //  Acumula tiempo para cambio de frame
-    float frameTime = 0.15f;    //  Duración de cada frame (segundos)
-    int frameWidth = 575;       //  Ancho de cada frame (píxeles)
-    int frameHeight = 1000;     //  Alto de cada frame (píxeles)
-    sf::IntRect frameActual;    //  Rectángulo que define el frame en la textura
+    // IA
+    enum class EstadoIA { patrullando, persiguiendo, atacando } _estadoIA;
+    std::vector<sf::Vector2f> _puntosPatrulla;
+    size_t _indicePatrulla = 0;
+    float _tiempoDesdeUltimoMovimiento = 0.f;
 };
