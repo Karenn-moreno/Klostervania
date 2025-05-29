@@ -34,8 +34,8 @@ public:
     virtual void update(float deltaTime,
                         bool moviendoDer=false,
                         bool moviendoIzq=false,
-                        bool moviendoArr=false,
-                        bool moviendoAbj=false);
+                        bool moviendoArriba=false,
+                        bool moviendoAbajo=false);
     virtual void mover(float offsetX, float offsetY); // Mueve el sprite en pantalla
     virtual void detener();                         // Detiene la animación y resetea frame
 
@@ -48,7 +48,7 @@ public:
     void setScale(float x, float y);
 
     // --- Estado de animación ---
-    enum class estadoPersonaje { quieto, caminando, ataqueLigero, ataquePesado, habilidadEspecial, muerto };
+    enum class estadoPersonaje { quieto, caminando, caminandoArriba, caminandoAbajo, ataqueLigero, ataquePesado, habilidadEspecial, muerto };
 
     // --- Acceso al estado ---
     estadoPersonaje getEstado() const { return estado; }
@@ -76,6 +76,7 @@ protected:
     float breathSpeed;           // Velocidad de ciclo
 
     // --- Animación de sprites ---
+    float speed = 50.f;  // 150 píxeles por segundo, ajústalo a tu gusto
     int currentFrame = 0;
     float frameTime = 0.15f;
     float frameTimer = 0.f;
@@ -86,14 +87,17 @@ protected:
     static constexpr int filaFrameQuieto               = 6;
     static constexpr int cantidadFrameQuieto           = 1;
     static constexpr int filaFrameCaminar              = 0;
-    static constexpr int cantidadFrameCaminar          = 1;
+    static constexpr int cantidadFrameCaminar          = 6;
     static constexpr int filaFrameAtaqueLigero         = 1;
     static constexpr int cantidadFrameAtaqueLigero     = 6;
     static constexpr int filaFrameAtaquePesado         = 2;
     static constexpr int cantidadFrameAtaquePesado     = 6;
     static constexpr int filaFrameHabilidadEspecial    = 3;
     static constexpr int cantidadFrameHabilidadEspecial= 6;
-
+    static constexpr int filaFrameCaminarAbajo         = 4;
+    static constexpr int cantidadFrameCaminarAbajo     = 6;
+    static constexpr int filaFrameCaminarArriba        = 5;
+    static constexpr int cantidadFrameCaminarArriba    = 6;
     // --- Control de ataque ---
     int ataqueFase = 0;
     sf::Vector2f ataqueStartPos = {100.f, 600.f};

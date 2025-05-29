@@ -104,8 +104,8 @@ void personaje::draw(sf::RenderWindow& window) {
 void personaje::update(float deltaTime,
                        bool movDer,
                        bool movIzq,
-                       bool movArr,
-                       bool movAbj)
+                       bool movArriba,
+                       bool movAbajo)
 {
     // A) Secuencia de ataque ligero
 if (estado == estadoPersonaje::ataqueLigero) {
@@ -155,6 +155,7 @@ if (estado == estadoPersonaje::ataqueLigero) {
     // — Fase de reset —
     else {
         sprite.setPosition(ataqueStartPos);
+        atacando  = false;
         estado = estadoPersonaje::quieto;
     }
 
@@ -265,46 +266,69 @@ if (estado == estadoPersonaje::ataqueLigero) {
 
         return;
     }
-    // B) Animación de caminata
-    bool caminando = movDer || movIzq;
-    if (caminando) {
-        estado = estadoPersonaje::caminando;
-        // Incrementar temporizador
-        frameTimer += deltaTime;
-if (frameTimer >= frameTime) {
-    frameTimer = 0.f;       // descartas el exceso
-    currentFrame = (currentFrame + 1) % totalFrames;
-}
-        // Seleccionar frame en spritesheet (fila 0)
-        int left = currentFrame * frameWidth;
-        sprite.setTextureRect(sf::IntRect(left, 0, frameWidth, frameHeight));
-        // Ajustar orientación según dirección
+    // 2) ¿Está caminando en alguna dirección?
+bool caminando = movDer || movIzq || movArriba || movAbajo;
 
-        //sprite.setTextureRect(frameActual);
+if (caminando) {
+    // 3) Elegir fila y totalFrames según dirección
+    int fila         = 0;
+    int totalFrames  = 0;
 
-        // Flip horizontal
-        if (movIzq) {
-            sprite.setScale(-baseScaleX, baseScaleY);
-            sprite.setOrigin(frameWidth, 0);
-        } else {
-            sprite.setScale(baseScaleX, baseScaleY);
-            sprite.setOrigin(0, 0);
-        }
+    if (movArriba) {
+        estado       = estadoPersonaje::caminandoArriba;
+        fila         = filaFrameCaminarArriba;
+        totalFrames  = cantidadFrameCaminarArriba;
+    }
+    else if (movAbajo) {
+        estado       = estadoPersonaje::caminandoAbajo;
+        fila         = filaFrameCaminarAbajo;
+        totalFrames  = cantidadFrameCaminarAbajo;
     }
     else {
-        // C) Estado quieto
-        estado = estadoPersonaje::quieto;
-        atacando=false;
-        currentFrame    = 0;
-        frameActual     = {
-            0,
-            filaFrameQuieto * frameHeight,
-            frameWidth,
-            frameHeight
-        };
-        sprite.setTextureRect(frameActual);
+        estado       = estadoPersonaje::caminando;
+        fila         = filaFrameCaminar;
+        totalFrames  = cantidadFrameCaminar;
     }
 
+    // 4) Avanzar el temporizador de animación
+    frameTimer += deltaTime;
+    if (frameTimer >= frameTime) {
+        frameTimer  -= frameTime;
+        currentFrame = (currentFrame + 1) % totalFrames;
+    }
+
+    // 5) Calcular y aplicar el sub-rectángulo
+    int left = currentFrame * frameWidth;
+    int top  = fila * frameHeight;
+    sprite.setTextureRect({ left, top, frameWidth, frameHeight });
+
+    // 6) Mover al personaje
+    if (movArriba) sprite.move(0, -speed * deltaTime);
+    if (movAbajo)  sprite.move(0,  speed * deltaTime);
+    if (movIzq)    sprite.move(-speed * deltaTime, 0);
+    if (movDer)    sprite.move( speed * deltaTime, 0);
+
+    // 7) Flip horizontal sólo para la caminata lateral
+    if (movIzq) {
+        sprite.setScale(-baseScaleX, baseScaleY);
+        sprite.setOrigin(frameWidth, 0);
+    } else {
+        sprite.setScale(baseScaleX, baseScaleY);
+        sprite.setOrigin(0, 0);
+    }
+}
+else {
+    // --- Estado quieto ---
+    estado     = estadoPersonaje::quieto;
+    currentFrame = 0;
+    // Frame fijo de quieto en la fila 6
+    sprite.setTextureRect({
+        0,
+        filaFrameQuieto * frameHeight,
+        frameWidth,
+        frameHeight
+    });
+}
     // D) Respiración / pulso
     float t = breathClock.getElapsedTime().asSeconds();
     float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);

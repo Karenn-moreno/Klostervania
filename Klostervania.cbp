@@ -45,6 +45,10 @@
 		<Unit filename="batalla.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="boss.cpp" />
+		<Unit filename="boss.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="continuarPartida.cpp" />
 		<Unit filename="continuarPartida.h">
 			<Option target="&lt;{~None~}&gt;" />

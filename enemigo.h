@@ -18,7 +18,7 @@ public:
 
     // Realiza un ataque aleatorio: ligero, pesado o especial
     // destino: posición donde dirigir el ataque (p.ej. posición del jugador)
-    int ataque(const sf::Vector2f& destino);
+    virtual int ataque(const sf::Vector2f& destino);
 
     // IA y animación (usa lógica de personaje para animar)
     void update(float deltaTime,

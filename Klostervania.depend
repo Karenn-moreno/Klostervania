@@ -565,17 +565,17 @@
 	<cstdlib>
 	<cmath>
 
-1748446543 source:c:\users\leand\desktop\klostervania\personaje.cpp
+1748527337 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 	<cmath>
 
-1748443990 c:\users\leand\desktop\klostervania\personaje.h
+1748527996 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<string>
 	<iostream>
 
-1748447739 c:\users\leand\desktop\klostervania\enemigo.h
+1748529255 c:\users\leand\desktop\klostervania\enemigo.h
 	"personaje.h"
 	<SFML/System.hpp>
 	<vector>
@@ -617,7 +617,7 @@
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
 
-1748447085 source:c:\users\leand\desktop\klostervania\batalla.cpp
+1748448140 source:c:\users\leand\desktop\klostervania\batalla.cpp
 	"batalla.h"
 
 1748438362 c:\users\leand\desktop\klostervania\batalla.h
@@ -636,4 +636,11 @@
 1747878544 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
 	"popUpCartel.h"
 	<stdexcept>
+
+1748529181 source:c:\users\leand\desktop\klostervania\boss.cpp
+	"boss.h"
+	<cstdlib>
+
+1748529181 c:\users\leand\desktop\klostervania\boss.h
+	"enemigo.h"
 
