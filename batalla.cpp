@@ -1,18 +1,28 @@
 #include "batalla.h"
 
-batalla::batalla(personaje& jugador, enemigo& adversario, sf::Sound& soundFlecha)
-    : _jugador(jugador)
-    , _adversario(adversario)
-    , soundFlecha   (soundFlecha)
-    , turnoActual(Turno::Jugador)
-    , vidaJugador(jugador.getSalud())
-    , vidaAdversario(adversario.getSalud()-400) //le resto para matarlo rapido y seguir porbando
-    , terminado(false)
-    , jugadorGanoFlag(false)
-    , fondo({1500.f, 900.f})
+batalla::batalla(personaje& jugador,
+                 const std::vector<enemigo*>& adversarios,
+                 sf::Sound& soundFlecha)
+  : _jugador(jugador)
+  , _adversarios(adversarios)  // copio el vector entero
+  , soundFlecha(soundFlecha)
+  , turnoActual(Turno::Jugador)
+  , vidaJugador(jugador.getSalud())
+  // si el vector viene vacío, inicializo en 0; si no, tomo la salud del primero menos 400
+  , vidaAdversario(
+        adversarios.empty()
+          ? 0
+          : adversarios[0]->getSalud() - 400
+    )
+  , terminado(false)
+  , jugadorGanoFlag(false)
+  , fondo({1500.f, 900.f})
 {
-
-};
+    // Opcional: guardar posición inicial del primer enemigo
+    if (!_adversarios.empty()) {
+        _posEnemigoInicial = _adversarios[0]->getSprite().getPosition();
+    }
+}
 
 void batalla::iniciarBatalla()
 {
@@ -37,10 +47,13 @@ void batalla::iniciarBatalla()
     textoMensaje.setFont(fuenteMensaje);
     textoMensaje.setCharacterSize(20);
     textoMensaje.setFillColor(sf::Color::White);
-    _adversario.setOrigin(0.f, 0.f);
-    _adversario.setPosition(1100.f, 630.f);
-    _adversario.setModoBatalla(true);
-
+    // Preparamos el primer enemigo del vector
+    if (!_adversarios.empty()) {
+        enemigo* e = _adversarios[0];
+        e->setOrigin(0.f, 0.f);
+        e->setPosition(1100.f, 630.f);
+        e->setModoBatalla(true);
+    }
 };
 
 void batalla::manejarInput()
@@ -129,15 +142,22 @@ void batalla::manejarInput()
 
 void batalla::actualizar(float deltaTime)
 {
-    _adversario.update(deltaTime,
+        // 1) Si no hay adversarios, no hacemos nada
+    if (_adversarios.empty())
+        return;
+
+    // 2) Para no repetir siempre _adversarios[0], creamos un puntero local
+    enemigo* e = _adversarios[0];
+    // 3) Actualizamos la animación del enemigo
+    e->update(deltaTime,
                        /*movDer*/ false,
                        /*movIzq*/ false,
                        /*movArr*/ false,
                        /*movAbj*/ false);
-    // Si no es el turno del enemigo, no hacemos nada
+    // 4) Si no es el turno del enemigo, no hacemos nada
     if (turnoActual != Turno::Enemigo)
         return;
-    // Si ya vencimos y hemos arrancado el reloj, espera 3s
+    // 5) Si ya vencimos y hemos arrancado el reloj, espera 3s
     if (victoriaIniciada)
     {
         if (victoriaClock.getElapsedTime() >= sf::seconds(3.f))
@@ -146,15 +166,16 @@ void batalla::actualizar(float deltaTime)
         }
         return;
     }
+    // 6) Si la vida del adversario llegó a cero...
     if (vidaAdversario <= 0 )
     {
         if(!_jugador.estaAtacando()){
-        // 1) Marcar victoria y desactivar enemigo
+        //  Marcar victoria y desactivar enemigo
         victoriaIniciada = true;
-        _adversario.setActivo(false);
+        e->setActivo(false);
         jugadorGanoFlag = true;
 
-        // 2)—— RECOMPENSA AL JUGADOR ——
+        // —— RECOMPENSA AL JUGADOR ——
         const int bonusSalud        = 50;
         const int bonusAtaqueLigero    =  5;
         const int bonusAtaquePesado    =  3;
@@ -188,84 +209,72 @@ void batalla::actualizar(float deltaTime)
                   << ", Ataque Pesado: " << _jugador.getAtaquePesado()
                   << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
                   << "\n";
-        // 3) Arranca el reloj de espera
-        //victoriaClock.restart();
         }
         return;
     }
+    // 7) Turno del enemigo: atacamos si el jugador no está en medio de su animación
 if (!_jugador.estaAtacando()) {
     // El enemigo ataca de forma aleatoria y devuelve el daño
     sf::Vector2f posJugador = _jugador.getSprite().getPosition();
-    int danio = _adversario.ataque(posJugador);
+    int danio = e->ataque(posJugador);
     vidaJugador -= danio;
     msj += "\n¡Enemigo ataca! Jugador recibe "+ std::to_string(danio)+ " de danio";
     mostrarMensaje(msj);
     std::cout << msj << ". Vida jugador: " << vidaJugador << "\n";
 
-
-    // 3) Pasar turno de nuevo al jugador y aumentar ronda
     turnoActual   = Turno::Jugador;
     _rondaTurno++;
     }
-    // 4) Compruebo fin de batalla
+    // 8) Compruebo fin de batalla
     if (vidaJugador <= 0)
     {
         terminado       = true;
         jugadorGanoFlag = (vidaJugador <= 0);
-        _adversario.setModoBatalla(false);
+        e->setModoBatalla(false);
     }
 }
 
 void batalla::drawBatalla(sf::RenderWindow& window)
 {
+    // 1) Dibujo del fondo de batalla
     window.draw(spriteFondo);
-    //  Ajusto colores según disponibilidad
 
-    sf::Color normal    = sf::Color::White;
-    sf::Color disabled  = sf::Color(128,128,128);   //porque no se cargaron los otros golpes/habilidades
-    sf::Color selected  = sf::Color::Red;
+    // 2) Ajuste de colores para el menú
+    sf::Color normal   = sf::Color::White;
+    sf::Color disabled = sf::Color(128,128,128);
+    sf::Color selected = sf::Color::Red;
 
-    // Recorre cada opción
+    // 3) Pintar cada opción del menú
     for (int i = 0; i < numOpcionesMenuBatalla; ++i)
     {
-        // Si es la seleccionada, la pinto de rojo
         if (i == _opcionSeleccionada)
             menuBatalla.setOptionColor(i, selected);
+        else if ((i == 1 && _rondaCarga < 2) ||
+                 (i == 2 && _rondaCarga < 3))
+            menuBatalla.setOptionColor(i, disabled);
         else
-        {
-            // Si es “Pesado” (índice 1) y rondaActual<2, gris  / o “ Habilidad Especial” (índice 2) y rondaActual<3, gris
-            if ((i == 1 && _rondaCarga < 2) ||(i == 2 && _rondaCarga < 3))
-            {
-                menuBatalla.setOptionColor(i, disabled);
-            }
-            else
-            {
-                menuBatalla.setOptionColor(i, normal);
-            }
-        }
+            menuBatalla.setOptionColor(i, normal);
     }
-    //ataques
     menuBatalla.dibujarMenu(window);
-    //mensajes durante la batalla
-   if (mensajeActivo)
-    {
+
+    // 4) Mostrar mensaje en curso (si lo hay)
+    if (mensajeActivo)
         window.draw(textoMensaje);
+
+    // 5) Dibujo del jugador
+    _jugador.draw(window);
+
+    // 6) Dibujo del (primer) enemigo, si existe
+    if (!_adversarios.empty()) {
+        enemigo* e = _adversarios[0];
+        e->draw(window);
     }
 
-
- // en caso de animar el ataque, getSprite() ya va moviéndose solo
-_jugador.draw(window);
-
-    // ——— Enemigo ———
-_adversario.draw(window);
-
-//  Si la batalla ya terminó y ganaste, lanza el popup
-   if (jugadorGanoFlag && !popupFinMostrado) {
+    // 7) Popup de fin de batalla (victoria)
+    if (jugadorGanoFlag && !popupFinMostrado) {
         popupFinBatalla.mostrar(mensajeFinBatalla, window.getSize());
         popupFinMostrado = true;
     }
-
-    // Dibuja el popup (si está activo)
     popupFinBatalla.draw(window);
 };
 

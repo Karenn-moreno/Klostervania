@@ -2,10 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include "personaje.h"
 #include "enemigo.h"
+#include "boss.h"
 #include "menu.h"
 #include "item.h"
 #include "batalla.h"
 #include <SFML/Audio.hpp>
+#include <vector>
 
 class gamePlay
 {
@@ -45,7 +47,10 @@ private:
 
 // ————— Entidades del juego —————
     personaje jugador;
-    enemigo    demonio;
+    // Aquí defines el vector de punteros a todos tus enemigos
+    std::vector<enemigo*> enemigos;
+      enemigo* enemigoSeleccionado = nullptr;
+      void inicializarEnemigos();
     item       itemRecolectable;
 
 // ————— Flags de estado —————

@@ -587,7 +587,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1748441105 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1748572190 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"nuevaPartida.h"
 	"continuarPartida.h"
@@ -596,14 +596,16 @@
 	"batalla.h"
 	"popUpCartel.h"
 
-1747878544 c:\users\leand\desktop\klostervania\gameplay.h
+1748571656 c:\users\leand\desktop\klostervania\gameplay.h
 	<SFML/Graphics.hpp>
 	"personaje.h"
 	"enemigo.h"
+	"boss.h"
 	"menu.h"
 	"item.h"
 	"batalla.h"
 	<SFML/Audio.hpp>
+	<vector>
 
 1747266487 source:c:\users\leand\desktop\klostervania\continuarpartida.cpp
 	"continuarPartida.h"
@@ -617,10 +619,10 @@
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
 
-1748448140 source:c:\users\leand\desktop\klostervania\batalla.cpp
+1748571114 source:c:\users\leand\desktop\klostervania\batalla.cpp
 	"batalla.h"
 
-1748438362 c:\users\leand\desktop\klostervania\batalla.h
+1748570017 c:\users\leand\desktop\klostervania\batalla.h
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 	"personaje.h"

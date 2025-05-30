@@ -45,6 +45,8 @@ gamePlay::gamePlay()
 
     // — Arrancamos el reloj de deltaTime —
     reloj.restart();
+    inicializarEnemigos();
+    std::cout << "Enemigos creados: " << enemigos.size() << std::endl;
 }
 
 void gamePlay::procesarEventos()
@@ -145,24 +147,27 @@ void gamePlay::procesarEventos()
 
 void gamePlay::updatePersonaje(sf::Time dt)
 {
-      float deltaTime = dt.asSeconds();
+    float deltaTime = dt.asSeconds();
 
-    // 1) Si el popup del ítem está abierto, no hacemos nada más
+    // 0) Actualiza todos los enemigos (activos o no) para que gestionen su respawn
+    for (auto* e : enemigos) {
+        // Pasamos siempre false a los flags; el update interno ignora movimiento
+        e->update(deltaTime, false, false, false, false);
+    }
+
+    // 1) Si el popup del ítem está abierto, salimos
     if (itemRecolectable.isPopupActive())
         return;
 
-    // 2) Actualizamos el ítem (respawn, pulso…)
-    itemRecolectable.update();
-
-    // 3) Detectar recogida: SIEMPRE antes de mover o iniciar batalla
+    // 2) Lógica de recogida de ítem
     if (estado == EstadoJuego::Exploracion &&
         itemRecolectable.tryPickup(jugador))
     {
         estado = EstadoJuego::dialogoItem;
-        return;  // salimos sin tocar nada más
+        return;
     }
 
-    // 4) Movimiento y animación del jugador
+    // 3) Movimiento y animación del jugador
     if (juegoIniciado)
     {
         bool movDer = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
@@ -177,18 +182,21 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (movAbj) jugador.mover(0.f,  speed);
 
         jugador.update(deltaTime, movDer, movIzq, movArr, movAbj);
-        demonio.update(deltaTime);
-
-        if (!itemRecolectable.isActive())
-            itemRecolectable.spawn(window.getSize());
     }
 
-    // 5) Colisión para iniciar batalla
-    if (estado == EstadoJuego::Exploracion && !batallaIniciada &&
-            demonio.estaActivo() &&
-            jugador.getBounds().intersects(demonio.getBounds()))
+    // 4) Colisión para iniciar batalla
+    if (estado == EstadoJuego::Exploracion && !batallaIniciada)
     {
-        estado = EstadoJuego::Batalla;
+        for (auto* e : enemigos)
+        {
+            if (e->estaActivo() &&
+                jugador.getBounds().intersects(e->getBounds()))
+            {
+                enemigoSeleccionado = e;
+                estado = EstadoJuego::Batalla;
+                break;
+            }
+        }
     }
 }
 
@@ -207,10 +215,11 @@ void gamePlay::drawExploracion()
         // Fondo de nivel
         window.draw(spriteNuevaPartida);
 
-        // Entidades (si el demonio sigue activo)
-        if (demonio.estaActivo())
-            demonio.draw(window);
-
+        // Dibujar todos los enemigos activos
+for (auto* e : enemigos) {
+    if (e->estaActivo())
+        e->draw(window);
+}
         // Jugador siempre
         jugador.draw(window);
 
@@ -246,21 +255,20 @@ void gamePlay::ejecutar()
             break;
 
         case EstadoJuego::Batalla:
-            // Iniciar batalla si aún no lo hemos hecho
-            if (!batallaIniciada)
+            // Sólo al arrancar la batalla:
+            if (!batallaIniciada && enemigoSeleccionado)
             {
-                std::cout << "\nSe inició una batalla";
-                // 1) Creamos la batalla
-                batallaGamePlay = new batalla(jugador, demonio, flecha);
-                // 2) Guardamos la posición de exploración asi volvemos.
+                // 1) Creamos la batalla con un sólo participante:
+                std::vector<enemigo*> participantes{ enemigoSeleccionado };
+
+                // 2) Usamos ese vector en el constructor:
+                batallaGamePlay = new batalla(jugador, participantes, flecha);
+
+                // 3) Guardamos posición, teletransportamos y arrancamos:
                 posicionPreBatalla = jugador.getSprite().getPosition();
-                // 3) Teletransportamos al jugador al punto de batalla
                 jugador.setPosition(100.f, 630.f);
                 jugador.setOrigin(0.f, 0.f);
-                jugador.setScale (0.3f, 0.3f);
-
-
-
+                jugador.setScale(0.3f, 0.3f);
                 // 4) Iniciamos la batalla
                 batallaGamePlay->iniciarBatalla();
                 // Transición de pantalla
@@ -313,3 +321,10 @@ bool gamePlay::batallaPopupActive() const {
     return batallaGamePlay && batallaGamePlay->popupFinBatalla.isActive();
 }
 
+void gamePlay::inicializarEnemigos() {
+    enemigo* esqueleto = new enemigo();
+    enemigos.push_back(esqueleto);
+
+    Boss* laranas = new Boss({800.f, 200.f}, "img/spritesheet_laranas.png",{1.f, 1.f});
+    enemigos.push_back(laranas);
+}

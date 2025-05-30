@@ -12,7 +12,9 @@ class batalla {
 public:
 
     /// Constructor: recibe referencias al jugador y al enemigo que van a pelear.
-    batalla(personaje& jugador, enemigo& adversario, sf::Sound& soundFlecha);
+       batalla(personaje& jugador,
+            const std::vector<enemigo*>& adversarios,
+            sf::Sound& soundFlecha);
 
     /// Inicializa las variables de la batalla y cambia el estado interno.
     void iniciarBatalla();
@@ -43,7 +45,7 @@ public:
 
 private:
     personaje& _jugador;      // referencia al jugador original
-    enemigo&    _adversario;  // referencia al enemigo original
+    std::vector<enemigo*> _adversarios;  // referencia al enemigo original
     sf::Vector2f  _posEnemigoInicial;
 
     enum class Turno { Jugador, Enemigo };
