@@ -35,49 +35,64 @@ int personaje::getHabilidadEspecial() const {
     return _habilidadEspecial;  // Devuelve valor de habilidad especial
 }
 
-const sf::Sprite& personaje::getSprite() const{
-    return sprite;
-};
-
 sf::FloatRect personaje::getBounds() const
     {
         return sprite.getGlobalBounds();
     };
 
-// Constructor: carga textura, configura sprite, frame y respiración
+// 1) Constructor por defecto
+// ———————————————————————————————
 personaje::personaje()
-    : _salud(1000)
-    , _ataqueLigero(10)
-    , _ataquePesado(15)
-    , _habilidadEspecial(25)
-    , totalFrames(6)
-    , currentFrame(0)
-    , frameTime(0.15f)
-    , frameTimer(0.f)
-    , frameWidth(500)
-    , frameHeight(500)
+  : estado(estadoPersonaje::quieto),
+    _salud(1000),
+    _ataqueLigero(10),
+    _ataquePesado(15),
+    _habilidadEspecial(25),
+    baseScaleX(0.3f),
+    baseScaleY(0.3f),
+    breathAmplitude(0.02f),    // pulso muy sutil por defecto
+    breathSpeed(0.5f)          // medio ciclo por segundo
 {
-    // 1) Cargar spritesheet
-    if (!textura.loadFromFile("img/spritesheet_guerrero.png")) {
-        std::cerr << "Error al cargar la textura del personaje\n";
+    // Si hubiera un sprite ya asociado, ajustamos escala y reiniciamos reloj
+    sprite.setScale(baseScaleX, baseScaleY);
+    breathClock.restart();
+}
+
+// ———————————————————————————————
+// 2) Nuevo constructor: recibe parámetros
+// ———————————————————————————————
+personaje::personaje(const sf::Vector2f& posInicial,
+                     const std::string& rutaSpritesheet,
+                     const sf::Vector2f& escala)
+  : estado(estadoPersonaje::quieto),
+    _salud(1000),
+    _ataqueLigero(10),
+    _ataquePesado(15),
+    _habilidadEspecial(25),
+    baseScaleX(escala.x),
+    baseScaleY(escala.y),
+    breathAmplitude(0.02f),
+    breathSpeed(0.5f)
+{
+    // 1) Intentamos cargar la textura desde rutaSpritesheet
+    std::cout << "Intentando cargar textura: " << rutaSpritesheet << "\n";
+    if (!textura.loadFromFile(rutaSpritesheet)) {
+        std::cerr << "ERROR: No pude cargar " << rutaSpritesheet << "\n";
+    } else {
+        std::cout << "Textura cargada OK: " << rutaSpritesheet << "\n";
     }
+
+    // 2) Asignar textura al sprite y definir rectángulo inicial
     sprite.setTexture(textura);
+    sprite.setTextureRect({0, 0, frameWidth, frameHeight});
 
-    // 2) Primer frame
-    frameActual = sf::IntRect(0, 0, frameWidth, frameHeight);
-    sprite.setTextureRect(frameActual);
+    // 3) Aplicar escala (actualiza baseScaleX/Y )
+    sprite.setScale(baseScaleX, baseScaleY);
 
-    // 3) Escala y posición inicial
-    sprite.setScale(0.25f, 0.25f);
-    sprite.setPosition(50.f, 400.f);
-    spriteProyectil.setTexture(textura);
-    spriteProyectil.setOrigin( sprite.getOrigin() );
+    // 4) Fijar posición inicial del personaje
+    sprite.setPosition(posInicial);
 
-    // 4) Inicializar respiración
-    baseScaleX      = sprite.getScale().x;
-    baseScaleY      = sprite.getScale().y;
-    breathAmplitude = 0.02f;
-    breathSpeed     = 0.25f;
+    // 5) Reiniciar reloj de respiración
     breathClock.restart();
 }
 
@@ -109,7 +124,7 @@ void personaje::update(float deltaTime,
 {
     // A) Secuencia de ataque ligero
 if (estado == estadoPersonaje::ataqueLigero) {
-        sprite.setScale(0.35f, 0.35f);
+        sprite.setScale(0.5f, 0.5f);
         // Si el destino (jugador) está a la izquierda, espejo horizontal:
     if (ataqueTargetPos.x < ataqueStartPos.x) {
         sprite.setScale(-baseScaleX, baseScaleY);
@@ -163,7 +178,7 @@ if (estado == estadoPersonaje::ataqueLigero) {
 }
 // Ataque Pesado
     if (estado == estadoPersonaje::ataquePesado) {
-        sprite.setScale(0.35f, 0.35f);
+        sprite.setScale(0.5f, 0.5f);
         // Si el destino (jugador) está a la izquierda, espejo horizontal:
     if (ataqueTargetPos.x < ataqueStartPos.x) {
         sprite.setScale(-baseScaleX, baseScaleY);
@@ -308,7 +323,8 @@ if (caminando) {
     if (movIzq)    sprite.move(-speed * deltaTime, 0);
     if (movDer)    sprite.move( speed * deltaTime, 0);
 
-    // 7) Flip horizontal sólo para la caminata lateral
+    // 7) Flip horizontal solo para la caminata lateral,
+    //    usando siempre baseScaleX/baseScaleY
     if (movIzq) {
         sprite.setScale(-baseScaleX, baseScaleY);
         sprite.setOrigin(frameWidth, 0);
@@ -319,8 +335,9 @@ if (caminando) {
 }
 else {
     // --- Estado quieto ---
-    estado     = estadoPersonaje::quieto;
+    estado       = estadoPersonaje::quieto;
     currentFrame = 0;
+
     // Frame fijo de quieto en la fila 6
     sprite.setTextureRect({
         0,
@@ -328,13 +345,16 @@ else {
         frameWidth,
         frameHeight
     });
+
+    // RESTAURAR escala y origen al valor base que le pasaste en el constructor
+    sprite.setScale(baseScaleX, baseScaleY);
+    sprite.setOrigin(0, 0);
 }
     // D) Respiración / pulso
-    float t = breathClock.getElapsedTime().asSeconds();
-    float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
-    float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
-    sprite.setScale(signX * baseScaleX * factor,
-                    baseScaleY * factor);
+//float t = breathClock.getElapsedTime().asSeconds();
+//float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
+//float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
+//sprite.setScale(signX * baseScaleX * factor, baseScaleY * factor);
 }
 
 void personaje::ataqueLigero(const sf::Vector2f& destino) {
@@ -392,18 +412,29 @@ void personaje::habilidadEspecial(const sf::Vector2f& destino) {
             frameHeight
         });
 
-        // 5) Inicializa el proyectil en la X del personaje, Y=0
-        float xPersonaje = ataqueStartPos.x;
-        spriteProyectil.setPosition(xPersonaje, 0.f);
+        // 5) **Asigna textura al proyectil** y fija su frame inicial
+        spriteProyectil.setTexture(textura);  // <<== Importante
         spriteProyectil.setTextureRect({
             0,
             filaFrameHabilidadEspecial * frameHeight,
             frameWidth,
             frameHeight
         });
+
+        // 6) Inicializa el proyectil en la X del personaje, Y=0
+        float xPersonaje = ataqueStartPos.x;
+        spriteProyectil.setPosition(xPersonaje, 0.f);
+        // Opcional: escalado inicial del proyectil si lo quisieras
+        spriteProyectil.setScale(baseScaleX, baseScaleY);
     }
 }
+sf::Vector2f personaje::getPosition() const {
+    return sprite.getPosition();
+}
 
+const sf::Sprite& personaje::getSprite() const {
+    return sprite;
+}
 
 void personaje::setPosition(float x, float y) {
     sprite.setPosition(x, y);
@@ -414,12 +445,26 @@ void personaje::setPosition(const sf::Vector2f& pos) {
 }
 
 void personaje::setOrigin(float x, float y) { sprite.setOrigin(x,y); }
-void personaje::setScale(float x, float y)  { sprite.setScale(x,y); }
+void personaje::setScale(float x, float y)  {
+
+    baseScaleX = x;
+    baseScaleY = y;
+
+    sprite.setScale(baseScaleX, baseScaleY);
+
+    sprite.setOrigin(0.f, 0.f);
+}
 
 bool personaje::estaAtacando(){
      return atacando;
     };
 
-sf::Vector2f personaje::getPosition() const {
-    return sprite.getPosition();
+
+void personaje::setScale(const sf::Vector2f& s) {
+    setScale(s.x, s.y);
+}
+void personaje::setEstado(estadoPersonaje nuevoEstado)
+{
+
+    estado = nuevoEstado;
 }

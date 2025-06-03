@@ -74,4 +74,4 @@ int Boss::ataqueEspecial2(const sf::Vector2f& destino) {
     // Asigna la fila de animación especial 2
     sprite.setTextureRect({0, filaFrameEspecial2 * frameHeight, frameWidth, frameHeight});
     return _habilidadEspecial + 20; // aún más daño
-}
+};

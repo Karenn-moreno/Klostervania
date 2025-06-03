@@ -7,7 +7,16 @@
 
 class personaje {
 public:
+    // ————— Constructores —————
+
+    // 1) Constructor por defecto (mantenerlo para quien no quiera cargar texturas aquí)
     personaje();
+
+    // 2) Nuevo constructor: recibe posición, ruta a spritesheet y escala
+    personaje(const sf::Vector2f& posInicial,
+              const std::string& rutaSpritesheet,
+              const sf::Vector2f& escala);
+
     virtual ~personaje() = default;  // Destructor virtual para herencia segura
 
     // --- Setters de estadísticas ---
@@ -21,9 +30,9 @@ public:
     int getAtaqueLigero() const;           // Devuelve el daño de ataque ligero
     int getAtaquePesado() const;           // Devuelve el daño de ataque pesado
     int getHabilidadEspecial() const;      // Devuelve el valor de la habilidad especial
-    sf::Vector2f getPosition() const;
-    const sf::Sprite& getSprite() const;   // Devuelve el sprite para consultar bounds o dibujarlo
-    sf::FloatRect getBounds() const;       // Devuelve el rectángulo global (para colisiones)
+
+       // Devuelve el sprite para consultar bounds o dibujarlo
+           // Devuelve el rectángulo global (para colisiones)
 
     // --- Acciones de combate (pueden sobrescribirse) ---
     virtual void ataqueLigero(const sf::Vector2f& destino);
@@ -40,30 +49,40 @@ public:
     virtual void detener();                         // Detiene la animación y resetea frame
 
     // --- Renderizado (puede sobrescribirse) ---
-    virtual void draw(sf::RenderWindow& window);    // Dibuja el personaje en la ventana
+    virtual void draw(sf::RenderWindow& window);    // Dibuja el personaje
 
+    // --- Posición y escala genéricos ---
+    virtual sf::Vector2f getPosition() const;
+    virtual const sf::Sprite& getSprite() const;
+    virtual sf::FloatRect getBounds() const;
     void setPosition(float x, float y);
     void setPosition(const sf::Vector2f& pos);
     void setOrigin(float x, float y);
+
+    // Sobrecargas para escala:
+    //   a) versión que recibe dos floats
     void setScale(float x, float y);
+    //   b) versión que recibe un Vector2f
+    void setScale(const sf::Vector2f& s);
 
     // --- Estado de animación ---
-    enum class estadoPersonaje { quieto, caminando, caminandoArriba, caminandoAbajo, ataqueLigero, ataquePesado, habilidadEspecial, muerto };
+    enum class estadoPersonaje {quieto, caminando, caminandoArriba, caminandoAbajo, ataqueLigero, ataquePesado, habilidadEspecial, muerto};
 
     // --- Acceso al estado ---
     estadoPersonaje getEstado() const { return estado; }
-    void setEstado(estadoPersonaje nuevoEstado) { estado = nuevoEstado; }
-    bool estaAtacando();
+    void setEstado(estadoPersonaje nuevoEstado);
+    virtual bool estaAtacando();
 
 protected:
     estadoPersonaje estado = estadoPersonaje::quieto;
-    // --- Estadísticas del personaje ---
-    int _salud = 1000;           // Puntos de vida actuales
-    int _ataqueLigero = 10;      // Daño de ataque ligero
-    int _ataquePesado = 15;      // Daño de ataque pesado
-    int _habilidadEspecial = 25; // Potencia de la habilidad especial
 
-    // --- Gráficos ---
+    // --- Estadísticas del personaje ---
+    int _salud = 1000;
+    int _ataqueLigero = 10;
+    int _ataquePesado = 15;
+    int _habilidadEspecial = 25;
+
+    // --- Gráficos / Animación ---
     sf::Sprite sprite;           // Sprite que representa al personaje
     sf::Texture textura;         // Textura completa del spritesheet
     sf::Sprite spriteProyectil;
@@ -72,11 +91,11 @@ protected:
     sf::Clock breathClock;       // Reloj para medir ciclo de respiración
     float baseScaleX;            // Escala X original del sprite
     float baseScaleY;            // Escala Y original del sprite
-    float breathAmplitude;       // Amplitud de variación de escala
-    float breathSpeed;           // Velocidad de ciclo
+    float breathAmplitude;       // Amplitud de variación de escala (p.ej. 0.02)
+    float breathSpeed;           // Velocidad de ciclo (p.ej. 0.5)
 
-    // --- Animación de sprites ---
-    float speed = 50.f;  // 150 píxeles por segundo, ajústalo a tu gusto
+    // --- Animación de sprites (frame) ---
+    float speed = 50.f;
     int currentFrame = 0;
     float frameTime = 0.15f;
     float frameTimer = 0.f;
@@ -98,7 +117,8 @@ protected:
     static constexpr int cantidadFrameCaminarAbajo     = 6;
     static constexpr int filaFrameCaminarArriba        = 5;
     static constexpr int cantidadFrameCaminarArriba    = 6;
-    // --- Control de ataque ---
+
+    // --- Control de ataque interno ---
     int ataqueFase = 0;
     sf::Vector2f ataqueStartPos = {100.f, 600.f};
     sf::Vector2f ataqueTargetPos;
@@ -109,5 +129,4 @@ protected:
     // --- Proyectil ---
     bool proyectilActivo = false;
     int projectileFrame = 0;
-
 };

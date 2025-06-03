@@ -1,15 +1,15 @@
 #pragma once
 
 #include "personaje.h"
-#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <vector>
 
 class enemigo : public personaje {
 public:
     // Constructor recibe posición inicial, ruta al spritesheet y escala opcional
-    enemigo(const sf::Vector2f& posInicial = {100.f, 100.f},
-            const std::string& rutaSpritesheet = "img/spritesheet_guerreroespejo.png",
-            const sf::Vector2f& escala = {0.3f, 0.3f});
+    enemigo(const sf::Vector2f& posInicial,
+            const std::string& rutaSpritesheet,
+            const sf::Vector2f& escala);
     ~enemigo() override = default;
 
     // Spawn / respawn
@@ -17,7 +17,6 @@ public:
     bool estaActivo() const;
 
     // Realiza un ataque aleatorio: ligero, pesado o especial
-    // destino: posición donde dirigir el ataque (p.ej. posición del jugador)
     virtual int ataque(const sf::Vector2f& destino);
 
     // IA y animación (usa lógica de personaje para animar)
@@ -31,6 +30,17 @@ public:
     // Indica si el enemigo está en combate por turnos
     void setModoBatalla(bool activo) { _modoBatalla = activo; }
 
+    const sf::Sprite& getSprite() { return sprite; }
+
+    sf::Vector2f getPosition() const override {
+        return sprite.getPosition();
+    }
+
+    sf::FloatRect getBounds() const override {
+        // getGlobalBounds ya tiene en cuenta la escala y posición
+        return sprite.getGlobalBounds();
+    }
+
 private:
     bool _modoBatalla = false;
     // Estadísticas avanzadas
@@ -39,7 +49,7 @@ private:
     // Spawn / estado
     bool _activo = true;
     sf::Clock _respawnClock;
-    sf::Time  _respawnDelay = sf::seconds(10.f);//segundos
+    sf::Time  _respawnDelay = sf::seconds(10.f); // segundos
     sf::Vector2f _posInicial;
 
     // IA

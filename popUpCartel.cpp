@@ -18,7 +18,7 @@ void PopUpCartel::cargarRecursos(const std::string& rutaTextura,
         throw std::runtime_error("PopUpCartel: no se pudo cargar fuente \"" + rutaFuente + "\"");
     _texto.setFont(_fuente);
     _texto.setCharacterSize(24);
-    _texto.setFillColor(sf::Color::White);
+    _texto.setFillColor(sf::Color::Black);
     _texto.setStyle(sf::Text::Bold);
 }
 

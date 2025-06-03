@@ -1,99 +1,102 @@
-
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <vector>        // <— necesario para std::vector
+#include <string>        // <— necesario para std::string
 #include "personaje.h"
 #include "enemigo.h"
 #include "menu.h"
 #include "popUpCartel.h"
 
-//      Gestiona un combate por turnos entre un jugador y un enemigo.
+/// Gestiona un combate por turnos entre un jugador y un enemigo.
 class batalla {
 public:
 
-    /// Constructor: recibe referencias al jugador y al enemigo que van a pelear.
-       batalla(personaje& jugador,
+    batalla(personaje& jugador,
             const std::vector<enemigo*>& adversarios,
             sf::Sound& soundFlecha);
 
-    /// Inicializa las variables de la batalla y cambia el estado interno.
+    /// Inicializa las variables de la batalla y carga todos los recursos.
     void iniciarBatalla();
 
-    /// Procesa la entrada del turno (teclas A=ataque, D=defensa, etc.).
+    /// Procesa la entrada del jugador en su turno (flechas + Enter).
     void manejarInput();
 
-    /// Actualiza la lógica de la batalla (cambio de turno, daños, fin de combate).
+    /// Actualiza la lógica (turnos, daños, detección de victoria/derrota).
     void actualizar(float deltaTime);
 
-    /// Dibuja la pantalla de batalla (fondo, vidas, menú de acciones).
+    /// Dibuja la batalla (fondo, menú, sprites, y pop-up final).
     void drawBatalla(sf::RenderWindow& ventana);
 
-    /// Para no cerrar la batalla hasta dar enter al pop up
-
-    bool batallaPopupActive() const;
-
-    /// Devuelve true cuando la batalla ha terminado.
+    /// Devuelve true cuando la batalla ha terminado **y** ya se mostró el pop-up final.
     bool finBatalla() const;
 
-    /// Indica si el jugador ha ganado (true) o perdido (false).
+    /// Indica si el jugador ganó (true) o perdió (false).
     bool ganador() const;
 
-    //   Pop up fin de batalla
-        PopUpCartel popupFinBatalla;
+    /// Permite a quien instancie la batalla saber si el pop-up de fin de batalla está activo.
+    bool batallaPopupActive() const;
 
+    /// Pop-up para mostrar el mensaje de “¡Victoria!” o “Derrota”.
+    PopUpCartel popupFinBatalla;
+
+    /// Muestra un mensaje en el HUD de batalla ("¡Enemigo ataca!", etc.).
     void mostrarMensaje(const std::string& msg);
 
 private:
-    personaje& _jugador;      // referencia al jugador original
-    std::vector<enemigo*> _adversarios;  // referencia al enemigo original
-    sf::Vector2f  _posEnemigoInicial;
+    personaje&                      _jugador;          // Referencia al jugador original
+    std::vector<enemigo*>           _adversarios;      // Vector de punteros a enemigos
+    sf::Vector2f                    _posEnemigoInicial;// Para guardar la posición original
+    sf::Sound&                      soundFlecha;       // Sonido de flecha para el menú
 
     enum class Turno { Jugador, Enemigo };
-    Turno turnoActual;
-    int _opcionSeleccionada = 0; // se conserva entre frames
+    Turno                        turnoActual       = Turno::Jugador;
+    int                          _opcionSeleccionada = 0;
 
-    int vidaJugador;          // copia de la vida para el combate
-    int vidaAdversario;       // copia de la vida para el combate
-    int _rondaTurno=1;
-    int _rondaCarga = 0;      // para activar los diferentes ataques y habilidades
+    int                          vidaJugador;       // Vida en combate
+    int                          vidaAdversario;    // Vida en combate del primer enemigo
 
-    bool terminado;           // indica si acabó la batalla
-    bool jugadorGanoFlag;     // resultado final
+    int                          _rondaTurno    = 1;
+    int                          _rondaCarga    = 0; // Para desbloquear ataques / habilidades
 
-// ————— Recursos gráficos —————
-  sf::RectangleShape fondo;         // fondo simple
-  sf::Texture         texturaFondo; // textura para cargar la jpg
-  sf::Sprite          spriteFondo;  // sprite para esa textura
-  sf::Font            fuente;
+    bool                         terminado         = false;  // Si finalizó la batalla
+    bool                         jugadorGanoFlag   = false;  // Resultado final
+    bool                         popupFinMostrado  = false;  // Para no re-mostrar el pop-up
+    bool                         victoriaIniciada  = false;  // Para retrasar 3s tras victoria
 
-// ————— Transición y menú —————
-    sf::RectangleShape pantallaNegra;
-    menu               menuBatalla;
-    static constexpr int numOpcionesMenuBatalla = 3;
-    std::vector<std::string> opcionesVectorBatalla = {"Ataque ligero", "Ataque Pesado", "Habilidad Especial"};
+    // — Recursos Gráficos —
+    sf::RectangleShape pantallaNegraFade;
+    sf::RectangleShape           fondo;             // Rectángulo base (no siempre se usa)
+    sf::Texture                  texturaFondo;      // Carga de "img/fondoBatalla.jpg"
+    sf::Sprite                   spriteFondo;       // Sprite para dibujar fondo
+    sf::Font                     fuente;            // Fuente para el menú
+    bool desvaneciendo =false;
+    float alphaFade    = 0.f;       // valor actual de opacidad (0..255)
+    float fadeSpeed    =60.f;     // “pixeles de alpha” que sumamos por segundo
+    // — Menú de batalla (3 opciones) —
+    menu                         menuBatalla;
+    static constexpr int         numOpcionesMenuBatalla = 3;
+    std::vector<std::string>     opcionesVectorBatalla  =
+        {"Ataque Ligero", "Ataque Pesado", "Habilidad Especial"};
 
-// ————— Sonidos —————
-    sf::Sound& soundFlecha;
-    sf::SoundBuffer bufferGolpeLijero;
-    sf::SoundBuffer bufferGolpePesado;
-    sf::SoundBuffer bufferHabilidadEspecial;
-    sf::Sound       golpeLijero;
-    sf::Sound       golpePesado;
-    sf::Sound       habilidadEspecial;
+    // — Sonidos de cada ataque (opcional) —
+    sf::SoundBuffer              bufferGolpeLigero;
+    sf::SoundBuffer              bufferGolpePesado;
+    sf::SoundBuffer              bufferHabilidadEspecial;
+    sf::Sound                     golpeLigero;
+    sf::Sound                     golpePesado;
+    sf::Sound                     habilidadEspecial;
 
-    /// Resetea el texto de estado (vidas y acciones disponibles).
+    // — HUD de mensajes en la batalla —
+    sf::Font                     fuenteMensaje;
+    sf::Text                     textoMensaje;
+    bool                         mensajeActivo    = false;
+    std::string                  msj;
+
+    // — Mensaje final (victoria o derrota) —
+    std::string                  mensajeFinBatalla;
+    //sf::Clock                    victoriaClock;   // Cronómetro para retrasar 3s tras victoria
+
+    /// (Opcional) Si quieres actualizar texto en cada turno, defínelo aquí.
     void actualizarTexto();
-
-    sf::Clock     victoriaClock;       // medir el tiempo tras la victoria
-bool          victoriaIniciada = false;
-
-        // ——— mensaje de victoria ———
-        std::string mensajeFinBatalla;
-        bool popupFinMostrado = false;
-
-        // ——— Nuevo: recuadro de mensaje durante la batalla ———
-std::string msj;
-sf::Text            textoMensaje;
-sf::Font            fuenteMensaje;
-bool                mensajeActivo = false;
 };

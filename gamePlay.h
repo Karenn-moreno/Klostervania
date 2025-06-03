@@ -6,65 +6,77 @@
 #include "menu.h"
 #include "item.h"
 #include "batalla.h"
+#include "popUpCartel.h"
 #include <SFML/Audio.hpp>
 #include <vector>
+#include <chrono>   // para std::chrono::seconds
 
 class gamePlay
 {
 public:
-    gamePlay();             // Constructor: crea ventana, carga entidades
-    void ejecutar();     // Bucle principal de juego
+    gamePlay();
+    void ejecutar();
+    void iniciarNuevaPartida();
+    void unlockPersonaje(int id);
+
 private:
-    void procesarEventos();          // Manejo de eventos puntuales
-    void manejarEntradaJugador();    // Teclas mantenidas (movimiento)
-    void updatePersonaje(sf::Time dt);    // Lógica de juego
-    void draw();                  // Renderizado
+    void procesarEventos();
+    void updatePersonaje(sf::Time dt);
     void drawExploracion();
 
-    sf::Clock reloj;     // Para delta time
+    // ====================================================
+    // Nuevo mÃ©todo para manejar el gameâ€over (derrota):
+    void mostrarGameOver();
+    // ====================================================
 
-    // ————— Ventana principal —————
+    sf::Clock reloj;
+
+    // â€”â€”â€”â€”â€” Ventana principal â€”â€”â€”â€”â€”
     sf::RenderWindow window;
 
-// ————— Fondos y sprites —————
+    // â€”â€”â€”â€”â€” Fondos y sprites â€”â€”â€”â€”â€”
     sf::Texture       fondoPrincipal;
     sf::Sprite        spriteFondo;
     sf::Texture       fondoNuevaPartida;
     sf::Sprite        spriteNuevaPartida;
 
-// ————— Transición y menú —————
+    // â€”â€”â€”â€”â€” TransiciÃ³n y menÃº â€”â€”â€”â€”â€”
     sf::RectangleShape pantallaNegra;
     sf::Font           fuente;
     menu               menuPrincipal;
     static constexpr int numOpcionesMenuPrincipal = 5;
-    std::vector<std::string> opcionesVector = {"Nueva Partida", "Continuar Partida", "Record", "Creditos", "Salir"};
+    std::vector<std::string> opcionesVector =
+        {"Nueva Partida", "Continuar Partida", "Record", "Creditos", "Salir"};
 
-// ————— Sonidos —————
+    // â€”â€”â€”â€”â€” Sonidos â€”â€”â€”â€”â€”
     sf::SoundBuffer bufferFlecha;
     sf::SoundBuffer bufferEnter;
     sf::Sound       flecha;
     sf::Sound       enter;
 
-// ————— Entidades del juego —————
-    personaje jugador;
-    // Aquí defines el vector de punteros a todos tus enemigos
+    // â€”â€”â€”â€”â€” Entidades del juego â€”â€”â€”â€”â€”
+    std::vector<std::shared_ptr<personaje>> prototipos;
+    std::vector<std::shared_ptr<personaje>> roster;
+    std::shared_ptr<personaje>              jugadorActivo;
+
+    // â€”â€”â€”â€”â€” Enemigos del juego â€”â€”â€”â€”â€”
     std::vector<enemigo*> enemigos;
-      enemigo* enemigoSeleccionado = nullptr;
-      void inicializarEnemigos();
+    enemigo* enemigoSeleccionado = nullptr;
+    void inicializarEnemigos();
     item       itemRecolectable;
 
-// ————— Flags de estado —————
+    // â€”â€”â€”â€”â€” Flags de estado â€”â€”â€”â€”â€”
     bool ejecutando     = false;
     bool juegoIniciado  = false;
     int  opcionSeleccionada = 0;
 
-// Nuevo enum para controlar en que estado de juego estoy
-    enum class EstadoJuego { Exploracion, pause, Batalla,dialogoItem };
+    enum class EstadoJuego { Exploracion, pause, Batalla, dialogoItem };
     EstadoJuego estado = EstadoJuego::Exploracion;
-    batalla* batallaGamePlay = nullptr;     // puntero, hasta que empiece la pelea
-    bool     batallaIniciada = false;
-sf::Vector2f posicionPreBatalla;
-PopUpCartel popupCartel;
-bool batallaPopupActive() const;
 
+    batalla* batallaGamePlay = nullptr;
+    bool     batallaIniciada = false;
+    sf::Vector2f posicionPreBatalla;
+    PopUpCartel popupCartel;
+
+    bool batallaPopupActive() const;
 };

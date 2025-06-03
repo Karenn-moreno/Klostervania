@@ -6,21 +6,24 @@
 enemigo::enemigo(const sf::Vector2f& posInicial,
                  const std::string& rutaSpritesheet,
                  const sf::Vector2f& escala)
-: personaje()
+ : personaje()
 , _posInicial(posInicial)
 {
-    // Inicializar estadísticas base
-    setSalud(_maxSalud);
+    // … cargas textura …
+std::cout << "Intentando cargar: " << rutaSpritesheet << "\n";
+if (!textura.loadFromFile(rutaSpritesheet)) {
+    std::cerr << "ERROR: No pude cargar textura de "
+              << rutaSpritesheet << "\n";
+} else {
+    std::cout << "Textura cargada OK: "
+              << rutaSpritesheet << "\n";
+}
+    sprite.setTexture(textura);;
+    sprite.setTextureRect({0,0, frameWidth, frameHeight});
 
-    // Carga de textura desde ruta proporcionada
-    if (!textura.loadFromFile(rutaSpritesheet)) {
-        std::cerr << "Error cargando textura: " << rutaSpritesheet << std::endl;
-    }
-    sprite.setTexture(textura);
+    // **Este es el paso clave para aplicar el escala que te pasan:**
+   setScale(escala);
 
-    // Configurar frame inicial y escala
-    sprite.setTextureRect({0, 0, frameWidth, frameHeight});
-    sprite.setScale(escala);
     sprite.setPosition(_posInicial);
 
     // Definir puntos de patrulla
@@ -126,3 +129,4 @@ int enemigo::ataque(const sf::Vector2f& destino) {
     }
     return danio;
 }
+

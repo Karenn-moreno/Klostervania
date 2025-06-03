@@ -1,8 +1,5 @@
 #pragma once
-#include <iostream>
-#include <thread>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 
+class gamePlay;   // Declaración adelantada, para no depender aún de gamePlay.h
 
-void nuevaPartida();
+void nuevaPartida(gamePlay& gp);
