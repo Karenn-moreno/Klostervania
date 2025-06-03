@@ -42,9 +42,9 @@ public:
     void setModoBatalla(bool activo) { _modoBatalla = activo; }
     bool estaEnBatalla() const       { return _modoBatalla; }
 
-private:
     bool _modoBatalla = false;
 
+private:
     // --- Estadísticas del enemigo ---
     int _maxSalud = 500;
 

@@ -14,15 +14,25 @@ public:
     // (el método base ataque debe ser virtual en enemigo)
     int ataque(const sf::Vector2f& destino) override;
 
+    void update(float deltaTime,
+              bool moviendoDer    = false,
+              bool moviendoIzq    = false,
+              bool moviendoArriba = false,
+              bool moviendoAbajo  = false) override;
+
 protected:
     // Métodos para los ataques especiales del Boss
     int ataqueEspecial1(const sf::Vector2f& destino);
     int ataqueEspecial2(const sf::Vector2f& destino);
 
     // Filas y cantidad de frames para animaciones especiales
-    static constexpr int filaFrameEspecial1      = 7;
-    static constexpr int cantidadFrameEspecial1  = 4;
-    static constexpr int filaFrameEspecial2      = 8;
-    static constexpr int cantidadFrameEspecial2  = 4;
+    static constexpr int filaFrameEspecial1      = 4;
+    static constexpr int cantidadFrameEspecial1  = 6;
+    static constexpr int filaFrameEspecial2      = 5;
+    static constexpr int cantidadFrameEspecial2  = 6;
+
+    //   bandera para saber cuál especial está en curso:
+    int _especialEnCurso = 0;
+    //   0 = ninguna, 1 = Especial1, 2 = Especial2
 };
 

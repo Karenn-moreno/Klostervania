@@ -67,72 +67,70 @@ gamePlay::gamePlay()
     // ---------- Personaje A -------------
     {
         sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaA = "img/spritesheet_guerrero.png";
-        sf::Vector2f escalaA = {0.3f, 0.3f};
+        std::string rutaA = "img/spritesheet_Arcangel.png";
+        sf::Vector2f escalaA = {0.25f, 0.25f};
         auto pA = std::make_shared<personaje>(posDummy, rutaA, escalaA);
         if (pA->getSprite().getTexture() != nullptr)
         {
             pA->setSalud(100);
             prototipos.push_back(pA);
-            std::cout << "Agregado prototipo A correctamente.\n";
+            std::cout << "Agregado personaje Arcangel Simon correctamente.\n";
         }
         else
         {
-            std::cerr << "Se omitió prototipo A porque la textura no se cargó.\n";
+            std::cerr << "Se omitió Arcangel Simon porque la textura no se cargó.\n";
         }
     }
-
     // ---------- Personaje B -------------
     {
         sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaB = "img/spritesheet_personajeB.png";
-        sf::Vector2f escalaB = {0.3f, 0.3f};
+        std::string rutaB = "img/spritesheet_Wennering.png";
+        sf::Vector2f escalaB = {0.25f, 0.25f};
         auto pB = std::make_shared<personaje>(posDummy, rutaB, escalaB);
         if (pB->getSprite().getTexture() != nullptr)
         {
             pB->setSalud(120);
             prototipos.push_back(pB);
-            std::cout << "Agregado prototipo B correctamente.\n";
+            std::cout << "Agregado personaje Wennering correctamente.\n";
         }
         else
         {
-            std::cerr << "Se omitió prototipo B porque la textura no se cargó.\n";
+            std::cerr << "Se omitió Wennering porque la textura no se cargó.\n";
         }
     }
-
     // ---------- Personaje C -------------
     {
         sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaC = "img/spritesheet_personajeC.png";
-        sf::Vector2f escalaC = {0.3f, 0.3f};
+        std::string rutaC = "img/spritesheet_Taparia.png";
+        sf::Vector2f escalaC = {0.25f, 0.25f};
         auto pC = std::make_shared<personaje>(posDummy, rutaC, escalaC);
         if (pC->getSprite().getTexture() != nullptr)
         {
             pC->setSalud(110);
             prototipos.push_back(pC);
-            std::cout << "Agregado prototipo C correctamente.\n";
+            std::cout << "Agregado personaje Taparia correctamente.\n";
         }
         else
         {
-            std::cerr << "Se omitió prototipo C porque la textura no se cargó.\n";
+            std::cerr << "Se omitió Taparia porque la textura no se cargó.\n";
         }
     }
 
     // ---------- Personaje D -------------
     {
         sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaD = "img/spritesheet_personajeD.png";
-        sf::Vector2f escalaD = {0.3f, 0.3f};
+        std::string rutaD = "img/spritesheet_Vernary.png";
+        sf::Vector2f escalaD = {0.25f, 0.25f};
         auto pD = std::make_shared<personaje>(posDummy, rutaD, escalaD);
         if (pD->getSprite().getTexture() != nullptr)
         {
             pD->setSalud(130);
             prototipos.push_back(pD);
-            std::cout << "Agregado prototipo D correctamente.\n";
+            std::cout << "Agregado personaje Vernary correctamente.\n";
         }
         else
         {
-            std::cerr << "Se omitió prototipo D porque la textura no se cargó.\n";
+            std::cerr << "Se omitió Vernary porque la textura no se cargó.\n";
         }
     }
 
@@ -328,7 +326,6 @@ void gamePlay::updatePersonaje(sf::Time dt)
         }
     }
 }
-
 // ====================================================
 //  Renderizado del modo Exploración y menú principal
 // ====================================================
@@ -496,9 +493,9 @@ void gamePlay::inicializarEnemigos()
     enemigos.push_back(esqueleto);
 
     // 2) Boss “laranas”
-    sf::Vector2f posLaranas(800.f, 200.f);
+    sf::Vector2f posLaranas(800.f, 600.f);
     std::string rutaLaranas = "img/spritesheet_laranas.png";
-    sf::Vector2f escalaLar  = {0.5f, 0.5f};
+    sf::Vector2f escalaLar  = {0.4f, 0.4f};
     Boss* laranas = new Boss(posLaranas, rutaLaranas, escalaLar);
     laranas->setSalud(300);
     enemigos.push_back(laranas);

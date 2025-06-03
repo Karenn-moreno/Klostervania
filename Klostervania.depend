@@ -544,13 +544,13 @@
 1747266487 source:c:\users\leand\desktop\klostervania\creditos.cpp
 	"creditos.h"
 
-1748823420 source:c:\users\leand\desktop\klostervania\nuevapartida.cpp
+1748962944 source:c:\users\leand\desktop\klostervania\nuevapartida.cpp
 	"nuevaPartida.h"
 	"gamePlay.h"
 
 1748730275 c:\users\leand\desktop\klostervania\nuevapartida.h
 
-1748960245 source:c:\users\leand\desktop\klostervania\enemigo.cpp
+1748972550 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
 	<cstdlib>
 	<cmath>
@@ -571,7 +571,7 @@
 	<string>
 	<iostream>
 
-1748960085 c:\users\leand\desktop\klostervania\enemigo.h
+1748962880 c:\users\leand\desktop\klostervania\enemigo.h
 	"personaje.h"
 	<SFML/Graphics.hpp>
 	<vector>
@@ -583,7 +583,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1748957626 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1748989780 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"continuarPartida.h"
 	"creditos.h"
@@ -645,11 +645,11 @@
 	"popUpCartel.h"
 	<stdexcept>
 
-1748960231 source:c:\users\leand\desktop\klostervania\boss.cpp
+1748988423 source:c:\users\leand\desktop\klostervania\boss.cpp
 	"boss.h"
 	<cstdlib>
 	<cmath>
 
-1748960018 c:\users\leand\desktop\klostervania\boss.h
+1748971417 c:\users\leand\desktop\klostervania\boss.h
 	"enemigo.h"
 

@@ -69,7 +69,7 @@ void gamePlay::iniciarNuevaPartida()
         jugadorActivo->setOrigin(0.f, 0.f);
         // Usamos la sobrecarga de personaje::setScale para que actualice baseScaleX/Y
         jugadorActivo->setScale(0.25f, 0.25f);
-        jugadorActivo->setSalud(100);
+        jugadorActivo->setSalud(500);
         roster.push_back(jugadorActivo);
     }
 
