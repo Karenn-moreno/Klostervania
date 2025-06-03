@@ -396,8 +396,8 @@ void gamePlay::ejecutar()
 
                 // Guardar posición previa y teleportar al jugador al punto de batalla
                 posicionPreBatalla = jugadorActivo->getSprite().getPosition();
-                jugadorActivo->setPosition(100.f, 630.f);
-                jugadorActivo->setOrigin(0.f, 0.f);
+                jugadorActivo->setPosition(100.f, 750.f);
+                //jugadorActivo->setOrigin(0.f, 0.f);
 
                 // Iniciar la batalla (carga de texturas, menús, etc.)
                 batallaGamePlay->iniciarBatalla();

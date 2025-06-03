@@ -12,49 +12,50 @@ public:
             const sf::Vector2f& escala);
     ~enemigo() override = default;
 
-    // Spawn / respawn
+    // --- Spawn / respawn ---
     void setActivo(bool activo);
     bool estaActivo() const;
 
-    // Realiza un ataque aleatorio: ligero, pesado o especial
-    virtual int ataque(const sf::Vector2f& destino);
+    // --- Ataque ---
+    // Realiza un ataque aleatorio: ligero, pesado o especial. Devuelve el daño.
+    virtual int ataque(const sf::Vector2f&);  // Eliminado override aquí
 
-    // IA y animación (usa lógica de personaje para animar)
+    // --- IA y animación ---
+    // Si _modoBatalla es true, delega en personaje::update para animar turnos
     void update(float deltaTime,
-                bool moviendoDer = false,
-                bool moviendoIzq = false,
-                bool moviendoArr = false,
-                bool moviendoAbj = false) override;
+                bool moviendoDer  = false,
+                bool moviendoIzq  = false,
+                bool moviendoArr  = false,
+                bool moviendoAbj  = false) override;
+
+    // Dibuja al enemigo solo si está activo
     void draw(sf::RenderWindow& window) override;
 
-    // Indica si el enemigo está en combate por turnos
+    // --- Getters heredados de personaje ---
+    // El método base es "virtual const sf::Sprite& getSprite() const"
+    // Por tanto aquí debe tener la misma firma (con const al final) y marcar override:
+    const sf::Sprite& getSprite() const override;
+    sf::Vector2f      getPosition() const override;
+    sf::FloatRect     getBounds() const override;
+
+    // --- Modo batalla ---
     void setModoBatalla(bool activo) { _modoBatalla = activo; }
-
-    const sf::Sprite& getSprite() { return sprite; }
-
-    sf::Vector2f getPosition() const override {
-        return sprite.getPosition();
-    }
-
-    sf::FloatRect getBounds() const override {
-        // getGlobalBounds ya tiene en cuenta la escala y posición
-        return sprite.getGlobalBounds();
-    }
+    bool estaEnBatalla() const       { return _modoBatalla; }
 
 private:
     bool _modoBatalla = false;
-    // Estadísticas avanzadas
+
+    // --- Estadísticas del enemigo ---
     int _maxSalud = 500;
 
-    // Spawn / estado
+    // --- Spawn / estado ---
     bool _activo = true;
-    sf::Clock _respawnClock;
-    sf::Time  _respawnDelay = sf::seconds(10.f); // segundos
+    sf::Clock    _respawnClock;
+    sf::Time     _respawnDelay = sf::seconds(10.f);
     sf::Vector2f _posInicial;
 
-    // IA
-    enum class EstadoIA { patrullando, persiguiendo, atacando } _estadoIA;
+    // --- IA de patrulla fuera de combate ---
     std::vector<sf::Vector2f> _puntosPatrulla;
-    size_t _indicePatrulla = 0;
-    float _tiempoDesdeUltimoMovimiento = 0.f;
+    size_t                    _indicePatrulla = 0;
+    float                     _tiempoDesdeUltimoMovimiento = 0.f;
 };

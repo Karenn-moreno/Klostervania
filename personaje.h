@@ -7,8 +7,6 @@
 
 class personaje {
 public:
-    // ————— Constructores —————
-
     // 1) Constructor por defecto (mantenerlo para quien no quiera cargar texturas aquí)
     personaje();
 
@@ -31,9 +29,6 @@ public:
     int getAtaquePesado() const;           // Devuelve el daño de ataque pesado
     int getHabilidadEspecial() const;      // Devuelve el valor de la habilidad especial
 
-       // Devuelve el sprite para consultar bounds o dibujarlo
-           // Devuelve el rectángulo global (para colisiones)
-
     // --- Acciones de combate (pueden sobrescribirse) ---
     virtual void ataqueLigero(const sf::Vector2f& destino);
     virtual void ataquePesado(const sf::Vector2f& destino);
@@ -41,15 +36,15 @@ public:
 
     // --- Lógica de juego (puede sobrescribirse) ---
     virtual void update(float deltaTime,
-                        bool moviendoDer=false,
-                        bool moviendoIzq=false,
-                        bool moviendoArriba=false,
-                        bool moviendoAbajo=false);
+                        bool moviendoDer    = false,
+                        bool moviendoIzq    = false,
+                        bool moviendoArriba = false,
+                        bool moviendoAbajo  = false);
     virtual void mover(float offsetX, float offsetY); // Mueve el sprite en pantalla
-    virtual void detener();                         // Detiene la animación y resetea frame
+    virtual void detener();                           // Detiene la animación y resetea frame
 
     // --- Renderizado (puede sobrescribirse) ---
-    virtual void draw(sf::RenderWindow& window);    // Dibuja el personaje
+    virtual void draw(sf::RenderWindow& window);      // Dibuja el personaje
 
     // --- Posición y escala genéricos ---
     virtual sf::Vector2f getPosition() const;
@@ -66,7 +61,16 @@ public:
     void setScale(const sf::Vector2f& s);
 
     // --- Estado de animación ---
-    enum class estadoPersonaje {quieto, caminando, caminandoArriba, caminandoAbajo, ataqueLigero, ataquePesado, habilidadEspecial, muerto};
+    enum class estadoPersonaje {
+        quieto,
+        caminando,
+        caminandoArriba,
+        caminandoAbajo,
+        ataqueLigero,
+        ataquePesado,
+        habilidadEspecial,
+        muerto
+    };
 
     // --- Acceso al estado ---
     estadoPersonaje getEstado() const { return estado; }
@@ -103,20 +107,20 @@ protected:
     int frameHeight = 500;
     sf::IntRect frameActual;
     int totalFrames = 6;
-    static constexpr int filaFrameQuieto               = 6;
-    static constexpr int cantidadFrameQuieto           = 1;
-    static constexpr int filaFrameCaminar              = 0;
-    static constexpr int cantidadFrameCaminar          = 6;
-    static constexpr int filaFrameAtaqueLigero         = 1;
-    static constexpr int cantidadFrameAtaqueLigero     = 6;
-    static constexpr int filaFrameAtaquePesado         = 2;
-    static constexpr int cantidadFrameAtaquePesado     = 6;
-    static constexpr int filaFrameHabilidadEspecial    = 3;
-    static constexpr int cantidadFrameHabilidadEspecial= 6;
-    static constexpr int filaFrameCaminarAbajo         = 4;
-    static constexpr int cantidadFrameCaminarAbajo     = 6;
-    static constexpr int filaFrameCaminarArriba        = 5;
-    static constexpr int cantidadFrameCaminarArriba    = 6;
+    static constexpr int filaFrameQuieto                = 6;
+    static constexpr int cantidadFrameQuieto            = 1;
+    static constexpr int filaFrameCaminar               = 0;
+    static constexpr int cantidadFrameCaminar           = 6;
+    static constexpr int filaFrameAtaqueLigero          = 1;
+    static constexpr int cantidadFrameAtaqueLigero      = 6;
+    static constexpr int filaFrameAtaquePesado          = 2;
+    static constexpr int cantidadFrameAtaquePesado      = 6;
+    static constexpr int filaFrameHabilidadEspecial     = 3;
+    static constexpr int cantidadFrameHabilidadEspecial = 6;
+    static constexpr int filaFrameCaminarAbajo          = 4;
+    static constexpr int cantidadFrameCaminarAbajo      = 6;
+    static constexpr int filaFrameCaminarArriba         = 5;
+    static constexpr int cantidadFrameCaminarArriba     = 6;
 
     // --- Control de ataque interno ---
     int ataqueFase = 0;

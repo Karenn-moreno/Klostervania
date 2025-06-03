@@ -66,12 +66,13 @@ void batalla::iniciarBatalla()
     textoMensaje.setFillColor(sf::Color::White);
     mensajeActivo = false;
 
-    // 4) Preparar al primer enemigo (si existe)
-    if (!_adversarios.empty())
-    {
-        enemigo* e = _adversarios[0];
-        e->setOrigin(0.f, 0.f);
-        e->setPosition(1100.f, 630.f);
+    // 4) Preparar los enemigos
+    float pisoY = 760.f;
+    float posX   = 1100.f;
+    for (size_t i = 0; i < _adversarios.size(); ++i) {
+        enemigo* e = _adversarios[i];
+        if (!e) continue;
+        e->setPosition(posX, pisoY);
         e->setModoBatalla(true);
     }
 
@@ -118,7 +119,7 @@ void batalla::manejarInput()
                    + std::to_string(vidaAdversario) + " de salud";
             mostrarMensaje(msj);
             std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
-            _jugador.ataqueLigero({1100.f, 630.f});
+            _jugador.ataqueLigero({1100.f, 740.f});
             turnoActual = Turno::Enemigo;
             _rondaCarga++;
             break;
@@ -131,7 +132,7 @@ void batalla::manejarInput()
                        + std::to_string(vidaAdversario) + " de salud";
                 mostrarMensaje(msj);
                 std::cout << "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " << vidaAdversario << " de vida\n";
-                _jugador.ataquePesado({1100.f, 630.f});
+                _jugador.ataquePesado({1100.f, 740.f});
                 _rondaCarga = 0;
                 turnoActual = Turno::Enemigo;
             }
@@ -150,7 +151,7 @@ void batalla::manejarInput()
                        + std::to_string(vidaAdversario) + " de salud";
                 mostrarMensaje(msj);
                 std::cout << "\nEl jugador ha usado la habilida especial! Enemigo tiene " << vidaAdversario << " de vida\n";
-                _jugador.habilidadEspecial({1000.f, 600.f});
+                _jugador.habilidadEspecial({1000.f, 740.f});
                 _rondaCarga = 0;
                 turnoActual = Turno::Enemigo;
             }
@@ -175,17 +176,19 @@ void batalla::actualizar(float deltaTime)
     enemigo* e = _adversarios[0];
     e->update(deltaTime, false, false, false, false);
 
-        if (desvaneciendo)
+    if (desvaneciendo)
     {
         // Solo avanzamos el fade aquí; nunca entramos a turno de Enemigo
-        if (alphaFade < 255.f) {
+        if (alphaFade < 255.f)
+        {
             alphaFade += fadeSpeed * deltaTime;
             if (alphaFade > 255.f) alphaFade = 255.f;
             pantallaNegraFade.setFillColor(
                 sf::Color(0, 0, 0, static_cast<sf::Uint8>(alphaFade))
             );
         }
-        else {
+        else
+        {
             // Cuando el fade ya alcanzó opacidad total, marcamos la batalla como terminada
             terminado = true;
             e->setActivo(false);
@@ -193,57 +196,56 @@ void batalla::actualizar(float deltaTime)
         return;
     }
 
-    if (turnoActual != Turno::Enemigo){
+    if (turnoActual != Turno::Enemigo)
+    {
         return;
     }
     // Verificar si el enemigo murió
-if (vidaAdversario <= 0)
-{
-    // 1) Victoria del jugador: solo la primera vez que entra aquí
-    if (!victoriaIniciada)
+    if (vidaAdversario <= 0)
     {
-        victoriaIniciada = true;
-        jugadorGanoFlag = true;
+        // 1) Victoria del jugador: solo la primera vez que entra aquí
+        if (!victoriaIniciada)
+        {
+            victoriaIniciada = true;
+            jugadorGanoFlag = true;
 
-        // —— Recompensa al jugador ——  (se ejecuta aún si está en medio de la animación)
-        const int bonusSalud             = 50;
-        const int bonusAtaqueLigero      =  5;
-        const int bonusAtaquePesado      =  3;
-        const int bonusHabilidadEspecial =  1;
+            // —— Recompensa al jugador ——  (se ejecuta aún si está en medio de la animación)
+            const int bonusSalud             = 50;
+            const int bonusAtaqueLigero      =  5;
+            const int bonusAtaquePesado      =  3;
+            const int bonusHabilidadEspecial =  1;
 
-        _jugador.setSalud(_jugador.getSalud() + bonusSalud);
-        _jugador.setAtaqueLigero(_jugador.getAtaqueLigero() + bonusAtaqueLigero);
-        _jugador.setAtaquePesado(_jugador.getAtaquePesado() + bonusAtaquePesado);
-        _jugador.setHabilidadEspecial(_jugador.getHabilidadEspecial() + bonusHabilidadEspecial);
+            _jugador.setSalud(_jugador.getSalud() + bonusSalud);
+            _jugador.setAtaqueLigero(_jugador.getAtaqueLigero() + bonusAtaqueLigero);
+            _jugador.setAtaquePesado(_jugador.getAtaquePesado() + bonusAtaquePesado);
+            _jugador.setHabilidadEspecial(_jugador.getHabilidadEspecial() + bonusHabilidadEspecial);
 
-        // 2) Preparamos el texto que irá en el pop-up:
-        mensajeFinBatalla  = "¡HAS VENCIDO AL ENEMIGO!\n\n";
-        mensajeFinBatalla += "AUMENTO DE TUS ESTADÍSTICAS:\n";
-        mensajeFinBatalla += "Salud +" + std::to_string(bonusSalud) + "\n";
-        mensajeFinBatalla += "Ataque Ligero +" + std::to_string(bonusAtaqueLigero) + "\n";
-        mensajeFinBatalla += "Ataque Pesado +" + std::to_string(bonusAtaquePesado) + "\n";
-        mensajeFinBatalla += "Habilidad Especial +" + std::to_string(bonusHabilidadEspecial) + "\n";
+            // 2) Preparamos el texto que irá en el pop-up:
+            mensajeFinBatalla  = "¡HAS VENCIDO AL ENEMIGO!\n\n";
+            mensajeFinBatalla += "AUMENTO DE TUS ESTADÍSTICAS:\n";
+            mensajeFinBatalla += "Salud +" + std::to_string(bonusSalud) + "\n";
+            mensajeFinBatalla += "Ataque Ligero +" + std::to_string(bonusAtaqueLigero) + "\n";
+            mensajeFinBatalla += "Ataque Pesado +" + std::to_string(bonusAtaquePesado) + "\n";
+            mensajeFinBatalla += "Habilidad Especial +" + std::to_string(bonusHabilidadEspecial) + "\n";
 
-        std::cout << "¡Recompensa! Salud +"
-                  << bonusSalud << ", Ataque Ligero +"
-                  << bonusAtaqueLigero << ", Ataque Pesado +"
-                  << bonusAtaquePesado << ", Habilidad +"
-                  << bonusHabilidadEspecial << "\n";
-        std::cout << "Nuevas estadísticas -> "
-                  << "Salud: " << _jugador.getSalud()
-                  << ", Ataque Ligero: " << _jugador.getAtaqueLigero()
-                  << ", Ataque Pesado: " << _jugador.getAtaquePesado()
-                  << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
-                  << "\n";
+            std::cout << "¡Recompensa! Salud +"
+                      << bonusSalud << ", Ataque Ligero +"
+                      << bonusAtaqueLigero << ", Ataque Pesado +"
+                      << bonusAtaquePesado << ", Habilidad +"
+                      << bonusHabilidadEspecial << "\n";
+            std::cout << "Nuevas estadísticas -> "
+                      << "Salud: " << _jugador.getSalud()
+                      << ", Ataque Ligero: " << _jugador.getAtaqueLigero()
+                      << ", Ataque Pesado: " << _jugador.getAtaquePesado()
+                      << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
+                      << "\n";
 
-        // 3) Arrancamos el fade out YA, sin esperar a que termine la animacion
-
-        desvaneciendo = true;
-        alphaFade     = 0.f;
-
+            // 3) Arrancamos el fade out YA, sin esperar a que termine la animacion, da el efecto que se muere
+            desvaneciendo = true;
+            alphaFade     = 0.f;
+        }
+        return;
     }
-    return;
-}
     // Turno del enemigo: ataca si el jugador no está en animación de ataque
     if (!_jugador.estaAtacando())
     {
@@ -253,26 +255,25 @@ if (vidaAdversario <= 0)
         msj += "\n¡Enemigo ataca! Jugador recibe " + std::to_string(danio) + " de danio";
         mostrarMensaje(msj);
         std::cout << msj << "\n   Vida jugador: " << vidaJugador << "\n";
-    // Verificar fin por derrota del jugador
-    if (vidaJugador <= 0)
-    {
-        // Solo la primera vez que detectamos vida <= 0:
-        if (!desvaneciendo)
+        // Verificar fin por derrota del jugador
+        if (vidaJugador <= 0)
         {
-            desvaneciendo = true;
-            alphaFade     = 0.f;
-            mensajeFinBatalla =
-                "Nuestros héroes han perdido la batalla\n"
-                "El fin del mundo se acerca...";
-
+            // Solo la primera vez que detectamos vida <= 0:
+            if (!desvaneciendo)
+            {
+                desvaneciendo = true;
+                alphaFade     = 0.f;
+                mensajeFinBatalla =
+                    "Nuestros héroes han perdido la batalla\n"
+                    "El fin del mundo se acerca...";
+            }
         }
+        else
+        {
+            turnoActual = Turno::Jugador;
+            _rondaTurno++;
+        };
     }
-    else {
-        turnoActual = Turno::Jugador;
-        _rondaTurno++;
-    };
-    }
-
 }
 
 void batalla::drawBatalla(sf::RenderWindow& window)
