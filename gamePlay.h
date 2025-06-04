@@ -22,12 +22,9 @@ public:
 private:
     void procesarEventos();
     void updatePersonaje(sf::Time dt);
+    void drawMenuPrincipal();
     void drawExploracion();
-
-    // ====================================================
-    // Nuevo método para manejar el game‐over (derrota):
     void mostrarGameOver();
-    // ====================================================
 
     sf::Clock reloj;
 
@@ -45,8 +42,7 @@ private:
     sf::Font           fuente;
     menu               menuPrincipal;
     static constexpr int numOpcionesMenuPrincipal = 5;
-    std::vector<std::string> opcionesVector =
-        {"Nueva Partida", "Continuar Partida", "Record", "Creditos", "Salir"};
+    std::vector<std::string> opcionesVector = {"Nueva Partida", "Continuar Partida", "Record", "Creditos", "Salir"};
 
     // ————— Sonidos —————
     sf::SoundBuffer bufferFlecha;
@@ -70,8 +66,8 @@ private:
     bool juegoIniciado  = false;
     int  opcionSeleccionada = 0;
 
-    enum class EstadoJuego { Exploracion, pause, Batalla, dialogoItem };
-    EstadoJuego estado = EstadoJuego::Exploracion;
+    enum class EstadoJuego { MenuPrincipal, Exploracion, pause, Batalla, dialogoItem };
+    EstadoJuego estado = EstadoJuego::MenuPrincipal;
 
     batalla* batallaGamePlay = nullptr;
     bool     batallaIniciada = false;

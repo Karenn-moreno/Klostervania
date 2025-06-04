@@ -206,6 +206,7 @@ void gamePlay::procesarEventos()
                             opacidad -= 8;
                             sf::sleep(sf::milliseconds(100));
                         }
+                        estado = EstadoJuego::Exploracion;
                     }
                     break;
                 case 1:  // Continuar Partida
@@ -326,10 +327,11 @@ void gamePlay::updatePersonaje(sf::Time dt)
         }
     }
 }
+
 // ====================================================
-//  Renderizado del modo Exploración y menú principal
+//  Renderizado del Menu Principal
 // ====================================================
-void gamePlay::drawExploracion()
+void gamePlay::drawMenuPrincipal()
 {
     window.clear(sf::Color::Black);
 
@@ -339,7 +341,19 @@ void gamePlay::drawExploracion()
         window.draw(spriteFondo);
         menuPrincipal.dibujarMenu(window);
     }
-    else
+
+    window.display();
+}
+
+// ====================================================
+//  Renderizado del modo Exploración
+// ====================================================
+void gamePlay::drawExploracion()
+{
+    window.clear(sf::Color::Black);
+
+    if (juegoIniciado)
+
     {
         // — Partida en curso —
         window.draw(spriteNuevaPartida);
@@ -374,6 +388,10 @@ void gamePlay::ejecutar()
 
         switch (estado)
         {
+        case EstadoJuego::MenuPrincipal:
+            drawMenuPrincipal();
+            break;
+
         case EstadoJuego::Exploracion:
             updatePersonaje(dt);
             drawExploracion();
@@ -462,7 +480,7 @@ void gamePlay::ejecutar()
                     // -------- DERROTA --------
                     // Volvemos al menú principal
                     juegoIniciado = false;
-                    estado = EstadoJuego::Exploracion;
+                    estado = EstadoJuego::MenuPrincipal;
                 }
             }
             break;
@@ -535,7 +553,7 @@ void gamePlay::mostrarGameOver()
 
     // 3) Al cerrar el pop-up, volvemos al menú principal:
     juegoIniciado = false;
-    estado        = EstadoJuego::Exploracion;
+    estado        = EstadoJuego::MenuPrincipal;
 
     // 4) Restablecer vida inicial del jugador para la próxima partida
     if (jugadorActivo)

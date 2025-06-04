@@ -544,11 +544,11 @@
 1747266487 source:c:\users\leand\desktop\klostervania\creditos.cpp
 	"creditos.h"
 
-1748962944 source:c:\users\leand\desktop\klostervania\nuevapartida.cpp
+1748995310 source:c:\users\leand\desktop\klostervania\nuevapartida.cpp
 	"nuevaPartida.h"
 	"gamePlay.h"
 
-1748730275 c:\users\leand\desktop\klostervania\nuevapartida.h
+1748995310 c:\users\leand\desktop\klostervania\nuevapartida.h
 
 1748972550 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
@@ -583,7 +583,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1748989780 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1748997005 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"continuarPartida.h"
 	"creditos.h"
@@ -597,7 +597,7 @@
 	<algorithm>
 	"personaje.h"
 
-1748820747 c:\users\leand\desktop\klostervania\gameplay.h
+1748996136 c:\users\leand\desktop\klostervania\gameplay.h
 	<SFML/Graphics.hpp>
 	"personaje.h"
 	"enemigo.h"
