@@ -18,11 +18,12 @@ gamePlay::gamePlay()
     : window        (sf::VideoMode(1500, 900), "KLOSTERVANIA")
     , ejecutando    (true)
     , pantallaNegra ({1500.f, 900.f})
-, flecha        (bufferFlecha)
-, enter         (bufferEnter)
+    , flecha        (bufferFlecha)
+    , enter         (bufferEnter)
 {
     window.setFramerateLimit(60);
-
+    pantallaNegra.setFillColor(sf::Color(0, 0, 0, 255)); // alpha=255 al inicio
+    alphaFade = 255.f;
     // — Fondos —
     if (!fondoPrincipal.loadFromFile("img/Klostervania_fondo.jpg"))
         std::cout << "Error al cargar fondo principal\n";
@@ -40,7 +41,7 @@ gamePlay::gamePlay()
     // — Fuente y menú principal —
     if (!fuente.loadFromFile("fonts/Hatch.ttf"))
         std::cout << "Error al cargar fuente del menú\n";
-    menuPrincipal.crearMenu(
+        menuPrincipal.crearMenu(
         numOpcionesMenuPrincipal,
         fuente,
         opcionesVector,
@@ -61,92 +62,11 @@ gamePlay::gamePlay()
     flecha.setBuffer(bufferFlecha);
     enter.setBuffer(bufferEnter);
 
-    // — Cargar prototipos de personajes jugables —
-    prototipos.reserve(4);
-
-    // ---------- Personaje A -------------
-    {
-        sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaA = "img/spritesheet_Arcangel.png";
-        sf::Vector2f escalaA = {0.25f, 0.25f};
-        auto pA = std::make_shared<personaje>(posDummy, rutaA, escalaA);
-        if (pA->getSprite().getTexture() != nullptr)
-        {
-            pA->setSalud(100);
-            prototipos.push_back(pA);
-            std::cout << "Agregado personaje Arcangel Simon correctamente.\n";
-        }
-        else
-        {
-            std::cerr << "Se omitió Arcangel Simon porque la textura no se cargó.\n";
-        }
-    }
-    // ---------- Personaje B -------------
-    {
-        sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaB = "img/spritesheet_Wennering.png";
-        sf::Vector2f escalaB = {0.25f, 0.25f};
-        auto pB = std::make_shared<personaje>(posDummy, rutaB, escalaB);
-        if (pB->getSprite().getTexture() != nullptr)
-        {
-            pB->setSalud(120);
-            prototipos.push_back(pB);
-            std::cout << "Agregado personaje Wennering correctamente.\n";
-        }
-        else
-        {
-            std::cerr << "Se omitió Wennering porque la textura no se cargó.\n";
-        }
-    }
-    // ---------- Personaje C -------------
-    {
-        sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaC = "img/spritesheet_Taparia.png";
-        sf::Vector2f escalaC = {0.25f, 0.25f};
-        auto pC = std::make_shared<personaje>(posDummy, rutaC, escalaC);
-        if (pC->getSprite().getTexture() != nullptr)
-        {
-            pC->setSalud(110);
-            prototipos.push_back(pC);
-            std::cout << "Agregado personaje Taparia correctamente.\n";
-        }
-        else
-        {
-            std::cerr << "Se omitió Taparia porque la textura no se cargó.\n";
-        }
-    }
-
-    // ---------- Personaje D -------------
-    {
-        sf::Vector2f posDummy{0.f, 0.f};
-        std::string rutaD = "img/spritesheet_Vernary.png";
-        sf::Vector2f escalaD = {0.25f, 0.25f};
-        auto pD = std::make_shared<personaje>(posDummy, rutaD, escalaD);
-        if (pD->getSprite().getTexture() != nullptr)
-        {
-            pD->setSalud(130);
-            prototipos.push_back(pD);
-            std::cout << "Agregado personaje Vernary correctamente.\n";
-        }
-        else
-        {
-            std::cerr << "Se omitió Vernary porque la textura no se cargó.\n";
-        }
-    }
-
-    // Roster inicialmente vacío; aún no hay personaje activo
-    roster.clear();
-    jugadorActivo = nullptr;
-
     // — Arrancamos el reloj de deltaTime —
     reloj.restart();
-    inicializarEnemigos();
     std::cout << "Enemigos creados: " << enemigos.size() << std::endl;
 }
 
-// ====================================================
-//  Procesamiento de eventos
-// ====================================================
 void gamePlay::procesarEventos()
 {
     sf::Event event;
@@ -190,24 +110,8 @@ void gamePlay::procesarEventos()
                 switch (opcionSeleccionada)
                 {
                 case 0:  // Nueva Partida
-                    std::cout << "\nIniciando una nueva partida";
-                    juegoIniciado = true;
-                    {
-                        iniciarNuevaPartida();    // Mostrar menú de selección
-                        // Transición de pantalla
-                        int opacidad = 255;
-                        while (opacidad > 0)
-                        {
-                            pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
-                            window.clear();
-                            window.draw(spriteNuevaPartida);
-                            window.draw(pantallaNegra);
-                            window.display();
-                            opacidad -= 8;
-                            sf::sleep(sf::milliseconds(100));
-                        }
-                        estado = EstadoJuego::Exploracion;
-                    }
+                    iniciarNuevaPartida();
+
                     break;
                 case 1:  // Continuar Partida
                     std::cout << "\nEntrando a Continuar partida";
@@ -263,9 +167,6 @@ void gamePlay::procesarEventos()
     }
 }
 
-// ====================================================
-//  Lógica de actualización del personaje en Exploración
-// ====================================================
 void gamePlay::updatePersonaje(sf::Time dt)
 {
     float deltaTime = dt.asSeconds();
@@ -328,9 +229,6 @@ void gamePlay::updatePersonaje(sf::Time dt)
     }
 }
 
-// ====================================================
-//  Renderizado del Menu Principal
-// ====================================================
 void gamePlay::drawMenuPrincipal()
 {
     window.clear(sf::Color::Black);
@@ -345,9 +243,6 @@ void gamePlay::drawMenuPrincipal()
     window.display();
 }
 
-// ====================================================
-//  Renderizado del modo Exploración
-// ====================================================
 void gamePlay::drawExploracion()
 {
     window.clear(sf::Color::Black);
@@ -376,9 +271,6 @@ void gamePlay::drawExploracion()
     window.display();
 }
 
-// ====================================================
-//  Bucle principal de ejecución
-// ====================================================
 void gamePlay::ejecutar()
 {
     while (window.isOpen() && ejecutando)
@@ -391,6 +283,8 @@ void gamePlay::ejecutar()
         case EstadoJuego::MenuPrincipal:
             drawMenuPrincipal();
             break;
+
+
 
         case EstadoJuego::Exploracion:
             updatePersonaje(dt);
@@ -491,19 +385,15 @@ void gamePlay::ejecutar()
     }
 }
 
-
 bool gamePlay::batallaPopupActive() const
 {
     return batallaGamePlay && batallaGamePlay->popupFinBatalla.isActive();
 }
 
-// ====================================================
-//  Inicialización de enemigos
-// ====================================================
 void gamePlay::inicializarEnemigos()
 {
     // 1) Esqueleto
-    sf::Vector2f posEsqueleto(300.f, 300.f);
+    sf::Vector2f posEsqueleto(100.f, 280.f);
     std::string rutaEsqueleto = "img/spritesheet_guerreroespejo.png";
     sf::Vector2f escalaEsq   = {0.3f, 0.3f};
     enemigo* esqueleto = new enemigo(posEsqueleto, rutaEsqueleto, escalaEsq);
@@ -511,17 +401,22 @@ void gamePlay::inicializarEnemigos()
     enemigos.push_back(esqueleto);
 
     // 2) Boss “laranas”
-    sf::Vector2f posLaranas(800.f, 600.f);
+    sf::Vector2f posLaranas(1200.f, 400.f);
     std::string rutaLaranas = "img/spritesheet_laranas.png";
     sf::Vector2f escalaLar  = {0.4f, 0.4f};
     Boss* laranas = new Boss(posLaranas, rutaLaranas, escalaLar);
     laranas->setSalud(300);
     enemigos.push_back(laranas);
+
+    // 2) Boss “Klosferatu”
+    sf::Vector2f posKlosferatu(1200.f, 800.f);
+    std::string rutaKlosferatu = "img/spritesheet_klosferatu.png";
+    sf::Vector2f escalaKlosferatu  = {0.4f, 0.4f};
+    Boss* klosferatu = new Boss(posKlosferatu, rutaKlosferatu, escalaKlosferatu);
+    klosferatu->setSalud(300);
+    enemigos.push_back(klosferatu);
 }
 
-// ====================================================
-//  Desbloquear nuevo personaje y mostrar pop-up
-// ====================================================
 void gamePlay::unlockPersonaje(int prototipoIndex)
 {
     if (prototipoIndex < 0 || prototipoIndex >= static_cast<int>(prototipos.size()))
@@ -533,14 +428,11 @@ void gamePlay::unlockPersonaje(int prototipoIndex)
         if (p == nuevo)
             return; // ya estaba desbloqueado
     }
-    nuevo->setPosition({400.f, 400.f});  // posición de aparición
+    nuevo->setPosition({1000.f, 800.f});  // posición de aparición
     roster.push_back(nuevo);
     popupCartel.mostrar("¡Has encontrado un nuevo personaje!", window.getSize());
 }
 
-// ====================================================
-//  Mostrar el pop-up de derrota y regresar al menú
-// ====================================================
 void gamePlay::mostrarGameOver()
 {
     // 1) Texto de derrota
@@ -568,3 +460,312 @@ void gamePlay::mostrarGameOver()
     );
 }
 
+void gamePlay::seleccionPersonaje()
+{
+    // — Fondo de la pantalla de selección —
+    sf::Texture fondoSeleccion;
+    if (!fondoSeleccion.loadFromFile("img/fondoSeleccion.png"))
+    {
+        std::cout << "Error al cargar fondoSeleccion.png\n";
+        return;
+    }
+    sf::Sprite spriteFondoSeleccion(fondoSeleccion);
+    spriteFondoSeleccion.setScale(1.f, 0.89f);
+    fadeInTransition(spriteFondoSeleccion);
+
+    // — Posiciones de los 6 personajes en la parte inferior —
+    std::vector<sf::Vector2f> posiciones =
+    {
+        {270.f, 875.f}, {450.f, 875.f}, {630.f, 875.f},
+        {815.f, 875.f}, {980.f, 875.f}, {1165.f, 875.f}
+    };
+
+    int seleccionActual = 0;
+    bool seleccionado = false;
+
+    // — Temporizadores para animación y espera (central) —
+    sf::Clock animClock;          // controla cada frame en la animación central
+    sf::Clock esperaClock;        // controla los 3s quieto en la central
+    bool enEspera     = true;
+    int  currentFrame = 0;
+    const float frameTime = 0.15f;
+
+    // Función interna para limpiar estado visual de un personaje seleccionado
+    auto reiniciarEstadoSeleccion = [](std::shared_ptr<personaje>& p)
+    {
+        p->setOrigin(0.f, 0.f);
+        p->setScale(0.25f, 0.25f);
+        p->setEstado(personaje::estadoPersonaje::quieto);
+    };
+
+    // — Bucle de selección —
+    while (window.isOpen() && !seleccionado)
+    {
+        // — Procesamiento de eventos —
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                ejecutando = false;
+                window.close();
+                return;
+            }
+
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::Left)
+                {
+                    seleccionActual = (seleccionActual + 5) % 6;
+                    flecha.play();
+                }
+                else if (event.key.code == sf::Keyboard::Right)
+                {
+                    seleccionActual = (seleccionActual + 1) % 6;
+                    flecha.play();
+                }
+                else if (event.key.code == sf::Keyboard::Enter)
+                {
+                    // Solo confirmar si el índice está en roster (desbloqueado)
+                    if (seleccionActual < static_cast<int>(roster.size()))
+                    {
+                        jugadorActivo = roster[seleccionActual];
+                        reiniciarEstadoSeleccion(jugadorActivo);
+                        jugadorActivo->setPosition({50.f, 500.f});
+                        jugadorActivo->setSalud(500);
+                        seleccionado = true;
+                        enter.play();
+                    }
+                }
+            }
+        }
+
+        // — Animación del personaje central —
+        if (!enEspera)
+        {
+            if (animClock.getElapsedTime().asSeconds() > frameTime)
+            {
+                currentFrame = (currentFrame + 1) % 6;  // ciclo de 6 frames de ataque
+                animClock.restart();
+                if (currentFrame == 0)
+                {
+                    enEspera = true;
+                    esperaClock.restart();
+                }
+            }
+        }
+        else
+        {
+            if (esperaClock.getElapsedTime().asSeconds() > 2.f)
+            {
+                enEspera = false;
+                currentFrame = 0;
+                animClock.restart();
+            }
+        }
+
+        window.clear();
+
+        // — Dibujar fondo —
+        window.draw(spriteFondoSeleccion);
+
+        // — Dibujar personajes inferiores en estado quieto —
+        for (int i = 0; i < 6; ++i)
+        {
+            if (i < static_cast<int>(prototipos.size()))
+            {
+                auto& p = prototipos[i];
+                p->setPosition(posiciones[i]);
+                p->setScale(0.2f, 0.2f);
+                p->setEstado(personaje::estadoPersonaje::quieto);
+                p->update(0.f, false, false, false, false);
+
+                if (i >= static_cast<int>(roster.size()))
+                    p->getSprite().setColor(sf::Color(255, 255, 255, 70));
+                else
+                    p->getSprite().setColor(sf::Color(255, 255, 255, 255));
+
+                p->draw(window);
+            }
+        }
+
+        // — Dibujar personaje central animado y superponer la cara con marco —
+        if (seleccionActual < static_cast<int>(prototipos.size()))
+        {
+            auto& p = prototipos[seleccionActual];
+
+            // 1) Posicionar y escalar el cuerpo animado
+            p->setPosition({620.f, 700.f});
+            p->setScale(0.6f, 0.6f);
+
+            if (enEspera)
+            {
+                p->setEstado(personaje::estadoPersonaje::quieto);
+                p->update(0.f, false, false, false, false);
+            }
+            else
+            {
+                p->setFrameAtaque(currentFrame);
+            }
+            p->draw(window);
+
+            // 2) Ahora superponer la cara+marco
+            // Asumimos frameWidth = frameHeight = 500 y filaFrameQuieto = 6
+            const int frameWidth  = 500;
+            const int frameHeight = 500;
+            const int filaFrameCara = 6;
+            // columna 1 para "cara+marco"
+            sf::IntRect caraConMarcoRect(
+                frameWidth,            // x = columna 1 * 500
+                filaFrameCara * frameHeight, // y = fila 6 * 500
+                frameWidth,
+                frameHeight
+            );
+
+            // a) Crear sprite temporal de cara+marco usando la misma textura
+            sf::Sprite spriteCara;
+            spriteCara.setTexture(*p->getSprite().getTexture());
+            spriteCara.setTextureRect(caraConMarcoRect);
+
+            // b) Escalar para que encaje sobre el cuerpo (500×500 * 0.6 = 300×300)
+            spriteCara.setScale(0.9f, 0.9f);
+
+            // c) Posicionar la cara+marco centrada
+            spriteCara.setPosition( 537.f , -2.f );
+
+            // d) Opacidad reducida si está bloqueado
+            if (seleccionActual >= static_cast<int>(roster.size()))
+                spriteCara.setColor(sf::Color(255, 255, 255, 70));
+            else
+                spriteCara.setColor(sf::Color(255, 255, 255, 255));
+
+            // e) Dibujar la cara+marco encima del cuerpo
+            window.draw(spriteCara);
+        }
+
+        window.display();
+    }
+
+    // — Salimos del selector y pasamos a exploración —
+    estado = EstadoJuego::Exploracion;
+}
+
+void gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ruta)
+{
+    std::cout << "Intentando cargar textura: " << ruta << "\n";
+
+    auto personajePtr = std::make_shared<personaje>(sf::Vector2f{0.f, 0.f}, ruta, sf::Vector2f{0.5f, 0.5f});
+    if (!personajePtr->getSprite().getTexture())
+    {
+        std::cout << "Error al cargar personaje: " << nombre << "\n";
+        return;
+    }
+
+    std::cout << "Textura cargada OK: " << ruta << "\n";
+    std::cout << "Agregado personaje " << nombre << " correctamente.\n";
+
+    prototipos.push_back(personajePtr);
+}
+
+void gamePlay::inicializarPrototipos()
+{
+    // ——— Personajes iniciales desbloqueados ———
+    agregarPersonaje("Arcangel Simon", "img/spritesheet_Arcangel.png");
+    agregarPersonaje("Wennering",      "img/spritesheet_Wennering.png");
+    agregarPersonaje("Taparia",        "img/spritesheet_Taparia.png");
+    agregarPersonaje("Vernary",        "img/spritesheet_Vernary.png");
+
+    // Agregar al roster los jugables desde el inicio
+    roster.push_back(prototipos[0]);
+    roster.push_back(prototipos[1]);
+    roster.push_back(prototipos[2]);
+    roster.push_back(prototipos[3]);
+
+    // ——— Bosses que aparecen como bloqueados ———
+    agregarPersonaje("Klosferatu",     "img/spritesheet_klosferatu.png");
+    agregarPersonaje("Laranas",        "img/spritesheet_laranas.png");
+}
+
+void gamePlay::iniciarNuevaPartida()
+{
+    std::cout << "\nIniciando una nueva partida...\n";
+
+    // 1. Resetear datos anteriores
+    roster.clear();
+    prototipos.clear();
+    jugadorActivo = nullptr;
+    enemigoSeleccionado = nullptr;
+    batallaIniciada = false;
+
+    // 2. Cargar personajes disponibles y ocultos
+    inicializarPrototipos();
+
+    // 3. Ir al menú de selección de personaje
+    seleccionPersonaje();  // ← el jugadorActivo queda configurado aquí
+
+    // 4. Ahora sí, inicializar enemigos
+    inicializarEnemigos();
+
+    // 5. Marcar el juego como iniciado
+    // Configuración inicial
+    jugadorActivo->setPosition({50.f, 500.f});
+    jugadorActivo->setScale({0.25f, 0.25f});
+    jugadorActivo->setSalud(500);
+
+    fadeInTransition(spriteNuevaPartida);
+
+    juegoIniciado = true;
+    estado = EstadoJuego::Exploracion;
+
+    std::cout << "Partida iniciada correctamente.\n";
+}
+
+void gamePlay::fadeInTransition(sf::Sprite& spriteFondo)
+{
+    // 1) Inicializar alpha y pantallaNegra
+    alphaFade = 255.f;
+    pantallaNegra.setSize({1500.f, 900.f});
+    pantallaNegra.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(alphaFade)));
+
+    // 2) Usamos un reloj local para medir dt de esta transición
+    sf::Clock relojFade;
+
+    // 3) Bucle hasta que alphaFade llegue a 0 o la ventana se cierre
+    bool terminado = false;
+    while (window.isOpen() && !terminado)
+    {
+        // 3.a) Procesar eventos básicos para que la ventana no “congele”
+        sf::Event ev;
+        while (window.pollEvent(ev))
+        {
+            if (ev.type == sf::Event::Closed)
+            {
+                ejecutando = false;
+                window.close();
+                return;
+            }
+        }
+
+        // 3.b) Calcular deltaTime
+        float dt = relojFade.restart().asSeconds();
+
+        // 3.c) Reducir alpha según fadeSpeed
+        alphaFade -= fadeSpeed * dt;
+        if (alphaFade < 0.f) alphaFade = 0.f;
+
+        // 3.d) Ajustar el color de pantallaNegra (solo cambia la componente alfa)
+        pantallaNegra.setFillColor(
+            sf::Color(0, 0, 0, static_cast<sf::Uint8>(alphaFade))
+        );
+
+        // 3.e) Dibujar fondo + overlay negro
+        window.clear();
+        window.draw(spriteFondo);
+        window.draw(pantallaNegra);
+        window.display();
+
+        // 3.f) Chequear si ya terminamos (alpha==0)
+        if (alphaFade <= 0.f)
+            terminado = true;
+    }
+}

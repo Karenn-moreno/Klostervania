@@ -51,7 +51,7 @@ private:
     // --- Spawn / estado ---
     bool _activo = true;
     sf::Clock    _respawnClock;
-    sf::Time     _respawnDelay = sf::seconds(10.f);
+    sf::Time     _respawnDelay = sf::seconds(20.f);
     sf::Vector2f _posInicial;
 
     // --- IA de patrulla fuera de combate ---

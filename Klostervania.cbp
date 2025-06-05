@@ -74,10 +74,6 @@
 		<Unit filename="menu.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="nuevaPartida.cpp" />
-		<Unit filename="nuevaPartida.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="personaje.cpp" />
 		<Unit filename="personaje.h">
 			<Option target="&lt;{~None~}&gt;" />

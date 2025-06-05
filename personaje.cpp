@@ -22,7 +22,6 @@ void personaje::setHabilidadEspecial(int habilidadEspecial)
     _habilidadEspecial = habilidadEspecial;  // Actualiza poder habilidad especial
 }
 
-// --- Getters de estadísticas ---
 int personaje::getSalud() const
 {
     return _salud;  // Devuelve puntos de vida actuales
@@ -58,8 +57,8 @@ personaje::personaje()
       _habilidadEspecial(25),
       baseScaleX(0.3f),
       baseScaleY(0.3f),
-      breathAmplitude(0.02f),    // pulso muy sutil por defecto
-      breathSpeed(0.5f)          // medio ciclo por segundo
+      breathAmplitude(0.01f),    // pulso muy sutil por defecto
+      breathSpeed(0.5f)          // ciclo por segundo
 {
     // Si hubiera un sprite ya asociado, ajustamos escala y origin a la base
     sprite.setScale(baseScaleX, baseScaleY);
@@ -84,7 +83,7 @@ personaje::personaje(const sf::Vector2f& posInicial,
       baseScaleX(escala.x),
       baseScaleY(escala.y),
       breathAmplitude(0.02f),
-      breathSpeed(0.5f)
+      breathSpeed(0.2f)
 {
     // 1) Intentamos cargar la textura desde rutaSpritesheet
     std::cout << "Intentando cargar textura: " << rutaSpritesheet << "\n";
@@ -497,10 +496,10 @@ void personaje::update(float deltaTime,
     }
 
     // D) Respiración / pulso  (opcional, comentado si no se quiere)
-    // float t = breathClock.getElapsedTime().asSeconds();
-    // float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
-    // float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
-    // sprite.setScale(signX * baseScaleX * factor, baseScaleY * factor);
+     float t = breathClock.getElapsedTime().asSeconds();
+     float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
+     float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
+     sprite.setScale(signX * baseScaleX * factor, baseScaleY * factor);
 }
 
 // --- IMPLEMENTACIÓN de los métodos de ataque (solo asignan estado y guardan posición) ---
@@ -631,3 +630,20 @@ void personaje::setEstado(estadoPersonaje nuevoEstado)
 {
     estado = nuevoEstado;
 }
+
+sf::Sprite& personaje::getSprite() {
+    return sprite;
+}
+
+void personaje::setFrameAtaque(int frame)
+{
+    currentFrame = frame % cantidadFrameAtaqueLigero;
+
+    frameActual.left = currentFrame * frameWidth;
+    frameActual.top  = filaFrameAtaqueLigero * frameHeight;
+    frameActual.width  = frameWidth;
+    frameActual.height = frameHeight;
+
+    sprite.setTextureRect(frameActual);
+}
+

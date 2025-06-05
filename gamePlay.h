@@ -17,6 +17,7 @@ public:
     gamePlay();
     void ejecutar();
     void iniciarNuevaPartida();
+    void seleccionPersonaje();
     void unlockPersonaje(int id);
 
 private:
@@ -43,6 +44,12 @@ private:
     menu               menuPrincipal;
     static constexpr int numOpcionesMenuPrincipal = 5;
     std::vector<std::string> opcionesVector = {"Nueva Partida", "Continuar Partida", "Record", "Creditos", "Salir"};
+    // Velocidad de fade (cambios de alpha por segundo)
+    float fadeSpeed = 100.f;
+    // Alpha actual (0→255)
+    float alphaFade   = 255.f;
+    // Devuelve true cuando ya llegó a alpha = 0 (completamente transparente)
+    void fadeInTransition(sf::Sprite& spriteFondo);
 
     // ————— Sonidos —————
     sf::SoundBuffer bufferFlecha;
@@ -54,6 +61,8 @@ private:
     std::vector<std::shared_ptr<personaje>> prototipos;
     std::vector<std::shared_ptr<personaje>> roster;
     std::shared_ptr<personaje>              jugadorActivo;
+    void agregarPersonaje(const std::string& nombre, const std::string& ruta);
+    void inicializarPrototipos();
 
     // ————— Enemigos del juego —————
     std::vector<enemigo*> enemigos;
@@ -66,7 +75,7 @@ private:
     bool juegoIniciado  = false;
     int  opcionSeleccionada = 0;
 
-    enum class EstadoJuego { MenuPrincipal, Exploracion, pause, Batalla, dialogoItem };
+    enum class EstadoJuego { SeleccionPersonaje , MenuPrincipal, Exploracion, pause, Batalla, dialogoItem };
     EstadoJuego estado = EstadoJuego::MenuPrincipal;
 
     batalla* batallaGamePlay = nullptr;
