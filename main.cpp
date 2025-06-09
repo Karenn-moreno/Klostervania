@@ -5,11 +5,6 @@ int main() {
     klostervania.ejecutar(); // Entra en el bucle principal hasta que cierre
     return 0;
 }
-
-
-
-
-
 /*
 #include <thread>
 #include <SFML/Graphics.hpp>
