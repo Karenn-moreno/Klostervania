@@ -33,6 +33,7 @@ public:
     virtual void ataqueLigero(const sf::Vector2f& destino);
     virtual void ataquePesado(const sf::Vector2f& destino);
     virtual void habilidadEspecial(const sf::Vector2f& destino);
+    virtual void setFrameAtaque(int frame);
 
     // --- Lógica de juego (puede sobrescribirse) ---
     virtual void update(float deltaTime,
@@ -49,6 +50,7 @@ public:
     // --- Posición y escala genéricos ---
     virtual sf::Vector2f getPosition() const;
     virtual const sf::Sprite& getSprite() const;
+    virtual sf::Sprite& getSprite();
     virtual sf::FloatRect getBounds() const;
     void setPosition(float x, float y);
     void setPosition(const sf::Vector2f& pos);

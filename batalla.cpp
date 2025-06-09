@@ -129,7 +129,7 @@ void batalla::manejarInput()
             {
                 vidaAdversario -= _jugador.getAtaquePesado();
                 msj += "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene "
-                       + std::to_string(vidaAdversario) + " de salud";
+                    + std::to_string(vidaAdversario) + " de salud";
                 mostrarMensaje(msj);
                 std::cout << "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " << vidaAdversario << " de vida\n";
                 _jugador.ataquePesado({1100.f, 740.f});
@@ -148,7 +148,7 @@ void batalla::manejarInput()
             {
                 vidaAdversario -= _jugador.getHabilidadEspecial();
                 msj += "\nEl jugador ha usado Habilidad Especial. Enemigo tiene "
-                       + std::to_string(vidaAdversario) + " de salud";
+                    + std::to_string(vidaAdversario) + " de salud";
                 mostrarMensaje(msj);
                 std::cout << "\nEl jugador ha usado la habilida especial! Enemigo tiene " << vidaAdversario << " de vida\n";
                 _jugador.habilidadEspecial({1000.f, 740.f});
@@ -190,8 +190,9 @@ void batalla::actualizar(float deltaTime)
         else
         {
             // Cuando el fade ya alcanzó opacidad total, marcamos la batalla como terminada
-            terminado = true;
+            enemigo* e = _adversarios[0];
             e->setActivo(false);
+            terminado = true;
         }
         return;
     }
