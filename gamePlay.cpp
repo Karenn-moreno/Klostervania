@@ -30,7 +30,7 @@ gamePlay::gamePlay()
     spriteFondo.setTexture(fondoPrincipal);
     spriteFondo.setScale(1.5f, 1.1f);
 
-    if (!fondoNuevaPartida.loadFromFile("img/fondonuevaPartida.jpg"))
+    if (!fondoNuevaPartida.loadFromFile("img/fondoNuevaPartida.jpg"))
         std::cout << "Error al cargar fondo nueva partida\n";
     spriteNuevaPartida.setTexture(fondoNuevaPartida);
     spriteNuevaPartida.setScale(2.0f, 2.0f);
@@ -211,6 +211,10 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (movAbj) jugadorActivo->mover(0.f, +speed);
 
         jugadorActivo->update(deltaTime, movDer, movIzq, movArr, movAbj);
+
+        itemRecolectable.update();
+        if (!itemRecolectable.isActive())
+            itemRecolectable.spawn(window.getSize());
     }
 
     // 4) Colisión para iniciar batalla

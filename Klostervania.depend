@@ -565,7 +565,7 @@
 	"personaje.h"
 	<cmath>
 
-1749046409 c:\users\leand\desktop\klostervania\personaje.h
+1749225432 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<string>
@@ -583,7 +583,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1749085221 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1749165791 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"continuarPartida.h"
 	"creditos.h"
