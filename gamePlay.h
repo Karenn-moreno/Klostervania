@@ -34,6 +34,7 @@ private:
 
     // ————— Fondos y sprites —————
     sf::Texture       fondoPrincipal;
+    sf::View vista;
     sf::Sprite        spriteFondo;
     sf::Texture       fondoNuevaPartida;
     sf::Sprite        spriteNuevaPartida;
@@ -50,6 +51,7 @@ private:
     float alphaFade   = 255.f;
     // Devuelve true cuando ya llegó a alpha = 0 (completamente transparente)
     void fadeInTransition(sf::Sprite& spriteFondo);
+    void fadeInTransition(sf::Sprite& spriteFondo, sf::View* vista);
 
     // ————— Sonidos —————
     sf::SoundBuffer bufferFlecha;

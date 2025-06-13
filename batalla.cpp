@@ -29,7 +29,7 @@ batalla::batalla(personaje& jugador,
     }
 }
 
-void batalla::iniciarBatalla()
+void batalla::iniciarBatalla(sf::RenderWindow& window)
 {
     // 1) Cargar textura de fondo
     if (!texturaFondo.loadFromFile("img/fondoBatalla.jpg"))
@@ -44,6 +44,7 @@ void batalla::iniciarBatalla()
     {
         std::cout << "Error al cargar fuente de batalla\n";
     }
+
     menuBatalla.crearMenu(
         numOpcionesMenuBatalla,
         fuente,
@@ -85,6 +86,8 @@ void batalla::iniciarBatalla()
     _rondaTurno       = 1;
     msj.clear();
     mensajeFinBatalla.clear();
+
+    fadeIn(window);
 }
 
 void batalla::manejarInput()
@@ -364,6 +367,49 @@ void batalla::mostrarMensaje(const std::string& msg)
     sf::FloatRect b = textoMensaje.getLocalBounds();
     textoMensaje.setPosition(15.f, 110.f - b.height);
     mensajeActivo = true;
+}
+void batalla::fadeIn(sf::RenderWindow& window)
+{
+    float alphaFade = 255.f;
+    const float fadeSpeed = 150.f;
+
+    // Pantalla negra del tamaño de la ventana
+    sf::RectangleShape pantallaNegra({window.getSize().x * 1.f, window.getSize().y * 1.f});
+    pantallaNegra.setFillColor(sf::Color(0, 0, 0, 255));
+
+    sf::Clock relojFade;
+
+    while (window.isOpen() && alphaFade > 0.f)
+    {
+        // Procesar eventos básicos para no congelar la ventana
+        sf::Event ev;
+        while (window.pollEvent(ev))
+        {
+            if (ev.type == sf::Event::Closed)
+            {
+                window.close();
+                return;
+            }
+        }
+
+        // Calcular cuánto tiempo pasó
+        float dt = relojFade.restart().asSeconds();
+        alphaFade -= fadeSpeed * dt;
+        if (alphaFade < 0.f) alphaFade = 0.f;
+
+        pantallaNegra.setFillColor(
+            sf::Color(0, 0, 0, static_cast<sf::Uint8>(alphaFade))
+        );
+
+        // Usar vista por defecto para que la escena de batalla esté centrada
+        window.setView(window.getDefaultView());
+
+        // Dibujar fondo de batalla y superponer pantalla negra
+        window.clear();
+        drawBatalla(window);       // Esta es tu función ya implementada
+        window.draw(pantallaNegra);
+        window.display();
+    }
 }
 
 

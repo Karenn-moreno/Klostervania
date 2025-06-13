@@ -30,10 +30,12 @@ gamePlay::gamePlay()
     spriteFondo.setTexture(fondoPrincipal);
     spriteFondo.setScale(1.5f, 1.1f);
 
-    if (!fondoNuevaPartida.loadFromFile("img/fondoNuevaPartida.jpg"))
-        std::cout << "Error al cargar fondo nueva partida\n";
+    if (!fondoNuevaPartida.loadFromFile("img/mapa.png"))
+        std::cout << "Error al cargar mapa\n";
     spriteNuevaPartida.setTexture(fondoNuevaPartida);
     spriteNuevaPartida.setScale(2.0f, 2.0f);
+
+    vista.setSize(1200.f, 800.f);  // Tamaño de la vista
 
     // — Transición —
     pantallaNegra.setFillColor(sf::Color(0,0,0,255));
@@ -211,6 +213,34 @@ void gamePlay::updatePersonaje(sf::Time dt)
         if (movAbj) jugadorActivo->mover(0.f, +speed);
 
         jugadorActivo->update(deltaTime, movDer, movIzq, movArr, movAbj);
+        vista.setCenter(jugadorActivo->getPosition());
+
+        // — Limitar la vista a los bordes del fondo escalado —
+sf::Vector2f centro = vista.getCenter();
+sf::Vector2f tam = vista.getSize();
+
+// Obtener tamaño real del fondo con escalado aplicado
+sf::FloatRect fondoBounds = spriteNuevaPartida.getGlobalBounds();
+float mapaAncho = fondoBounds.width;
+float mapaAlto  = fondoBounds.height;
+
+float halfWidth = tam.x / 2.f;
+float halfHeight = tam.y / 2.f;
+
+// Limitar en X
+if (centro.x < halfWidth)
+    centro.x = halfWidth;
+else if (centro.x > mapaAncho - halfWidth)
+    centro.x = mapaAncho - halfWidth;
+
+// Limitar en Y
+if (centro.y < halfHeight)
+    centro.y = halfHeight;
+else if (centro.y > mapaAlto - halfHeight)
+    centro.y = mapaAlto - halfHeight;
+
+// Aplicar la corrección final
+vista.setCenter(centro);
 
         itemRecolectable.update();
         if (!itemRecolectable.isActive())
@@ -254,6 +284,7 @@ void gamePlay::drawExploracion()
     if (juegoIniciado)
 
     {
+         window.setView(vista);
         // — Partida en curso —
         window.draw(spriteNuevaPartida);
 
@@ -269,7 +300,10 @@ void gamePlay::drawExploracion()
             jugadorActivo->draw(window);
 
         // Dibujar ítem si corresponde
+        window.setView(window.getDefaultView());
         itemRecolectable.draw(window);
+        // Restaurar la vista del mapa si seguís dibujando otras cosas
+        window.setView(vista);
     }
 
     window.display();
@@ -313,18 +347,7 @@ void gamePlay::ejecutar()
                 //jugadorActivo->setOrigin(0.f, 0.f);
 
                 // Iniciar la batalla (carga de texturas, menús, etc.)
-                batallaGamePlay->iniciarBatalla();
-
-                // Hacemos un fade in para la batalla
-                for (int opacidad = 255; opacidad >= 0; opacidad -= 5)
-                {
-                    pantallaNegra.setFillColor(sf::Color(0, 0, 0, opacidad));
-                    window.clear();
-                    batallaGamePlay->drawBatalla(window);
-                    window.draw(pantallaNegra);
-                    window.display();
-                }
-
+                batallaGamePlay->iniciarBatalla(window);
                 batallaIniciada = true;
             }
 
@@ -726,6 +749,11 @@ void gamePlay::iniciarNuevaPartida()
 
 void gamePlay::fadeInTransition(sf::Sprite& spriteFondo)
 {
+    fadeInTransition(spriteFondo, nullptr);  // llama a la extendida con vista nula
+}
+
+void gamePlay::fadeInTransition(sf::Sprite& spriteFondo, sf::View* vista)
+{
     // 1) Inicializar alpha y pantallaNegra
     alphaFade = 255.f;
     pantallaNegra.setSize({1500.f, 900.f});
@@ -738,7 +766,7 @@ void gamePlay::fadeInTransition(sf::Sprite& spriteFondo)
     bool terminado = false;
     while (window.isOpen() && !terminado)
     {
-        // 3.a) Procesar eventos básicos para que la ventana no “congele”
+        // 3.a) Procesar eventos básicos para que la ventana no se congele
         sf::Event ev;
         while (window.pollEvent(ev))
         {
@@ -757,18 +785,22 @@ void gamePlay::fadeInTransition(sf::Sprite& spriteFondo)
         alphaFade -= fadeSpeed * dt;
         if (alphaFade < 0.f) alphaFade = 0.f;
 
-        // 3.d) Ajustar el color de pantallaNegra (solo cambia la componente alfa)
         pantallaNegra.setFillColor(
             sf::Color(0, 0, 0, static_cast<sf::Uint8>(alphaFade))
         );
 
-        // 3.e) Dibujar fondo + overlay negro
+        // —— APLICAR la vista que nos pasen, o usar la default ——
+        if (vista)
+            window.setView(*vista);
+        else
+            window.setView(window.getDefaultView());
+
+        // 3.d) Dibujar fondo + overlay negro
         window.clear();
         window.draw(spriteFondo);
         window.draw(pantallaNegra);
         window.display();
 
-        // 3.f) Chequear si ya terminamos (alpha==0)
         if (alphaFade <= 0.f)
             terminado = true;
     }

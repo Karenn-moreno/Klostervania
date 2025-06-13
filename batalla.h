@@ -17,7 +17,7 @@ public:
             sf::Sound& soundFlecha);
 
     /// Inicializa las variables de la batalla y carga todos los recursos.
-    void iniciarBatalla();
+    void iniciarBatalla(sf::RenderWindow& window);
 
     /// Procesa la entrada del jugador en su turno (flechas + Enter).
     void manejarInput();
@@ -72,7 +72,7 @@ private:
     sf::Font                     fuente;            // Fuente para el menú
     bool desvaneciendo =false;
     float alphaFade    = 0.f;       // valor actual de opacidad (0..255)
-    float fadeSpeed    =60.f;     // “pixeles de alpha” que sumamos por segundo
+    float fadeSpeed    =60.f;     // pixeles que sumamos por segundo
     // — Menú de batalla (3 opciones) —
     menu                         menuBatalla;
     static constexpr int         numOpcionesMenuBatalla = 3;
@@ -87,7 +87,7 @@ private:
     sf::Sound                     golpePesado;
     sf::Sound                     habilidadEspecial;
 
-    // — HUD de mensajes en la batalla —
+    // —mensajes en la batalla —
     sf::Font                     fuenteMensaje;
     sf::Text                     textoMensaje;
     bool                         mensajeActivo    = false;
@@ -95,8 +95,11 @@ private:
 
     // — Mensaje final (victoria o derrota) —
     std::string                  mensajeFinBatalla;
-    //sf::Clock                    victoriaClock;   // Cronómetro para retrasar 3s tras victoria
 
-    /// (Opcional) Si quieres actualizar texto en cada turno, defínelo aquí.
-    void actualizarTexto();
+    ///  Si quieres actualizar texto en cada turno, defínelo aquí.
+   // void actualizarTexto();
+
+    // ————— Transición —————
+    //sf::RectangleShape pantallaNegra;
+    void fadeIn(sf::RenderWindow& window);
 };
