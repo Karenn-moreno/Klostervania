@@ -583,7 +583,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1749814404 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1749817766 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"continuarPartida.h"
 	"creditos.h"
@@ -636,12 +636,12 @@
 	"menu.h"
 	"popUpCartel.h"
 
-1748906646 c:\users\leand\desktop\klostervania\popupcartel.h
+1749817766 c:\users\leand\desktop\klostervania\popupcartel.h
 	"popUpCartel.h"
 	<stdexcept>
 	<SFML/Graphics.hpp>
 
-1748823693 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
+1749817766 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
 	"popUpCartel.h"
 	<stdexcept>
 

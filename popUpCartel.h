@@ -12,7 +12,7 @@ void cargarRecursos(const std::string& rutaTextura, const std::string& rutaFuent
 
 void mostrar(const std::string& mensaje, const sf::Vector2u& tamVentana);
 
-void draw(sf::RenderWindow& ventana);
+void draw(sf::RenderWindow& window);
 
 bool handleEvent(const sf::Event& evt);
 

@@ -300,10 +300,7 @@ void gamePlay::drawExploracion()
             jugadorActivo->draw(window);
 
         // Dibujar ítem si corresponde
-        window.setView(window.getDefaultView());
         itemRecolectable.draw(window);
-        // Restaurar la vista del mapa si seguís dibujando otras cosas
-        window.setView(vista);
     }
 
     window.display();
@@ -420,7 +417,7 @@ bool gamePlay::batallaPopupActive() const
 void gamePlay::inicializarEnemigos()
 {
     // 1) Esqueleto
-    sf::Vector2f posEsqueleto(100.f, 280.f);
+    sf::Vector2f posEsqueleto(500.f, 280.f);
     std::string rutaEsqueleto = "img/spritesheet_guerreroespejo.png";
     sf::Vector2f escalaEsq   = {0.3f, 0.3f};
     enemigo* esqueleto = new enemigo(posEsqueleto, rutaEsqueleto, escalaEsq);
@@ -735,7 +732,7 @@ void gamePlay::iniciarNuevaPartida()
 
     // 5. Marcar el juego como iniciado
     // Configuración inicial
-    jugadorActivo->setPosition({50.f, 500.f});
+    jugadorActivo->setPosition({10.f, 200.f});
     jugadorActivo->setScale({0.25f, 0.25f});
     jugadorActivo->setSalud(500);
 
