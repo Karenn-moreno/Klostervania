@@ -565,7 +565,7 @@
 	"personaje.h"
 	<cmath>
 
-1749046409 c:\users\leand\desktop\klostervania\personaje.h
+1749225432 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<string>
@@ -583,7 +583,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1749085221 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1749817766 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"continuarPartida.h"
 	"creditos.h"
@@ -597,7 +597,7 @@
 	<algorithm>
 	"personaje.h"
 
-1749083839 c:\users\leand\desktop\klostervania\gameplay.h
+1749761426 c:\users\leand\desktop\klostervania\gameplay.h
 	<SFML/Graphics.hpp>
 	"personaje.h"
 	"enemigo.h"
@@ -622,11 +622,11 @@
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
 
-1749082902 source:c:\users\leand\desktop\klostervania\batalla.cpp
+1749814748 source:c:\users\leand\desktop\klostervania\batalla.cpp
 	"batalla.h"
 	<iostream>
 
-1748881895 c:\users\leand\desktop\klostervania\batalla.h
+1749814404 c:\users\leand\desktop\klostervania\batalla.h
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 	<vector>
@@ -636,12 +636,12 @@
 	"menu.h"
 	"popUpCartel.h"
 
-1748906646 c:\users\leand\desktop\klostervania\popupcartel.h
+1749817766 c:\users\leand\desktop\klostervania\popupcartel.h
 	"popUpCartel.h"
 	<stdexcept>
 	<SFML/Graphics.hpp>
 
-1748823693 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
+1749817766 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
 	"popUpCartel.h"
 	<stdexcept>
 

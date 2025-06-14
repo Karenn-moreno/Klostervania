@@ -66,7 +66,7 @@ bool PopUpCartel::handleEvent(const sf::Event& evt)
     return false;
 }
 
-void PopUpCartel::draw(sf::RenderWindow& ventana)
+void PopUpCartel::draw(sf::RenderWindow& window)
 {
     if (!_activo) return;
 
@@ -79,8 +79,9 @@ void PopUpCartel::draw(sf::RenderWindow& ventana)
     _texto.setScale(_scale, _scale);
 
     // Dibujamos
-    ventana.draw(_spriteFondo);
-    ventana.draw(_texto);
+    window.setView(window.getDefaultView());
+    window.draw(_spriteFondo);
+    window.draw(_texto);
 }
 
 bool PopUpCartel::isActive() const {

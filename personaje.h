@@ -101,10 +101,10 @@ protected:
     float breathSpeed;           // Velocidad de ciclo (p.ej. 0.5)
 
     // --- Animación de sprites (frame) ---
-    float speed = 50.f;
+    float speed = 20.f;                                 // Velocidad de movimiento o de cambio de cuadros (unidades por segundo)
     int currentFrame = 0;
-    float frameTime = 0.15f;
-    float frameTimer = 0.f;
+    float frameTime = 0.15f;                            // Tiempo que debe transcurrir (en segundos) antes de pasar al siguiente cuadro
+    float frameTimer = 0.f;                             // Temporizador acumulado para medir cuánto ha pasado desde el último cambio de cuadro
     int frameWidth = 500;
     int frameHeight = 500;
     sf::IntRect frameActual;
@@ -128,7 +128,7 @@ protected:
     int ataqueFase = 0;
     sf::Vector2f ataqueStartPos = {100.f, 600.f};
     sf::Vector2f ataqueTargetPos;
-    static constexpr float ataqueSpeed = 1200.f;
+    static constexpr float ataqueSpeed = 1800.f;
     bool ataqueLlegado = false;
     bool atacando = false;
 
