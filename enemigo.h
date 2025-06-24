@@ -9,7 +9,7 @@ public:
     // Constructor recibe posición inicial, ruta al spritesheet y escala opcional
     enemigo(const sf::Vector2f& posInicial,
             const std::string& rutaSpritesheet,
-            const sf::Vector2f& escala);
+            const sf::Vector2f& escala, const sf::Vector2f& puntoPatrulla, int cantAtaque);
     ~enemigo() override = default;
 
     // --- Spawn / respawn ---
@@ -44,6 +44,9 @@ public:
 
     bool _modoBatalla = false;
 
+protected:
+    bool esBoss = false;
+
 private:
     // --- Estadísticas del enemigo ---
     int _maxSalud = 500;
@@ -51,11 +54,12 @@ private:
     // --- Spawn / estado ---
     bool _activo = true;
     sf::Clock    _respawnClock;
-    sf::Time     _respawnDelay = sf::seconds(20.f);
+    sf::Time     _respawnDelay = sf::seconds(10.f);
     sf::Vector2f _posInicial;
 
     // --- IA de patrulla fuera de combate ---
-    std::vector<sf::Vector2f> _puntosPatrulla;
+    bool _volviendo = false;
+    sf::Vector2f _puntoPatrulla;
     size_t                    _indicePatrulla = 0;
     float                     _tiempoDesdeUltimoMovimiento = 0.f;
 };

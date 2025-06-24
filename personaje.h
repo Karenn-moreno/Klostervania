@@ -62,6 +62,8 @@ public:
     //   b) versión que recibe un Vector2f
     void setScale(const sf::Vector2f& s);
 
+    sf::Vector2f getScale() const;
+
     // --- Estado de animación ---
     enum class estadoPersonaje {
         quieto,
@@ -81,7 +83,7 @@ public:
 
 protected:
     estadoPersonaje estado = estadoPersonaje::quieto;
-
+    int _cantAtaque;
     // --- Estadísticas del personaje ---
     int _salud = 1000;
     int _ataqueLigero = 10;
@@ -101,7 +103,7 @@ protected:
     float breathSpeed;           // Velocidad de ciclo (p.ej. 0.5)
 
     // --- Animación de sprites (frame) ---
-    float speed = 20.f;                                 // Velocidad de movimiento o de cambio de cuadros (unidades por segundo)
+    float speed = 120.f;                                 // Velocidad de movimiento o de cambio de cuadros (unidades por segundo)
     int currentFrame = 0;
     float frameTime = 0.15f;                            // Tiempo que debe transcurrir (en segundos) antes de pasar al siguiente cuadro
     float frameTimer = 0.f;                             // Temporizador acumulado para medir cuánto ha pasado desde el último cambio de cuadro

@@ -74,8 +74,12 @@ void batalla::iniciarBatalla(sf::RenderWindow& window)
         enemigo* e = _adversarios[i];
         if (!e) continue;
         e->setPosition(posX, pisoY);
+        sf::Vector2f esc = e->getScale();
+        e->setScale(esc.x * 3.f, esc.y * 3.f);
         e->setModoBatalla(true);
     }
+    sf::Vector2f esc = _jugador.getScale();
+    _jugador.setScale(esc.x * 3.f, esc.y * 3.f);
 
     // 5) Resetear flags y datos de turno
     terminado         = false;
@@ -193,9 +197,17 @@ void batalla::actualizar(float deltaTime)
         else
         {
             // Cuando el fade ya alcanzó opacidad total, marcamos la batalla como terminada
+             for (auto* e : _adversarios)
+        if (e) {
+            // Escala actual
+            sf::Vector2f esc = e->getSprite().getScale();
+            e->setScale(esc.x / 3.f, esc.y / 3.f);
+        }
             enemigo* e = _adversarios[0];
             e->setActivo(false);
             terminado = true;
+                    sf::Vector2f esc = _jugador.getScale();
+         _jugador.setScale(esc.x / 3.f, esc.y / 3.f);
         }
         return;
     }
@@ -244,10 +256,11 @@ void batalla::actualizar(float deltaTime)
                       << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
                       << "\n";
 
-            // 3) Arrancamos el fade out YA, sin esperar a que termine la animacion, da el efecto que se muere
+            // 3) Arrancamos el fade out, sin esperar a que termine la animacion, da el efecto que se muere
             desvaneciendo = true;
             alphaFade     = 0.f;
         }
+
         return;
     }
     // Turno del enemigo: ataca si el jugador no está en animación de ataque
@@ -271,6 +284,8 @@ void batalla::actualizar(float deltaTime)
                     "Nuestros héroes han perdido la batalla\n"
                     "El fin del mundo se acerca...";
             }
+            sf::Vector2f esc = _jugador.getScale();
+            _jugador.setScale(esc.x / 3.f, esc.y / 3.f);
         }
         else
         {
@@ -354,6 +369,7 @@ bool batalla::ganador() const
 bool batalla::finBatalla() const
 {
     return terminado && popupFinMostrado;
+
 }
 
 bool batalla::batallaPopupActive() const

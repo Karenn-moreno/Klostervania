@@ -8,7 +8,7 @@ public:
     // Constructor: delega en enemigo (y en personaje) para cargar todo
     Boss(const sf::Vector2f& posInicial,
          const std::string& rutaSpritesheet,
-         const sf::Vector2f& escala);
+         const sf::Vector2f& escala, const sf::Vector2f& puntoPatrulla, int cantAtaque);
 
     // Sobrescribimos ataque para incluir 2 ataques adicionales
     // (el método base ataque debe ser virtual en enemigo)
@@ -21,6 +21,7 @@ public:
               bool moviendoAbajo  = false) override;
 
 protected:
+    bool esBoss = true;
     // Métodos para los ataques especiales del Boss
     int ataqueEspecial1(const sf::Vector2f& destino);
     int ataqueEspecial2(const sf::Vector2f& destino);

@@ -1,7 +1,4 @@
 #include "gamePlay.h"
-#include "continuarPartida.h"
-#include "creditos.h"
-#include "record.h"
 #include "batalla.h"
 #include "popUpCartel.h"
 #include <thread>// borrarrrrrrrrrrrrrrrrrrr
@@ -19,6 +16,8 @@ gamePlay::gamePlay()
     , pantallaNegra ({1500.f, 900.f})
     , flecha        (bufferFlecha)
     , enter         (bufferEnter)
+    , castle        (buffercastle)
+    , battle        (bufferbattle)
 {
     window.setFramerateLimit(60);
     pantallaNegra.setFillColor(sf::Color(0, 0, 0, 255)); // alpha=255 al inicio
@@ -32,9 +31,15 @@ gamePlay::gamePlay()
     if (!fondoNuevaPartida.loadFromFile("img/mapa.png"))
         std::cout << "Error al cargar mapa\n";
     spriteNuevaPartida.setTexture(fondoNuevaPartida);
-    spriteNuevaPartida.setScale(2.0f, 2.0f);
+    vista.setSize(400.f, 300.f);  // Tamaño de la vista
 
-    vista.setSize(1200.f, 800.f);  // Tamaño de la vista
+    mascaraColision.loadFromFile("img/mapa_colisiones_escalado.png");
+    std::cout << "Intentando cargar máscara de colisión...\n";
+if (!mascaraColision.loadFromFile("img/mapa_colisiones.png")) {
+    std::cerr << "ERROR: No se pudo cargar la máscara de colisión\n";
+} else {
+    std::cout << "Máscara de colisión cargada correctamente\n";
+}
 
     // — Transición —
     pantallaNegra.setFillColor(sf::Color(0,0,0,255));
@@ -56,12 +61,20 @@ gamePlay::gamePlay()
 
     // — Sonidos —
     if (!bufferFlecha.loadFromFile("audio/flecha.wav") ||
-            !bufferEnter.loadFromFile("audio/enter.wav"))
+            !bufferEnter.loadFromFile("audio/enter.wav")||
+            !buffercastle.loadFromFile("audio/castle.wav")||
+            !bufferbattle.loadFromFile("audio/battle.wav"));
     {
         std::cout << "Error al cargar audio\n";
     }
     flecha.setBuffer(bufferFlecha);
     enter.setBuffer(bufferEnter);
+    castle.setBuffer(buffercastle);
+    battle.setBuffer(bufferbattle);
+
+    ///MODULAR VOLUMEN
+    castle.setVolume(15.f);
+    battle.setVolume(20.f);
 
     // — Arrancamos el reloj de deltaTime —
     reloj.restart();
@@ -147,23 +160,6 @@ void gamePlay::procesarEventos()
             if (batallaGamePlay->popupFinBatalla.handleEvent(event))
                 ; // el popup se cerró con Enter
         }
-
-        // 5) Cambiar personaje activo con la tecla T
-        if (juegoIniciado && jugadorActivo && event.type == sf::Event::KeyPressed
-                && event.key.code == sf::Keyboard::T)
-        {
-            if (roster.size() > 1)
-            {
-                auto it = std::find(roster.begin(), roster.end(), jugadorActivo);
-                if (it != roster.end())
-                {
-                    size_t idx = std::distance(roster.begin(), it);
-                    idx = (idx + 1) % roster.size();
-                    jugadorActivo = roster[idx];
-                    std::cout << "Cambiado a personaje del roster, índice: " << idx << "\n";
-                }
-            }
-        }
     }
 }
 
@@ -190,6 +186,7 @@ void gamePlay::updatePersonaje(sf::Time dt)
             return;
         }
     }
+
     // 3) Movimiento y animación del jugador activo
     if (juegoIniciado && jugadorActivo)
     {
@@ -199,46 +196,72 @@ void gamePlay::updatePersonaje(sf::Time dt)
             mostrarGameOver();
             return;
         }
-        bool movDer = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
-        bool movIzq = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
-        bool movArr = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
-        bool movAbj = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
 
-        const float speed = 2.5f;
-        if (movIzq) jugadorActivo->mover(-speed, 0.f);
-        if (movDer) jugadorActivo->mover(+speed, 0.f);
-        if (movArr) jugadorActivo->mover(0.f, -speed);
-        if (movAbj) jugadorActivo->mover(0.f, +speed);
+        bool movDer = false;
+bool movIzq = false;
+bool movArr = false;
+bool movAbj = false;
+
+const float speed = 2.5f;
+sf::FloatRect bounds = jugadorActivo->getBounds();
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    sf::FloatRect derecha = bounds;
+    derecha.left += speed;
+    if (esZonaLibre(derecha))
+        movDer = true;
+}
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+    sf::FloatRect izquierda = bounds;
+    izquierda.left -= speed;
+    if (esZonaLibre(izquierda))
+        movIzq = true;
+}
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+    sf::FloatRect arriba = bounds;
+    arriba.top -= speed;
+    if (esZonaLibre(arriba))
+        movArr = true;
+}
+
+if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+    sf::FloatRect abajo = bounds;
+    abajo.top += speed;
+    if (esZonaLibre(abajo))
+        movAbj = true;
+}
 
         jugadorActivo->update(deltaTime, movDer, movIzq, movArr, movAbj);
         vista.setCenter(jugadorActivo->getPosition());
 
         // — Limitar la vista a los bordes del fondo escalado —
-sf::Vector2f centro = vista.getCenter();
-sf::Vector2f tam = vista.getSize();
+        sf::Vector2f centro = vista.getCenter();
+        sf::Vector2f tam = vista.getSize();
 
-// Obtener tamaño real del fondo con escalado aplicado
-sf::FloatRect fondoBounds = spriteNuevaPartida.getGlobalBounds();
-float mapaAncho = fondoBounds.width;
-float mapaAlto  = fondoBounds.height;
+        // Obtener tamaño real del fondo con escalado aplicado
+        sf::FloatRect fondoBounds = spriteNuevaPartida.getGlobalBounds();
+        float mapaAncho = fondoBounds.width;
+        float mapaAlto  = fondoBounds.height;
 
-float halfWidth = tam.x / 2.f;
-float halfHeight = tam.y / 2.f;
+        float halfWidth = tam.x / 2.f;
+        float halfHeight = tam.y / 2.f;
 
-// Limitar en X
-if (centro.x < halfWidth)
-    centro.x = halfWidth;
-else if (centro.x > mapaAncho - halfWidth)
-    centro.x = mapaAncho - halfWidth;
+        // Limitar en X
+        if (centro.x < halfWidth)
+            centro.x = halfWidth;
+        else if (centro.x > mapaAncho - halfWidth)
+            centro.x = mapaAncho - halfWidth;
 
-// Limitar en Y
-if (centro.y < halfHeight)
-    centro.y = halfHeight;
-else if (centro.y > mapaAlto - halfHeight)
-    centro.y = mapaAlto - halfHeight;
+        // Limitar en Y
+        if (centro.y < halfHeight)
+            centro.y = halfHeight;
+        else if (centro.y > mapaAlto - halfHeight)
+            centro.y = mapaAlto - halfHeight;
 
-// Aplicar la corrección final
-vista.setCenter(centro);
+        // Aplicar la corrección final
+        vista.setCenter(centro);
 
         itemRecolectable.update();
         if (!itemRecolectable.isActive())
@@ -251,7 +274,7 @@ vista.setCenter(centro);
         for (auto* e : enemigos)
         {
             if (e->estaActivo() &&
-                    jugadorActivo->getBounds().intersects(e->getBounds()))
+                jugadorActivo->getBounds().intersects(e->getBounds()))
             {
                 enemigoSeleccionado = e;
                 estado = EstadoJuego::Batalla;
@@ -260,6 +283,7 @@ vista.setCenter(centro);
         }
     }
 }
+
 
 void gamePlay::drawMenuPrincipal()
 {
@@ -282,6 +306,11 @@ void gamePlay::drawExploracion()
     if (juegoIniciado)
 
     {
+        if (!sonidoInicioReproducido)
+    {
+        castle.play(); ///  Reproducir sonido de inicio de partida
+        sonidoInicioReproducido = true;
+    }
          window.setView(vista);
         // — Partida en curso —
         window.draw(spriteNuevaPartida);
@@ -332,6 +361,13 @@ void gamePlay::ejecutar()
             // 1) Si aún no hemos creado la batalla, la inicializamos
             if (!batallaIniciada && enemigoSeleccionado && jugadorActivo)
             {
+                if (!sonidoBattleReproducido)
+                    {
+                       castle.stop();
+                       battle.play(); ///  Reproducir sonido de inicio de partida
+                       sonidoBattleReproducido = true;
+                    }
+
                 // Crear la instancia de batalla
                 std::vector<enemigo*> participantes{ enemigoSeleccionado };
                 batallaGamePlay = new batalla(*jugadorActivo, participantes, flecha);
@@ -339,7 +375,6 @@ void gamePlay::ejecutar()
                 // Guardar posición previa y teleportar al jugador al punto de batalla
                 posicionPreBatalla = jugadorActivo->getSprite().getPosition();
                 jugadorActivo->setPosition(100.f, 750.f);
-                //jugadorActivo->setOrigin(0.f, 0.f);
 
                 // Iniciar la batalla (carga de texturas, menús, etc.)
                 batallaGamePlay->iniciarBatalla(window);
@@ -370,6 +405,10 @@ void gamePlay::ejecutar()
             // 6) Si la batalla terminó y ya cerraron el pop-up, procesar resultado
             if (batallaGamePlay && batallaGamePlay->finBatalla() && !batallaGamePlay->popupFinBatalla.isActive())
             {
+                battle.stop();                      /// Detener música de batallaAdd commentMore actions
+                castle.play();                      /// Volver a la música de exploración
+                sonidoBattleReproducido = false;    /// Habilitar para la próxima batalla
+
                 // 6.1) Restaurar al jugador a su posición previa
                 jugadorActivo->setPosition(posicionPreBatalla);
 
@@ -386,8 +425,25 @@ void gamePlay::ejecutar()
 
                 if (jugadorGano)
                 {
-                    // -------- VICTORIA --------
-                    // Simplemente volvemos a Exploración
+/*
+bool ambosBossDerrotados = true;
+for (auto* e : enemigos)
+{
+    Boss* boss = dynamic_cast<Boss*>(e);
+    if (boss && boss->estaActivo())  // si aún está activo, no está derrotado
+    {
+        ambosBossDerrotados = false;
+        break;
+    }
+}
+if (ambosBossDerrotados)
+{
+    popupCartel.mostrar("¡Has derrotado a los jefes finales!\nEl mal ha sido vencido...\n\nGRACIAS POR JUGAR KLOSTERVANIA.", window.getSize());
+    juegoIniciado = false;
+    estado = EstadoJuego::MenuPrincipal;
+}
+*/
+
                     estado = EstadoJuego::Exploracion;
                     // Nota: dejamos juegoIniciado = true para que siga la partida
                 }
@@ -414,28 +470,83 @@ bool gamePlay::batallaPopupActive() const
 
 void gamePlay::inicializarEnemigos()
 {
-    // 1) Esqueleto
-    sf::Vector2f posEsqueleto(500.f, 280.f);
-    std::string rutaEsqueleto = "img/spritesheet_guerreroespejo.png";
-    sf::Vector2f escalaEsq   = {0.3f, 0.3f};
-    enemigo* esqueleto = new enemigo(posEsqueleto, rutaEsqueleto, escalaEsq);
-    esqueleto->setSalud(50);
-    enemigos.push_back(esqueleto);
+/////////////////////////////////////////////// murcielagos  ////////////////////////////////////////////////////////////////////
+    sf::Vector2f posMurcielagos1(200.f, 100.f);
+    sf::Vector2f puntoPatrullaMurcielagos1(200.f, 270.f);
+    std::string rutaMurcielagos1 = "img/murcielagos.png";
+    sf::Vector2f escalaMurcielagos1   = {0.12f, 0.12f};
+    enemigo* murcielagos1 = new enemigo(posMurcielagos1, rutaMurcielagos1, escalaMurcielagos1, puntoPatrullaMurcielagos1, 1);
+    murcielagos1->setSalud(50);
+    enemigos.push_back(murcielagos1);
 
+
+////////////////////////////////////////////  esqueletos verde solo 2 atq ///////////////////////////////////////////////////////////
+
+    sf::Vector2f posEsqueletoVerde1(300.f, 200.f);
+    sf::Vector2f puntoPatrullaEsqueletoVerde1(300.f, 150.f);
+    std::string rutaEsqueletoVerde1 = "img/esqueleto_verde.png";
+    sf::Vector2f escalaEsqueletoVerde1   = {0.12f, 0.12f};
+    enemigo* esqueletoVerde1 = new enemigo(posEsqueletoVerde1, rutaEsqueletoVerde1, escalaEsqueletoVerde1, puntoPatrullaEsqueletoVerde1, 2);
+    esqueletoVerde1->setSalud(80);
+    enemigos.push_back(esqueletoVerde1);
+
+
+///////////////////////////////////////////// Esqueletos 2 ataques  /////////////////////////////////////////////////////////////////
+    sf::Vector2f posEsqueleto1(500.f, 280.f);
+    sf::Vector2f puntoPatrullaEsqueleto1(550.f, 250.f);
+    std::string rutaEsqueleto1 = "img/esqueleto.png";
+    sf::Vector2f escalaEsqueleto1   = {0.12f, 0.12f};
+    enemigo* esqueleto1 = new enemigo(posEsqueleto1, rutaEsqueleto1, escalaEsqueleto1, puntoPatrullaEsqueleto1, 2);
+    esqueleto1->setSalud(100);
+    enemigos.push_back(esqueleto1);
+
+////////////////////////////////////////////// vampiros 2 ataques  //////////////////////////////////////////////////////////////////
+    sf::Vector2f posVampiro1(300.f, 280.f);
+    sf::Vector2f puntoPatrullaVampiro1(450.f, 200.f);
+    std::string rutaVampiro1 = "img/vampiro.png";
+    sf::Vector2f escalaVampiro1   = {0.12f, 0.12f};
+    enemigo* vampiro1 = new enemigo(posVampiro1, rutaVampiro1, escalaVampiro1, puntoPatrullaVampiro1, 2);
+    vampiro1->setSalud(150);
+    enemigos.push_back(vampiro1);
+
+///////////////////////////////////////////// Esqueletos 3 ataques  //////////////////////////////////////////////////////////////
+    sf::Vector2f posEsqueleto10(500.f, 280.f);
+    sf::Vector2f puntoPatrullaEsqueleto10(550.f, 250.f);
+    std::string rutaEsqueleto10 = "img/esqueleto.png";
+    sf::Vector2f escalaEsqueleto10   = {0.12f, 0.12f};
+    enemigo* esqueleto10 = new enemigo(posEsqueleto10, rutaEsqueleto10, escalaEsqueleto10, puntoPatrullaEsqueleto10, 3);
+    esqueleto10->setSalud(100);
+    enemigos.push_back(esqueleto10);
+
+////////////////////////////////////////////// vampiros 3 ataques  //////////////////////////////////////////////////////////////
+    sf::Vector2f posVampiro10(300.f, 680.f);
+    sf::Vector2f puntoPatrullaVampiro10(450.f, 650.f);
+    std::string rutaVampiro10 = "img/vampiro.png";
+    sf::Vector2f escalaVampiro10   = {0.12f, 0.12f};
+    enemigo* vampiro10 = new enemigo(posVampiro10, rutaVampiro10, escalaVampiro10, puntoPatrullaVampiro10, 3);
+    vampiro10->setSalud(150);
+    enemigos.push_back(vampiro10);
+
+
+
+
+/////////////////////////////////////////////////////////  BOSSES  ///////////////////////////////////////////////////////////
     // 2) Boss “laranas”
-    sf::Vector2f posLaranas(1200.f, 400.f);
+    sf::Vector2f posLaranas(1300.f, 600.f);
+    sf::Vector2f puntoPatrullaLaranas(1300.f, 500.f);
     std::string rutaLaranas = "img/spritesheet_laranas.png";
-    sf::Vector2f escalaLar  = {0.4f, 0.4f};
-    Boss* laranas = new Boss(posLaranas, rutaLaranas, escalaLar);
-    laranas->setSalud(300);
+    sf::Vector2f escalaLar  = {0.2f, 0.2f};
+    Boss* laranas = new Boss(posLaranas, rutaLaranas, escalaLar, puntoPatrullaLaranas,5);
+    laranas->setSalud(30);
     enemigos.push_back(laranas);
 
     // 2) Boss “Klosferatu”
-    sf::Vector2f posKlosferatu(1200.f, 800.f);
+    sf::Vector2f posKlosferatu(1300.f, 200.f);
+    sf::Vector2f puntoPatrullaKlosferatu(1300.f, 240.f);
     std::string rutaKlosferatu = "img/spritesheet_klosferatu.png";
-    sf::Vector2f escalaKlosferatu  = {0.4f, 0.4f};
-    Boss* klosferatu = new Boss(posKlosferatu, rutaKlosferatu, escalaKlosferatu);
-    klosferatu->setSalud(300);
+    sf::Vector2f escalaKlosferatu  = {0.2f, 0.2f};
+    Boss* klosferatu = new Boss(posKlosferatu, rutaKlosferatu, escalaKlosferatu, puntoPatrullaKlosferatu,5);
+    klosferatu->setSalud(50);
     enemigos.push_back(klosferatu);
 }
 
@@ -730,8 +841,8 @@ void gamePlay::iniciarNuevaPartida()
 
     // 5. Marcar el juego como iniciado
     // Configuración inicial
-    jugadorActivo->setPosition({10.f, 600.f});
-    jugadorActivo->setScale({0.25f, 0.25f});
+    jugadorActivo->setPosition({10.f, 200.f});
+    jugadorActivo->setScale({0.1f, 0.1f});
     jugadorActivo->setSalud(500);
 
     fadeInTransition(spriteNuevaPartida);
@@ -799,4 +910,18 @@ void gamePlay::fadeInTransition(sf::Sprite& spriteFondo, sf::View* vista)
         if (alphaFade <= 0.f)
             terminado = true;
     }
+}
+
+bool gamePlay::esZonaLibre(const sf::FloatRect& area)                   ///recibe un rectángulo (area) que representa una zona del mapa,
+{
+    for (int x = area.left; x < area.left + area.width; x += 3) {       ///Recorre horizontalmente de x = area.left hasta x = area.right, con un paso de 3 píxeles para no chequear cada píxel
+        for (int y = area.top; y < area.top + area.height; y += 3) {    ///Recorre verticalmente de y = area.top hasta y = area.bottom, también con paso de 3.
+            if (x < 0 || y < 0 ||                                       ///x < 0 || y < 0 → Está fuera del mapa por la izquierda o arriba.
+                x >= (int)mascaraColision.getSize().x ||                ///Está fuera del mapa por la derecha
+                y >= (int)mascaraColision.getSize().y ||                ///o abajo.
+                mascaraColision.getPixel(x, y) != sf::Color::White)     /// El píxel NO es blanco, por lo tanto hay un obstáculo.
+                return false;
+        }
+    }
+    return true;
 }

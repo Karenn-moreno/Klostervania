@@ -57,8 +57,14 @@ private:
     // ————— Sonidos —————
     sf::SoundBuffer bufferFlecha;
     sf::SoundBuffer bufferEnter;
+    sf::SoundBuffer buffercastle;
+    sf::SoundBuffer bufferbattle;
     sf::Sound       flecha;
     sf::Sound       enter;
+    sf::Sound       castle;
+    sf::Sound       battle;
+    bool sonidoInicioReproducido = false;
+    bool sonidoBattleReproducido = false;
 
     // ————— Entidades del juego —————
     std::vector<std::shared_ptr<personaje>> prototipos;
@@ -87,4 +93,7 @@ private:
     PopUpCartel popupCartel;
 
     bool batallaPopupActive() const;
+
+    sf::Image mascaraColision;
+    bool esZonaLibre(const sf::FloatRect& area);
 };

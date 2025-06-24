@@ -47,8 +47,7 @@ sf::FloatRect personaje::getBounds() const
     return sprite.getGlobalBounds();
 }
 
-// 1) Constructor por defecto
-// ———————————————————————————————
+
 personaje::personaje()
     : estado(estadoPersonaje::quieto),
       _salud(1000),
@@ -69,9 +68,7 @@ personaje::personaje()
     breathClock.restart();
 }
 
-// ———————————————————————————————
-// 2) Nuevo constructor: recibe parámetros
-// ———————————————————————————————
+
 personaje::personaje(const sf::Vector2f& posInicial,
                      const std::string& rutaSpritesheet,
                      const sf::Vector2f& escala)
@@ -114,13 +111,11 @@ personaje::personaje(const sf::Vector2f& posInicial,
     breathClock.restart();
 }
 
-// Mueve el sprite según los desplazamientos dados
 void personaje::mover(float offsetX, float offsetY)
 {
     sprite.move(offsetX, offsetY);
 }
 
-// Detiene la animación, resetea frame y temporizador
 void personaje::detener()
 {
     currentFrame = 0;
@@ -128,7 +123,6 @@ void personaje::detener()
     sprite.setTextureRect(frameActual);
 }
 
-// Dibujo: personaje y posible proyectil
 void personaje::draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
@@ -136,7 +130,6 @@ void personaje::draw(sf::RenderWindow& window)
         window.draw(spriteProyectil);
 }
 
-// --- Lógica de actualización: animación, movimiento y respiración ---
 void personaje::update(float deltaTime,
                        bool movDer,
                        bool movIzq,
@@ -502,7 +495,6 @@ void personaje::update(float deltaTime,
      sprite.setScale(signX * baseScaleX * factor, baseScaleY * factor);
 }
 
-// --- IMPLEMENTACIÓN de los métodos de ataque (solo asignan estado y guardan posición) ---
 void personaje::ataqueLigero(const sf::Vector2f& destino)
 {
     if (estado != estadoPersonaje::ataqueLigero)
@@ -519,7 +511,6 @@ void personaje::ataqueLigero(const sf::Vector2f& destino)
     }
 }
 
-// Ataque Pesado
 void personaje::ataquePesado(const sf::Vector2f& destino)
 {
     if (estado != estadoPersonaje::ataquePesado)
@@ -536,7 +527,6 @@ void personaje::ataquePesado(const sf::Vector2f& destino)
     }
 }
 
-// Habilidad Especial
 void personaje::habilidadEspecial(const sf::Vector2f& destino)
 {
     if (estado != estadoPersonaje::habilidadEspecial)
@@ -647,3 +637,6 @@ void personaje::setFrameAtaque(int frame)
     sprite.setTextureRect(frameActual);
 }
 
+sf::Vector2f personaje::getScale() const {
+    return sprite.getScale();
+}

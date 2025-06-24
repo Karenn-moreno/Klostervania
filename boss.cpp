@@ -5,10 +5,10 @@
 // Constructor: delega en enemigo y, automáticamente, en personaje
 Boss::Boss(const sf::Vector2f& posInicial,
            const std::string& rutaSpritesheet,
-           const sf::Vector2f& escala)
-    : enemigo(posInicial, rutaSpritesheet, escala)
+           const sf::Vector2f& escala, const sf::Vector2f& puntoPatrulla, int cantAtaque)
+    : enemigo(posInicial, rutaSpritesheet, escala, puntoPatrulla, cantAtaque)
 {
-    // ajustar salud, stats u otras propiedades específicas del Boss
+    _cantAtaque=cantAtaque;
 
 }
 

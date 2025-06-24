@@ -39,7 +39,7 @@ private:
     sf::Clock lifeClock, pulseClock;
     sf::Time  lifetime = sf::seconds(120.f);
     bool      active   = false;
-    float baseScaleX     = 0.1f, baseScaleY = 0.1f;
+    float baseScaleX     = 0.05f, baseScaleY = 0.05f;
     float pulseAmplitude = 0.05f, pulseSpeed = 0.5f;
 
     // Para inicializar rand() solo una vez

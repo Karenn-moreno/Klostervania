@@ -7,12 +7,14 @@
 // para que ese constructor fije escala y origin en la base automáticamente.
 enemigo::enemigo(const sf::Vector2f& posInicial,
                  const std::string& rutaSpritesheet,
-                 const sf::Vector2f& escala)
+                 const sf::Vector2f& escala,
+                 const sf::Vector2f& puntoPatrulla,
+                 int cantAtaque)
     : personaje(posInicial, rutaSpritesheet, escala)
-    , _posInicial(posInicial)
 {
-    // Definir puntos de patrulla de ejemplo
-    _puntosPatrulla = {{100.f, 200.f}, {300.f, 200.f}};
+    _posInicial=posInicial;
+    _cantAtaque=cantAtaque;
+    _puntoPatrulla = puntoPatrulla;
 }
 
 // Activa o desactiva el enemigo; si se desactiva, arranca el reloj de respawn.
@@ -56,6 +58,8 @@ void enemigo::update(float deltaTime,
 {
     // 1) Respawn si está inactivo
     if (!_activo) {
+        if (esBoss) return; // Si es un boss, nunca se reactiva
+
         if (_respawnClock.getElapsedTime() >= _respawnDelay) {
             // Reactivar enemigo y restaurar estado inicial
             _activo = true;
@@ -87,23 +91,25 @@ void enemigo::update(float deltaTime,
         return;
     }
 
-    // 3) IA de patrulla aleatoria fuera de combate
-    _tiempoDesdeUltimoMovimiento += deltaTime;
-    if (_tiempoDesdeUltimoMovimiento >= 0.7f && !_puntosPatrulla.empty()) {
-        // Elegir un punto de patrulla al azar
-        int idx = std::rand() % static_cast<int>(_puntosPatrulla.size());
-        sf::Vector2f destino = _puntosPatrulla[idx];
+    // 3) IA de patrulla simple: ir al punto y volver
+_tiempoDesdeUltimoMovimiento += deltaTime;
 
-        // Calcular dirección y mover ligeramente hacia ese punto
-        sf::Vector2f dir = destino - sprite.getPosition();
-        float dist       = std::hypot(dir.x, dir.y);
-        const float speedP = 4.f; // velocidad de patrulla
-        if (dist > 1.f) {
-            dir /= dist; // normalizar
-            sprite.move(dir * speedP);
-        }
-        _tiempoDesdeUltimoMovimiento = 0.f;
+if (_tiempoDesdeUltimoMovimiento >= 0.7f) {
+    sf::Vector2f destino = _volviendo ? _posInicial : _puntoPatrulla;
+    sf::Vector2f pos     = sprite.getPosition();
+    sf::Vector2f dir     = destino - pos;
+    float dist           = std::hypot(dir.x, dir.y);
+
+    const float speedP = 4.f;
+    if (dist > 1.f) {
+        dir /= dist; // normalizar
+        sprite.move(dir * speedP);
+    } else {
+        _volviendo = !_volviendo; // cuando llega, da la vuelta
     }
+
+    _tiempoDesdeUltimoMovimiento = 0.f;
+}
 
     // 4) Delegar animaciones de caminata/respiración a personaje::update
     personaje::update(deltaTime, false, false, false, false);
@@ -134,7 +140,7 @@ int enemigo::ataque(const sf::Vector2f& destino)
     }
 
     // 4) Elegir tipo de ataque (ligero, pesado, especial) y lanzar animación
-    int r = std::rand() % 3; // 0 = ligero, 1 = pesado, 2 = especial
+    int r = std::rand() % _cantAtaque; // 0 = ligero, 1 = pesado, 2 = especial
     int danio = 0;
     switch (r) {
         case 0:
