@@ -80,7 +80,8 @@ textoVida.setOutlineThickness(1);
 
 personaje::personaje(const sf::Vector2f& posInicial,
                      const std::string& rutaSpritesheet,
-                     const sf::Vector2f& escala)
+                     const sf::Vector2f& escala,
+                     const std::string& nombrePersonaje)///
     : estado(estadoPersonaje::quieto),
       _salud(1000),
       _ataqueLigero(10),
@@ -89,7 +90,8 @@ personaje::personaje(const sf::Vector2f& posInicial,
       baseScaleX(escala.x),
       baseScaleY(escala.y),
       breathAmplitude(0.02f),
-      breathSpeed(0.2f)
+      breathSpeed(0.2f),
+      nombre(nombrePersonaje) ///GUARDAR EL NOMBRE AQUI
 {
     // 1) Intentamos cargar la textura desde rutaSpritesheet
     std::cout << "Intentando cargar textura: " << rutaSpritesheet << "\n";
@@ -672,4 +674,8 @@ void personaje::setFrameAtaque(int frame)
 
 sf::Vector2f personaje::getScale() const {
     return sprite.getScale();
+}
+
+std::string personaje::getNombre() const { ///
+    return nombre;
 }
