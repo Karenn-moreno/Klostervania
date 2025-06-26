@@ -542,7 +542,7 @@
 
 1748995310 c:\users\leand\desktop\klostervania\nuevapartida.h
 
-1750788845 source:c:\users\leand\desktop\klostervania\enemigo.cpp
+1750905700 source:c:\users\leand\desktop\klostervania\enemigo.cpp
 	"enemigo.h"
 	<cstdlib>
 	<cmath>
@@ -553,17 +553,17 @@
 	<cstdlib>
 	<cmath>
 
-1750099602 source:c:\users\leand\desktop\klostervania\personaje.cpp
+1750905853 source:c:\users\leand\desktop\klostervania\personaje.cpp
 	"personaje.h"
 	<cmath>
 
-1750099613 c:\users\leand\desktop\klostervania\personaje.h
+1750900496 c:\users\leand\desktop\klostervania\personaje.h
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<string>
 	<iostream>
 
-1750788883 c:\users\leand\desktop\klostervania\enemigo.h
+1750901809 c:\users\leand\desktop\klostervania\enemigo.h
 	"personaje.h"
 	<SFML/Graphics.hpp>
 	<vector>
@@ -575,7 +575,7 @@
 	"personaje.h"
 	"popUpCartel.h"
 
-1750805166 source:c:\users\leand\desktop\klostervania\gameplay.cpp
+1750902847 source:c:\users\leand\desktop\klostervania\gameplay.cpp
 	"gamePlay.h"
 	"batalla.h"
 	"popUpCartel.h"
@@ -585,7 +585,7 @@
 	<algorithm>
 	"personaje.h"
 
-1750804623 c:\users\leand\desktop\klostervania\gameplay.h
+1750850508 c:\users\leand\desktop\klostervania\gameplay.h
 	<SFML/Graphics.hpp>
 	"personaje.h"
 	"enemigo.h"
@@ -611,11 +611,11 @@
 1747266747 source:c:\users\leand\desktop\klostervania\record.cpp
 	"record.h"
 
-1750788129 source:c:\users\leand\desktop\klostervania\batalla.cpp
+1750901908 source:c:\users\leand\desktop\klostervania\batalla.cpp
 	"batalla.h"
 	<iostream>
 
-1750005960 c:\users\leand\desktop\klostervania\batalla.h
+1750873770 c:\users\leand\desktop\klostervania\batalla.h
 	<SFML/Graphics.hpp>
 	<SFML/Audio.hpp>
 	<vector>
@@ -624,22 +624,23 @@
 	"enemigo.h"
 	"menu.h"
 	"popUpCartel.h"
+	"boss.h"
 
 1749817766 c:\users\leand\desktop\klostervania\popupcartel.h
 	"popUpCartel.h"
 	<stdexcept>
 	<SFML/Graphics.hpp>
 
-1749817766 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
+1750890840 source:c:\users\leand\desktop\klostervania\popupcartel.cpp
 	"popUpCartel.h"
 	<stdexcept>
 
-1750088668 source:c:\users\leand\desktop\klostervania\boss.cpp
+1750902073 source:c:\users\leand\desktop\klostervania\boss.cpp
 	"boss.h"
 	<cstdlib>
 	<cmath>
 
-1750788845 c:\users\leand\desktop\klostervania\boss.h
+1750901839 c:\users\leand\desktop\klostervania\boss.h
 	"enemigo.h"
 
 1750788129 source:c:\users\leand\desktop\utn\klostervania_buckup\batalla.cpp

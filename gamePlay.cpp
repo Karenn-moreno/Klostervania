@@ -14,10 +14,10 @@ gamePlay::gamePlay()
     : window        (sf::VideoMode(1500, 900), "KLOSTERVANIA")
     , ejecutando    (true)
     , pantallaNegra ({1500.f, 900.f})
-    , flecha        (bufferFlecha)
-    , enter         (bufferEnter)
-    , castle        (buffercastle)
-    , battle        (bufferbattle)
+, flecha        (bufferFlecha)
+, enter         (bufferEnter)
+, castle        (buffercastle)
+, battle        (bufferbattle)
 {
     window.setFramerateLimit(60);
     pantallaNegra.setFillColor(sf::Color(0, 0, 0, 255)); // alpha=255 al inicio
@@ -35,11 +35,14 @@ gamePlay::gamePlay()
 
     mascaraColision.loadFromFile("img/mapa_colisiones_escalado.png");
     std::cout << "Intentando cargar máscara de colisión...\n";
-if (!mascaraColision.loadFromFile("img/mapa_colisiones.png")) {
-    std::cerr << "ERROR: No se pudo cargar la máscara de colisión\n";
-} else {
-    std::cout << "Máscara de colisión cargada correctamente\n";
-}
+    if (!mascaraColision.loadFromFile("img/mapa_colisiones.png"))
+    {
+        std::cerr << "ERROR: No se pudo cargar la máscara de colisión\n";
+    }
+    else
+    {
+        std::cout << "Máscara de colisión cargada correctamente\n";
+    }
 
     // — Transición —
     pantallaNegra.setFillColor(sf::Color(0,0,0,255));
@@ -47,7 +50,7 @@ if (!mascaraColision.loadFromFile("img/mapa_colisiones.png")) {
     // — Fuente y menú principal —
     if (!fuente.loadFromFile("fonts/Hatch.ttf"))
         std::cout << "Error al cargar fuente del menú\n";
-        menuPrincipal.crearMenu(
+    menuPrincipal.crearMenu(
         numOpcionesMenuPrincipal,
         fuente,
         opcionesVector,
@@ -129,15 +132,15 @@ void gamePlay::procesarEventos()
                     break;
                 case 1:  // Continuar Partida
                     std::cout << "\nEntrando a Continuar partida";
-                   // continuarPartida();
+                    // continuarPartida();
                     break;
                 case 2:  // Record
                     std::cout << "\nEntrando a records";
-                   // record();
+                    // record();
                     break;
                 case 3:  // Créditos
                     std::cout << "\nEntrando a los creditos";
-                   // creditos();
+                    // creditos();
                     break;
                 case 4:  // Salir
                     ejecutando = false;
@@ -170,7 +173,7 @@ void gamePlay::updatePersonaje(sf::Time dt)
     // 0) Actualiza todos los enemigos para gestionar respawn
     for (auto* e : enemigos)
     {
-        e->update(deltaTime, false, false, false, false);
+        e->update(deltaTime, false, false, false, false, jugadorActivo->getSalud());
     }
 
     // 1) Si el popup de ítem está abierto, no hacer nada
@@ -198,40 +201,44 @@ void gamePlay::updatePersonaje(sf::Time dt)
         }
 
         bool movDer = false;
-bool movIzq = false;
-bool movArr = false;
-bool movAbj = false;
+        bool movIzq = false;
+        bool movArr = false;
+        bool movAbj = false;
 
-const float speed = 2.5f;
-sf::FloatRect bounds = jugadorActivo->getBounds();
+        const float speed = 2.5f;
+        sf::FloatRect bounds = jugadorActivo->getBounds();
 
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-    sf::FloatRect derecha = bounds;
-    derecha.left += speed;
-    if (esZonaLibre(derecha))
-        movDer = true;
-}
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            sf::FloatRect derecha = bounds;
+            derecha.left += speed;
+            if (esZonaLibre(derecha))
+                movDer = true;
+        }
 
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-    sf::FloatRect izquierda = bounds;
-    izquierda.left -= speed;
-    if (esZonaLibre(izquierda))
-        movIzq = true;
-}
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            sf::FloatRect izquierda = bounds;
+            izquierda.left -= speed;
+            if (esZonaLibre(izquierda))
+                movIzq = true;
+        }
 
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-    sf::FloatRect arriba = bounds;
-    arriba.top -= speed;
-    if (esZonaLibre(arriba))
-        movArr = true;
-}
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            sf::FloatRect arriba = bounds;
+            arriba.top -= speed;
+            if (esZonaLibre(arriba))
+                movArr = true;
+        }
 
-if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-    sf::FloatRect abajo = bounds;
-    abajo.top += speed;
-    if (esZonaLibre(abajo))
-        movAbj = true;
-}
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            sf::FloatRect abajo = bounds;
+            abajo.top += speed;
+            if (esZonaLibre(abajo))
+                movAbj = true;
+        }
 
         jugadorActivo->update(deltaTime, movDer, movIzq, movArr, movAbj);
         vista.setCenter(jugadorActivo->getPosition());
@@ -274,7 +281,7 @@ if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
         for (auto* e : enemigos)
         {
             if (e->estaActivo() &&
-                jugadorActivo->getBounds().intersects(e->getBounds()))
+                    jugadorActivo->getBounds().intersects(e->getBounds()))
             {
                 enemigoSeleccionado = e;
                 estado = EstadoJuego::Batalla;
@@ -307,11 +314,11 @@ void gamePlay::drawExploracion()
 
     {
         if (!sonidoInicioReproducido)
-    {
-        castle.play(); ///  Reproducir sonido de inicio de partida
-        sonidoInicioReproducido = true;
-    }
-         window.setView(vista);
+        {
+            castle.play(); ///  Reproducir sonido de inicio de partida
+            sonidoInicioReproducido = true;
+        }
+        window.setView(vista);
         // — Partida en curso —
         window.draw(spriteNuevaPartida);
 
@@ -362,11 +369,11 @@ void gamePlay::ejecutar()
             if (!batallaIniciada && enemigoSeleccionado && jugadorActivo)
             {
                 if (!sonidoBattleReproducido)
-                    {
-                       castle.stop();
-                       battle.play(); ///  Reproducir sonido de inicio de partida
-                       sonidoBattleReproducido = true;
-                    }
+                {
+                    castle.stop();
+                    battle.play(); ///  Reproducir sonido de inicio de partida
+                    sonidoBattleReproducido = true;
+                }
 
                 // Crear la instancia de batalla
                 std::vector<enemigo*> participantes{ enemigoSeleccionado };
@@ -417,36 +424,26 @@ void gamePlay::ejecutar()
 
                 // 6.3) Determinar si fue victoria o derrota
                 bool jugadorGano = batallaGamePlay->ganador();
+                bool victoriaFinal   = batallaGamePlay->haGanadoElJuego();
 
                 // 6.4) Limpiar la instancia de batalla
                 delete batallaGamePlay;
                 batallaGamePlay   = nullptr;
                 batallaIniciada   = false;
 
-                if (jugadorGano)
-                {
-/*
-bool ambosBossDerrotados = true;
-for (auto* e : enemigos)
-{
-    Boss* boss = dynamic_cast<Boss*>(e);
-    if (boss && boss->estaActivo())  // si aún está activo, no está derrotado
+  if (jugadorGano)
     {
-        ambosBossDerrotados = false;
-        break;
+        if (victoriaFinal)
+        {
+            juegoIniciado = false;
+            estado = EstadoJuego::MenuPrincipal;
+        }
+        else
+        {
+            estado = EstadoJuego::Exploracion;
+            // Nota: dejamos juegoIniciado = true para que siga la partida
+        }
     }
-}
-if (ambosBossDerrotados)
-{
-    popupCartel.mostrar("¡Has derrotado a los jefes finales!\nEl mal ha sido vencido...\n\nGRACIAS POR JUGAR KLOSTERVANIA.", window.getSize());
-    juegoIniciado = false;
-    estado = EstadoJuego::MenuPrincipal;
-}
-*/
-
-                    estado = EstadoJuego::Exploracion;
-                    // Nota: dejamos juegoIniciado = true para que siga la partida
-                }
                 else
                 {
                     // -------- DERROTA --------
@@ -470,62 +467,63 @@ bool gamePlay::batallaPopupActive() const
 
 void gamePlay::inicializarEnemigos()
 {
-/////////////////////////////////////////////// murcielagos  ////////////////////////////////////////////////////////////////////
-    sf::Vector2f posMurcielagos1(200.f, 100.f);
-    sf::Vector2f puntoPatrullaMurcielagos1(200.f, 270.f);
-    std::string rutaMurcielagos1 = "img/murcielagos.png";
-    sf::Vector2f escalaMurcielagos1   = {0.12f, 0.12f};
-    enemigo* murcielagos1 = new enemigo(posMurcielagos1, rutaMurcielagos1, escalaMurcielagos1, puntoPatrullaMurcielagos1, 1);
-    murcielagos1->setSalud(50);
-    enemigos.push_back(murcielagos1);
+
+    /////////////////////////////////////////////// murcielagos  ////////////////////////////////////////////////////////////////////
+       sf::Vector2f posMurcielagos1(200.f, 100.f);
+       sf::Vector2f puntoPatrullaMurcielagos1(200.f, 270.f);
+       std::string rutaMurcielagos1 = "img/murcielagos.png";
+       sf::Vector2f escalaMurcielagos1   = {0.12f, 0.12f};
+       enemigo* murcielagos1 = new enemigo(posMurcielagos1, rutaMurcielagos1, escalaMurcielagos1, puntoPatrullaMurcielagos1, 1);
+       murcielagos1->setSalud(50);
+       enemigos.push_back(murcielagos1);
 
 
-////////////////////////////////////////////  esqueletos verde solo 2 atq ///////////////////////////////////////////////////////////
+    ////////////////////////////////////////////  esqueletos verde solo 2 atq ///////////////////////////////////////////////////////////
 
-    sf::Vector2f posEsqueletoVerde1(300.f, 200.f);
-    sf::Vector2f puntoPatrullaEsqueletoVerde1(300.f, 150.f);
-    std::string rutaEsqueletoVerde1 = "img/esqueleto_verde.png";
-    sf::Vector2f escalaEsqueletoVerde1   = {0.12f, 0.12f};
-    enemigo* esqueletoVerde1 = new enemigo(posEsqueletoVerde1, rutaEsqueletoVerde1, escalaEsqueletoVerde1, puntoPatrullaEsqueletoVerde1, 2);
-    esqueletoVerde1->setSalud(80);
-    enemigos.push_back(esqueletoVerde1);
+       sf::Vector2f posEsqueletoVerde1(300.f, 200.f);
+       sf::Vector2f puntoPatrullaEsqueletoVerde1(300.f, 150.f);
+       std::string rutaEsqueletoVerde1 = "img/esqueleto_verde.png";
+       sf::Vector2f escalaEsqueletoVerde1   = {0.12f, 0.12f};
+       enemigo* esqueletoVerde1 = new enemigo(posEsqueletoVerde1, rutaEsqueletoVerde1, escalaEsqueletoVerde1, puntoPatrullaEsqueletoVerde1, 2);
+       esqueletoVerde1->setSalud(1580);
+       enemigos.push_back(esqueletoVerde1);
 
 
-///////////////////////////////////////////// Esqueletos 2 ataques  /////////////////////////////////////////////////////////////////
-    sf::Vector2f posEsqueleto1(500.f, 280.f);
-    sf::Vector2f puntoPatrullaEsqueleto1(550.f, 250.f);
-    std::string rutaEsqueleto1 = "img/esqueleto.png";
-    sf::Vector2f escalaEsqueleto1   = {0.12f, 0.12f};
-    enemigo* esqueleto1 = new enemigo(posEsqueleto1, rutaEsqueleto1, escalaEsqueleto1, puntoPatrullaEsqueleto1, 2);
-    esqueleto1->setSalud(100);
-    enemigos.push_back(esqueleto1);
+    ///////////////////////////////////////////// Esqueletos 2 ataques  /////////////////////////////////////////////////////////////////
+       sf::Vector2f posEsqueleto1(500.f, 280.f);
+       sf::Vector2f puntoPatrullaEsqueleto1(550.f, 250.f);
+       std::string rutaEsqueleto1 = "img/esqueleto.png";
+       sf::Vector2f escalaEsqueleto1   = {0.12f, 0.12f};
+       enemigo* esqueleto1 = new enemigo(posEsqueleto1, rutaEsqueleto1, escalaEsqueleto1, puntoPatrullaEsqueleto1, 2);
+       esqueleto1->setSalud(2501);
+       enemigos.push_back(esqueleto1);
 
-////////////////////////////////////////////// vampiros 2 ataques  //////////////////////////////////////////////////////////////////
-    sf::Vector2f posVampiro1(300.f, 280.f);
-    sf::Vector2f puntoPatrullaVampiro1(450.f, 200.f);
-    std::string rutaVampiro1 = "img/vampiro.png";
-    sf::Vector2f escalaVampiro1   = {0.12f, 0.12f};
-    enemigo* vampiro1 = new enemigo(posVampiro1, rutaVampiro1, escalaVampiro1, puntoPatrullaVampiro1, 2);
-    vampiro1->setSalud(150);
-    enemigos.push_back(vampiro1);
+    ////////////////////////////////////////////// vampiros 2 ataques  //////////////////////////////////////////////////////////////////
+       sf::Vector2f posVampiro1(300.f, 280.f);
+       sf::Vector2f puntoPatrullaVampiro1(450.f, 200.f);
+       std::string rutaVampiro1 = "img/vampiro.png";
+       sf::Vector2f escalaVampiro1   = {0.12f, 0.12f};
+       enemigo* vampiro1 = new enemigo(posVampiro1, rutaVampiro1, escalaVampiro1, puntoPatrullaVampiro1, 2);
+       vampiro1->setSalud(15500);
+       enemigos.push_back(vampiro1);
 
-///////////////////////////////////////////// Esqueletos 3 ataques  //////////////////////////////////////////////////////////////
-    sf::Vector2f posEsqueleto10(500.f, 280.f);
-    sf::Vector2f puntoPatrullaEsqueleto10(550.f, 250.f);
-    std::string rutaEsqueleto10 = "img/esqueleto.png";
-    sf::Vector2f escalaEsqueleto10   = {0.12f, 0.12f};
-    enemigo* esqueleto10 = new enemigo(posEsqueleto10, rutaEsqueleto10, escalaEsqueleto10, puntoPatrullaEsqueleto10, 3);
-    esqueleto10->setSalud(100);
-    enemigos.push_back(esqueleto10);
+    ///////////////////////////////////////////// Esqueletos 3 ataques  //////////////////////////////////////////////////////////////
+       sf::Vector2f posEsqueleto10(500.f, 280.f);
+       sf::Vector2f puntoPatrullaEsqueleto10(550.f, 250.f);
+       std::string rutaEsqueleto10 = "img/esqueleto.png";
+       sf::Vector2f escalaEsqueleto10   = {0.12f, 0.12f};
+       enemigo* esqueleto10 = new enemigo(posEsqueleto10, rutaEsqueleto10, escalaEsqueleto10, puntoPatrullaEsqueleto10, 3);
+       esqueleto10->setSalud(100);
+       enemigos.push_back(esqueleto10);
 
-////////////////////////////////////////////// vampiros 3 ataques  //////////////////////////////////////////////////////////////
-    sf::Vector2f posVampiro10(300.f, 680.f);
-    sf::Vector2f puntoPatrullaVampiro10(450.f, 650.f);
-    std::string rutaVampiro10 = "img/vampiro.png";
-    sf::Vector2f escalaVampiro10   = {0.12f, 0.12f};
-    enemigo* vampiro10 = new enemigo(posVampiro10, rutaVampiro10, escalaVampiro10, puntoPatrullaVampiro10, 3);
-    vampiro10->setSalud(150);
-    enemigos.push_back(vampiro10);
+    ////////////////////////////////////////////// vampiros 3 ataques  //////////////////////////////////////////////////////////////
+       sf::Vector2f posVampiro10(300.f, 680.f);
+       sf::Vector2f puntoPatrullaVampiro10(450.f, 650.f);
+       std::string rutaVampiro10 = "img/vampiro.png";
+       sf::Vector2f escalaVampiro10   = {0.12f, 0.12f};
+       enemigo* vampiro10 = new enemigo(posVampiro10, rutaVampiro10, escalaVampiro10, puntoPatrullaVampiro10, 3);
+       vampiro10->setSalud(150);
+       enemigos.push_back(vampiro10);
 
 
 
@@ -537,7 +535,7 @@ void gamePlay::inicializarEnemigos()
     std::string rutaLaranas = "img/spritesheet_laranas.png";
     sf::Vector2f escalaLar  = {0.2f, 0.2f};
     Boss* laranas = new Boss(posLaranas, rutaLaranas, escalaLar, puntoPatrullaLaranas,5);
-    laranas->setSalud(30);
+    laranas->setSalud(13000);
     enemigos.push_back(laranas);
 
     // 2) Boss “Klosferatu”
@@ -546,7 +544,7 @@ void gamePlay::inicializarEnemigos()
     std::string rutaKlosferatu = "img/spritesheet_klosferatu.png";
     sf::Vector2f escalaKlosferatu  = {0.2f, 0.2f};
     Boss* klosferatu = new Boss(posKlosferatu, rutaKlosferatu, escalaKlosferatu, puntoPatrullaKlosferatu,5);
-    klosferatu->setSalud(50);
+    klosferatu->setSalud(50000);
     enemigos.push_back(klosferatu);
 }
 
@@ -764,7 +762,7 @@ void gamePlay::seleccionPersonaje()
             spriteCara.setScale(0.9f, 0.9f);
 
             // c) Posicionar la cara+marco centrada
-            spriteCara.setPosition( 537.f , -2.f );
+            spriteCara.setPosition( 537.f, -2.f );
 
             // d) Opacidad reducida si está bloqueado
             if (seleccionActual >= static_cast<int>(roster.size()))
@@ -914,14 +912,17 @@ void gamePlay::fadeInTransition(sf::Sprite& spriteFondo, sf::View* vista)
 
 bool gamePlay::esZonaLibre(const sf::FloatRect& area)                   ///recibe un rectángulo (area) que representa una zona del mapa,
 {
-    for (int x = area.left; x < area.left + area.width; x += 3) {       ///Recorre horizontalmente de x = area.left hasta x = area.right, con un paso de 3 píxeles para no chequear cada píxel
-        for (int y = area.top; y < area.top + area.height; y += 3) {    ///Recorre verticalmente de y = area.top hasta y = area.bottom, también con paso de 3.
+    for (int x = area.left; x < area.left + area.width; x += 3)         ///Recorre horizontalmente de x = area.left hasta x = area.right, con un paso de 3 píxeles para no chequear cada píxel
+    {
+        for (int y = area.top; y < area.top + area.height; y += 3)      ///Recorre verticalmente de y = area.top hasta y = area.bottom, también con paso de 3.
+        {
             if (x < 0 || y < 0 ||                                       ///x < 0 || y < 0 → Está fuera del mapa por la izquierda o arriba.
-                x >= (int)mascaraColision.getSize().x ||                ///Está fuera del mapa por la derecha
-                y >= (int)mascaraColision.getSize().y ||                ///o abajo.
-                mascaraColision.getPixel(x, y) != sf::Color::White)     /// El píxel NO es blanco, por lo tanto hay un obstáculo.
+                    x >= (int)mascaraColision.getSize().x ||                ///Está fuera del mapa por la derecha
+                    y >= (int)mascaraColision.getSize().y ||                ///o abajo.
+                    mascaraColision.getPixel(x, y) != sf::Color::White)     /// El píxel NO es blanco, por lo tanto hay un obstáculo.
                 return false;
         }
     }
     return true;
 }
+

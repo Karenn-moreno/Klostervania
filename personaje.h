@@ -18,12 +18,14 @@ public:
     virtual ~personaje() = default;  // Destructor virtual para herencia segura
 
     // --- Setters de estadísticas ---
+    void setNombre(const std::string& nuevoNombre) { nombre = nuevoNombre; }
     void setSalud(int salud);               // Establece los puntos de vida
     void setAtaqueLigero(int ataqueLigero); // Establece el daño de ataque ligero
     void setAtaquePesado(int ataquePesado); // Establece el daño de ataque pesado
     void setHabilidadEspecial(int habilidadEspecial); // Establece el valor de la habilidad especial
 
     // --- Getters de estadísticas ---
+    const std::string& getNombre() const { return nombre; }
     int getSalud() const;                  // Devuelve los puntos de vida
     int getAtaqueLigero() const;           // Devuelve el daño de ataque ligero
     int getAtaquePesado() const;           // Devuelve el daño de ataque pesado
@@ -40,7 +42,7 @@ public:
                         bool moviendoDer    = false,
                         bool moviendoIzq    = false,
                         bool moviendoArriba = false,
-                        bool moviendoAbajo  = false);
+                        bool moviendoAbajo  = false, int saludJugador = 0);
     virtual void mover(float offsetX, float offsetY); // Mueve el sprite en pantalla
     virtual void detener();                           // Detiene la animación y resetea frame
 
@@ -81,7 +83,10 @@ public:
     void setEstado(estadoPersonaje nuevoEstado);
     virtual bool estaAtacando();
 
+    sf::Text textoVida;
+    sf::Font fuenteTexto;
 protected:
+    std::string nombre;
     estadoPersonaje estado = estadoPersonaje::quieto;
     int _cantAtaque;
     // --- Estadísticas del personaje ---

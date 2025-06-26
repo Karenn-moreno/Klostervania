@@ -66,6 +66,15 @@ personaje::personaje()
         sprite.setOrigin(0.f, local.height);
     }
     breathClock.restart();
+
+    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf")) {
+    std::cerr << "Error al cargar la fuente\n";
+}
+textoVida.setFont(fuenteTexto);
+textoVida.setCharacterSize(50);
+textoVida.setScale(0.09f, 0.09f);
+textoVida.setOutlineColor(sf::Color::Black);
+textoVida.setOutlineThickness(1);
 }
 
 
@@ -109,6 +118,15 @@ personaje::personaje(const sf::Vector2f& posInicial,
 
     // 5) Reiniciar reloj de respiración
     breathClock.restart();
+    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf")) {
+    std::cerr << "Error al cargar la fuente\n";
+}
+textoVida.setFont(fuenteTexto);
+textoVida.setCharacterSize(50);
+textoVida.setScale(0.09f, 0.09f);
+textoVida.setOutlineColor(sf::Color::Black);
+textoVida.setOutlineThickness(1);
+textoVida.setFillColor(sf::Color::White);  // Blanco para jugador
 }
 
 void personaje::mover(float offsetX, float offsetY)
@@ -126,6 +144,7 @@ void personaje::detener()
 void personaje::draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
+    window.draw(textoVida);
     if (proyectilActivo)
         window.draw(spriteProyectil);
 }
@@ -134,8 +153,22 @@ void personaje::update(float deltaTime,
                        bool movDer,
                        bool movIzq,
                        bool movArriba,
-                       bool movAbajo)
+                       bool movAbajo, int saludJugador)
 {
+        // Actualizar el texto de vida (contenido y posición)
+textoVida.setString(std::to_string(getSalud()));
+
+
+// Calcular centrado sobre el sprite
+sf::FloatRect spriteBounds = sprite.getGlobalBounds();
+sf::FloatRect textBounds   = textoVida.getGlobalBounds();
+
+float centroX = spriteBounds.left + spriteBounds.width / 2.f;
+float textoOffsetX = textBounds.width / 2.f;
+float arribaY = spriteBounds.top - 5.f;
+
+textoVida.setPosition(centroX - textoOffsetX, arribaY);
+
     // A) Secuencia de ataque ligero
     if (estado == estadoPersonaje::ataqueLigero)
     {

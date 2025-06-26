@@ -7,6 +7,7 @@
 #include "enemigo.h"
 #include "menu.h"
 #include "popUpCartel.h"
+#include "boss.h"
 
 /// Gestiona un combate por turnos entre un jugador y un enemigo.
 class batalla {
@@ -43,9 +44,15 @@ public:
     /// Muestra un mensaje en el HUD de batalla ("¡Enemigo ataca!", etc.).
     void mostrarMensaje(const std::string& msg);
 
+    bool vencioLaranas();
+    bool ganoElJuego = false;
+    bool haGanadoElJuego() const { return ganoElJuego; }
+
+
 private:
     personaje&                      _jugador;          // Referencia al jugador original
     std::vector<enemigo*>           _adversarios;      // Vector de punteros a enemigos
+    std::string nombreEnemigoActual;
     sf::Vector2f                    _posEnemigoInicial;// Para guardar la posición original
     sf::Sound&                      soundFlecha;       // Sonido de flecha para el menú
 
@@ -95,6 +102,7 @@ private:
 
     // — Mensaje final (victoria o derrota) —
     std::string                  mensajeFinBatalla;
+    PopUpCartel cartelFinal;
 
     ///  Si quieres actualizar texto en cada turno, defínelo aquí.
    // void actualizarTexto();
@@ -102,4 +110,6 @@ private:
     // ————— Transición —————
     //sf::RectangleShape pantallaNegra;
     void fadeIn(sf::RenderWindow& window);
+
+
 };

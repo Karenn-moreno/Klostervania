@@ -23,10 +23,10 @@ public:
     // --- IA y animación ---
     // Si _modoBatalla es true, delega en personaje::update para animar turnos
     void update(float deltaTime,
-                bool moviendoDer  = false,
-                bool moviendoIzq  = false,
-                bool moviendoArr  = false,
-                bool moviendoAbj  = false) override;
+                bool moviendoDer  ,
+                bool moviendoIzq  ,
+                bool moviendoArr  ,
+                bool moviendoAbj  , int saludJugador) override;
 
     // Dibuja al enemigo solo si está activo
     void draw(sf::RenderWindow& window) override;
@@ -54,7 +54,7 @@ private:
     // --- Spawn / estado ---
     bool _activo = true;
     sf::Clock    _respawnClock;
-    sf::Time     _respawnDelay = sf::seconds(10.f);
+    sf::Time     _respawnDelay = sf::seconds(300.f);
     sf::Vector2f _posInicial;
 
     // --- IA de patrulla fuera de combate ---

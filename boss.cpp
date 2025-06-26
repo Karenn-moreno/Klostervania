@@ -9,6 +9,11 @@ Boss::Boss(const sf::Vector2f& posInicial,
     : enemigo(posInicial, rutaSpritesheet, escala, puntoPatrulla, cantAtaque)
 {
     _cantAtaque=cantAtaque;
+    // Asignar nombre automáticamente según el nombre del archivo del spritesheet
+    if (rutaSpritesheet.find("laranas") != std::string::npos)
+        nombre = "Laranas";
+    else if (rutaSpritesheet.find("klosferatu") != std::string::npos)
+        nombre = "Klosferatu";
 
 }
 
@@ -142,7 +147,7 @@ void Boss::update(float deltaTime,
                   bool moviendoDer,
                   bool moviendoIzq,
                   bool moviendoArriba,
-                  bool moviendoAbajo)
+                  bool moviendoAbajo, int saludJugador)
 {
     // ————— En combate por turnos —————
     if (_modoBatalla) {
@@ -272,5 +277,5 @@ void Boss::update(float deltaTime,
     // Delegar a enemigo::update para IA/patrulla normal
     enemigo::update(deltaTime,
                     moviendoDer, moviendoIzq,
-                    moviendoArriba, moviendoAbajo);
+                    moviendoArriba, moviendoAbajo, saludJugador);
 }

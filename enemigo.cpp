@@ -15,6 +15,14 @@ enemigo::enemigo(const sf::Vector2f& posInicial,
     _posInicial=posInicial;
     _cantAtaque=cantAtaque;
     _puntoPatrulla = puntoPatrulla;
+    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf")) {
+    std::cerr << "Error al cargar la fuente\n";
+}
+textoVida.setFont(fuenteTexto);
+textoVida.setCharacterSize(50);
+//textoVida.setScale(0.09f, 0.09f);
+textoVida.setOutlineColor(sf::Color::Black);
+textoVida.setOutlineThickness(1);
 }
 
 // Activa o desactiva el enemigo; si se desactiva, arranca el reloj de respawn.
@@ -33,6 +41,11 @@ bool enemigo::estaActivo() const {
 void enemigo::draw(sf::RenderWindow& window) {
     if (_activo) {
         personaje::draw(window);
+        std::cout << "Color final textoVida: ("
+          << (int)textoVida.getFillColor().r << ", "
+          << (int)textoVida.getFillColor().g << ", "
+          << (int)textoVida.getFillColor().b << ")\n";
+        window.draw(textoVida);
     }
 }
 
@@ -54,8 +67,37 @@ void enemigo::update(float deltaTime,
                      bool movDer,
                      bool movIzq,
                      bool movArr,
-                     bool movAbj)
+                     bool movAbj, int saludJugador )
 {
+
+//Asignar el texto y color después del update base
+textoVida.setString(std::to_string(getSalud()));
+std::cout << "Salud jugador: " << saludJugador
+          << " / Salud enemigo: " << getSalud() << "\n";
+
+if (saludJugador > 0) {
+    float ratio = static_cast<float>(getSalud()) / saludJugador;
+
+    if (ratio > 5.f)
+        textoVida.setFillColor(sf::Color::Red);
+    else if (ratio > 2.f)
+        textoVida.setFillColor(sf::Color::Green);
+    else if (ratio > 1.5f)
+        textoVida.setFillColor(sf::Color::Yellow);
+    else
+        textoVida.setFillColor(sf::Color::White);
+} else {
+    textoVida.setFillColor(sf::Color::White); // Por defecto
+}
+
+// Reposicionar el texto arriba del enemigo
+sf::FloatRect bounds = textoVida.getLocalBounds();
+sf::FloatRect spriteBounds = sprite.getGlobalBounds();
+textoVida.setPosition(
+    spriteBounds.left + (spriteBounds.width / 2.f) - (bounds.width / 2.f),
+    spriteBounds.top - bounds.height - 5.f
+);
+
     // 1) Respawn si está inactivo
     if (!_activo) {
         if (esBoss) return; // Si es un boss, nunca se reactiva
@@ -87,7 +129,7 @@ void enemigo::update(float deltaTime,
 
     // 2) Si está en combate por turnos, solo animar mediante personaje::update
     if (_modoBatalla) {
-        personaje::update(deltaTime, movDer, movIzq, movArr, movAbj);
+        personaje::update(deltaTime, movDer, movIzq, movArr, movAbj, saludJugador);
         return;
     }
 
@@ -112,9 +154,9 @@ if (_tiempoDesdeUltimoMovimiento >= 0.7f) {
 }
 
     // 4) Delegar animaciones de caminata/respiración a personaje::update
-    personaje::update(deltaTime, false, false, false, false);
-}
+    personaje::update(deltaTime, false, false, false, false, saludJugador);
 
+}
 // ataque: elige ataque aleatorio y lo ejecuta; devuelve el daño causado
 int enemigo::ataque(const sf::Vector2f& destino)
 {

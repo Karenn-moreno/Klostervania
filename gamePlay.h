@@ -96,4 +96,5 @@ private:
 
     sf::Image mascaraColision;
     bool esZonaLibre(const sf::FloatRect& area);
+
 };

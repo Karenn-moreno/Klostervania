@@ -87,4 +87,3 @@ void PopUpCartel::draw(sf::RenderWindow& window)
 bool PopUpCartel::isActive() const {
      return _activo;
      }
-

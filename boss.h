@@ -15,10 +15,10 @@ public:
     int ataque(const sf::Vector2f& destino) override;
 
     void update(float deltaTime,
-              bool moviendoDer    = false,
-              bool moviendoIzq    = false,
-              bool moviendoArriba = false,
-              bool moviendoAbajo  = false) override;
+              bool moviendoDer    ,
+              bool moviendoIzq    ,
+              bool moviendoArriba ,
+              bool moviendoAbajo  , int saludJugador) override;
 
 protected:
     bool esBoss = true;

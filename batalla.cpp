@@ -27,6 +27,11 @@ batalla::batalla(personaje& jugador,
     {
         _posEnemigoInicial = _adversarios[0]->getSprite().getPosition();
     }
+    // Asignamos el nombre del primer enemigo (solo hay uno por batalla)
+    if (!_adversarios.empty() && _adversarios[0])
+        nombreEnemigoActual = _adversarios[0]->getNombre();
+    else
+        nombreEnemigoActual = "";
 }
 
 void batalla::iniciarBatalla(sf::RenderWindow& window)
@@ -181,7 +186,7 @@ void batalla::actualizar(float deltaTime)
         return;
 
     enemigo* e = _adversarios[0];
-    e->update(deltaTime, false, false, false, false);
+    e->update(deltaTime, false, false, false, false,_jugador.getSalud());
 
     if (desvaneciendo)
     {
@@ -206,8 +211,8 @@ void batalla::actualizar(float deltaTime)
             enemigo* e = _adversarios[0];
             e->setActivo(false);
             terminado = true;
-                    sf::Vector2f esc = _jugador.getScale();
-         _jugador.setScale(esc.x / 3.f, esc.y / 3.f);
+            sf::Vector2f esc = _jugador.getScale();
+            _jugador.setScale(esc.x / 3.f, esc.y / 3.f);
         }
         return;
     }
@@ -255,7 +260,8 @@ void batalla::actualizar(float deltaTime)
                       << ", Ataque Pesado: " << _jugador.getAtaquePesado()
                       << ", Habilidad Especial: " << _jugador.getHabilidadEspecial()
                       << "\n";
-
+    // Comprobamos si es Laranas el enemigo derrotado
+    vencioLaranas();
             // 3) Arrancamos el fade out, sin esperar a que termine la animacion, da el efecto que se muere
             desvaneciendo = true;
             alphaFade     = 0.f;
@@ -359,6 +365,7 @@ void batalla::drawBatalla(sf::RenderWindow& window)
 
     // 8) Dibujar el pop-up (si está activo) para que permanezca visible
     popupFinBatalla.draw(window);
+
 }
 
 bool batalla::ganador() const
@@ -428,4 +435,14 @@ void batalla::fadeIn(sf::RenderWindow& window)
     }
 }
 
-
+bool batalla::vencioLaranas() {
+    if (nombreEnemigoActual == "Laranas") {
+        mensajeFinBatalla =
+            "¡Has derrotado al último boss!\n"
+            "El mal ha sido vencido...\n"
+            "\n\nGRACIAS POR JUGAR KLOSTERVANIA.";
+        ganoElJuego = true;
+        return true;
+    }
+    return false;
+}
