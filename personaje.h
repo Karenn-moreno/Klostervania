@@ -13,7 +13,8 @@ public:
     // 2) Nuevo constructor: recibe posición, ruta a spritesheet y escala
     personaje(const sf::Vector2f& posInicial,
               const std::string& rutaSpritesheet,
-              const sf::Vector2f& escala);
+              const sf::Vector2f& escala,
+              const std::string& nombrePersonaje = ""); ///AGREGUE NOMBRE
 
     virtual ~personaje() = default;  // Destructor virtual para herencia segura
 
@@ -28,6 +29,7 @@ public:
     int getAtaqueLigero() const;           // Devuelve el daño de ataque ligero
     int getAtaquePesado() const;           // Devuelve el daño de ataque pesado
     int getHabilidadEspecial() const;      // Devuelve el valor de la habilidad especial
+    std::string getNombre() const;///
 
     // --- Acciones de combate (pueden sobrescribirse) ---
     virtual void ataqueLigero(const sf::Vector2f& destino);
@@ -83,6 +85,7 @@ public:
 
 protected:
     estadoPersonaje estado = estadoPersonaje::quieto;
+    std::string nombre;/// AGREGUE
     int _cantAtaque;
     // --- Estadísticas del personaje ---
     int _salud = 1000;

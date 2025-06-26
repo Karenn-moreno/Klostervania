@@ -70,7 +70,8 @@ private:
     std::vector<std::shared_ptr<personaje>> prototipos;
     std::vector<std::shared_ptr<personaje>> roster;
     std::shared_ptr<personaje>              jugadorActivo;
-    void agregarPersonaje(const std::string& nombre, const std::string& ruta);
+    //void agregarPersonaje(const std::string& nombre, const std::string& ruta);
+    std::shared_ptr<personaje> agregarPersonaje(const std::string& nombre, const std::string& ruta);///
     void inicializarPrototipos();
 
     // ————— Enemigos del juego —————

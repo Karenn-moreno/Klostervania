@@ -6,6 +6,8 @@
 #include <memory>
 #include <algorithm>
 #include "personaje.h"
+#include "ArchivoPuntaje.h"
+#include "puntaje.h"
 
 // ====================================================
 //  Constructor y configuración inicial de gamePlay
@@ -443,10 +445,30 @@ if (ambosBossDerrotados)
     estado = EstadoJuego::MenuPrincipal;
 }
 */
+ ///REGISTRO PUNTAJE
+ // === Actualizar puntaje del personaje activo ===
+    std::string nombrePersonaje = jugadorActivo->getNombre(); // Asegurate de tener este método en personaje
+    ArchivoPuntaje archivo("puntos.dat");
 
-                    estado = EstadoJuego::Exploracion;
-                    // Nota: dejamos juegoIniciado = true para que siga la partida
-                }
+    int pos = archivo.buscarPorNombre(nombrePersonaje);
+    Puntaje puntaje;
+
+    if (pos == -1)
+        puntaje = Puntaje(nombrePersonaje, 0); // Crear nuevo puntaje si no existe
+    else
+        puntaje = archivo.leerRegistro(pos);   // Cargar el puntaje existente
+
+    puntaje.agregarPuntos(50); // O los puntos que consideres por victoria
+    std::cout << "El personaje " << nombrePersonaje << " obtuvo 50 puntos. Total actual: " << puntaje.getPuntos() << std::endl;
+
+    if (pos == -1)
+        archivo.grabarRegistro(puntaje);
+    else
+        archivo.actualizarRegistro(pos, puntaje);
+
+    // Continuar exploración
+    estado = EstadoJuego::Exploracion;
+     }
                 else
                 {
                     // -------- DERROTA --------
@@ -462,6 +484,26 @@ if (ambosBossDerrotados)
         }
     }
 }
+
+
+                    /*estado = EstadoJuego::Exploracion;
+                    // Nota: dejamos juegoIniciado = true para que siga la partida*/
+               /* }
+                else
+                {
+                    // -------- DERROTA --------
+                    // Volvemos al menú principal
+                    juegoIniciado = false;
+                    estado = EstadoJuego::MenuPrincipal;
+                }
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+}*/
 
 bool gamePlay::batallaPopupActive() const
 {
@@ -783,7 +825,7 @@ void gamePlay::seleccionPersonaje()
     estado = EstadoJuego::Exploracion;
 }
 
-void gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ruta)
+/*void gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ruta)
 {
     std::cout << "Intentando cargar textura: " << ruta << "\n";
 
@@ -798,11 +840,22 @@ void gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ru
     std::cout << "Agregado personaje " << nombre << " correctamente.\n";
 
     prototipos.push_back(personajePtr);
-}
+}*/
 
 void gamePlay::inicializarPrototipos()
 {
-    // ——— Personajes iniciales desbloqueados ———
+     // ——— Personajes iniciales desbloqueados ———
+    auto simon     = agregarPersonaje("Arcangel Simon", "img/spritesheet_Arcangel.png");
+    auto wennering = agregarPersonaje("Wennering",      "img/spritesheet_Wennering.png");
+    auto taparia   = agregarPersonaje("Taparia",        "img/spritesheet_Taparia.png");
+    auto vernary   = agregarPersonaje("Vernary",        "img/spritesheet_Vernary.png");
+
+    // Agregar al roster directamente
+    roster.push_back(simon);
+    roster.push_back(wennering);
+    roster.push_back(taparia);
+    roster.push_back(vernary);
+    /*// ——— Personajes iniciales desbloqueados ———
     agregarPersonaje("Arcangel Simon", "img/spritesheet_Arcangel.png");
     agregarPersonaje("Wennering",      "img/spritesheet_Wennering.png");
     agregarPersonaje("Taparia",        "img/spritesheet_Taparia.png");
@@ -812,12 +865,29 @@ void gamePlay::inicializarPrototipos()
     roster.push_back(prototipos[0]);
     roster.push_back(prototipos[1]);
     roster.push_back(prototipos[2]);
-    roster.push_back(prototipos[3]);
+    roster.push_back(prototipos[3]);*/
 
     // ——— Bosses que aparecen como bloqueados ———
     agregarPersonaje("Klosferatu",     "img/spritesheet_klosferatu.png");
     agregarPersonaje("Laranas",        "img/spritesheet_laranas.png");
 }
+
+std::shared_ptr<personaje> gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ruta)///agregue
+{
+    auto personajeNuevo = std::make_shared<personaje>(
+        sf::Vector2f{0.f, 0.f},
+        ruta,
+        sf::Vector2f{0.3f, 0.3f},
+        nombre
+    );
+
+    prototipos.push_back(personajeNuevo);
+    return personajeNuevo;
+}
+
+
+
+
 
 void gamePlay::iniciarNuevaPartida()
 {

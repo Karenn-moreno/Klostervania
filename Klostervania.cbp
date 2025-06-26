@@ -41,6 +41,8 @@
 			<Add library="sfml-system" />
 			<Add directory="SFML-2.6.0/lib" />
 		</Linker>
+		<Unit filename="ArchivoPuntaje.cpp" />
+		<Unit filename="ArchivoPuntaje.h" />
 		<Unit filename="batalla.cpp" />
 		<Unit filename="batalla.h">
 			<Option target="&lt;{~None~}&gt;" />
@@ -74,6 +76,8 @@
 		<Unit filename="popUpCartel.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="puntaje.cpp" />
+		<Unit filename="puntaje.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

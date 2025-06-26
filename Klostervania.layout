@@ -2,94 +2,65 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="personaje.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="personaje.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1783" topLine="35" />
+			<Cursor1 position="6150" topLine="121" />
 		</Cursor>
-		<Folding>
-			<Collapse line="5" />
-			<Collapse line="10" />
-			<Collapse line="15" />
-			<Collapse line="20" />
-			<Collapse line="25" />
-			<Collapse line="30" />
-			<Collapse line="35" />
-			<Collapse line="40" />
-			<Collapse line="60" />
-			<Collapse line="83" />
-			<Collapse line="119" />
-			<Collapse line="126" />
-			<Collapse line="498" />
-			<Collapse line="514" />
-			<Collapse line="530" />
-			<Collapse line="571" />
-			<Collapse line="576" />
-			<Collapse line="581" />
-			<Collapse line="586" />
-			<Collapse line="591" />
-			<Collapse line="596" />
-			<Collapse line="609" />
-			<Collapse line="614" />
-			<Collapse line="619" />
-			<Collapse line="623" />
-			<Collapse line="628" />
-			<Collapse line="639" />
-		</Folding>
-	</File>
-	<File name="menu.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1301" topLine="9" />
-		</Cursor>
-	</File>
-	<File name="main.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="212" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="gamePlay.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="13889" topLine="271" />
-		</Cursor>
-		<Folding>
-			<Collapse line="166" />
-			<Collapse line="302" />
-		</Folding>
-	</File>
-	<File name="boss.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="967" topLine="8" />
-		</Cursor>
-	</File>
-	<File name="item.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2797" topLine="162" />
-		</Cursor>
-	</File>
-	<File name="batalla.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7306" topLine="137" />
-		</Cursor>
-		<Folding>
-			<Collapse line="97" />
-			<Collapse line="298" />
-			<Collapse line="364" />
-			<Collapse line="380" />
-			<Collapse line="387" />
-		</Folding>
 	</File>
 	<File name="popUpCartel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="2623" topLine="59" />
 		</Cursor>
 	</File>
-	<File name="popUpCartel.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="item.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="387" topLine="5" />
+			<Cursor1 position="219" topLine="3" />
 		</Cursor>
 	</File>
-	<File name="personaje.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="489" topLine="0" />
+			<Cursor1 position="212" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="batalla.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4003" topLine="177" />
+		</Cursor>
+		<Folding>
+			<Collapse line="279" />
+			<Collapse line="298" />
+			<Collapse line="347" />
+			<Collapse line="349" />
+			<Collapse line="364" />
+		</Folding>
+	</File>
+	<File name="ArchivoPuntaje.cpp" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="565" topLine="43" />
+		</Cursor>
+	</File>
+	<File name="gamePlay.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2509" topLine="65" />
+		</Cursor>
+	</File>
+	<File name="personaje.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="474" topLine="46" />
+		</Cursor>
+		<Folding>
+			<Collapse line="45" />
+			<Collapse line="558" />
+		</Folding>
+	</File>
+	<File name="enemigo.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3583" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="enemigo.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="756" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="menu.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -97,37 +68,46 @@
 			<Cursor1 position="1721" topLine="14" />
 		</Cursor>
 	</File>
-	<File name="item.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="gamePlay.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1175" topLine="20" />
+			<Cursor1 position="14866" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="boss.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="batalla.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="9908" topLine="243" />
+			<Cursor1 position="633" topLine="9" />
 		</Cursor>
 	</File>
-	<File name="batalla.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="boss.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4626" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="enemigo.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1895" topLine="35" />
-		</Cursor>
-	</File>
-	<File name="gamePlay.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1975" topLine="51" />
-		</Cursor>
-	</File>
-	<File name="enemigo.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1761" topLine="54" />
+			<Cursor1 position="6515" topLine="186" />
 		</Cursor>
 		<Folding>
-			<Collapse line="119" />
+			<Collapse line="280" />
+			<Collapse line="346" />
+			<Collapse line="351" />
+			<Collapse line="356" />
+			<Collapse line="361" />
 		</Folding>
+	</File>
+	<File name="item.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2797" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="popUpCartel.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="387" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="boss.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3292" topLine="242" />
+		</Cursor>
+	</File>
+	<File name="menu.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1301" topLine="12" />
+		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
