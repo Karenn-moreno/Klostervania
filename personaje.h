@@ -26,7 +26,7 @@ public:
     void setHabilidadEspecial(int habilidadEspecial); // Establece el valor de la habilidad especial
 
     // --- Getters de estadísticas ---
-    const std::string& getNombre() const { return nombre; }
+    //const std::string& getNombre() const { return nombre; }
     int getSalud() const;                  // Devuelve los puntos de vida
     int getAtaqueLigero() const;           // Devuelve el daño de ataque ligero
     int getAtaquePesado() const;           // Devuelve el daño de ataque pesado
@@ -87,8 +87,9 @@ public:
 
     sf::Text textoVida;
     sf::Font fuenteTexto;
+    sf::Text& getTextoVida() { return textoVida; }
 protected:
-    std::string nombre;
+    //std::string nombre;
     estadoPersonaje estado = estadoPersonaje::quieto;
     std::string nombre;/// AGREGUE
     int _cantAtaque;

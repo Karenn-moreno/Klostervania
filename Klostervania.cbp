@@ -43,6 +43,10 @@
 		</Linker>
 		<Unit filename="ArchivoPuntaje.cpp" />
 		<Unit filename="ArchivoPuntaje.h" />
+		<Unit filename="CheckPoint.cpp" />
+		<Unit filename="CheckPoint.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="batalla.cpp" />
 		<Unit filename="batalla.h">
 			<Option target="&lt;{~None~}&gt;" />

@@ -1,0 +1,6 @@
+# Ignorar binarios
+*.o
+*.exe
+/bin/
+/obj/
+Klostervania.layout

@@ -67,14 +67,15 @@ personaje::personaje()
     }
     breathClock.restart();
 
-    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf")) {
-    std::cerr << "Error al cargar la fuente\n";
-}
-textoVida.setFont(fuenteTexto);
-textoVida.setCharacterSize(50);
-textoVida.setScale(0.09f, 0.09f);
-textoVida.setOutlineColor(sf::Color::Black);
-textoVida.setOutlineThickness(1);
+    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf"))
+    {
+        std::cerr << "Error al cargar la fuente\n";
+    }
+    textoVida.setFont(fuenteTexto);
+    textoVida.setCharacterSize(50);
+    textoVida.setScale(0.09f, 0.09f);
+    textoVida.setOutlineColor(sf::Color::Black);
+    textoVida.setOutlineThickness(1);
 }
 
 
@@ -120,15 +121,16 @@ personaje::personaje(const sf::Vector2f& posInicial,
 
     // 5) Reiniciar reloj de respiración
     breathClock.restart();
-    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf")) {
-    std::cerr << "Error al cargar la fuente\n";
-}
-textoVida.setFont(fuenteTexto);
-textoVida.setCharacterSize(50);
-textoVida.setScale(0.09f, 0.09f);
-textoVida.setOutlineColor(sf::Color::Black);
-textoVida.setOutlineThickness(1);
-textoVida.setFillColor(sf::Color::White);  // Blanco para jugador
+    if (!fuenteTexto.loadFromFile("fonts/Rochester-Regular.ttf"))
+    {
+        std::cerr << "Error al cargar la fuente\n";
+    }
+    textoVida.setFont(fuenteTexto);
+    textoVida.setCharacterSize(50);
+    textoVida.setScale(0.09f, 0.09f);
+    textoVida.setOutlineColor(sf::Color::Black);
+    textoVida.setOutlineThickness(1);
+    textoVida.setFillColor(sf::Color::White);  // Blanco para jugador
 }
 
 void personaje::mover(float offsetX, float offsetY)
@@ -157,19 +159,19 @@ void personaje::update(float deltaTime,
                        bool movArriba,
                        bool movAbajo, int saludJugador)
 {
-        // Actualizar el texto de vida (contenido y posición)
-textoVida.setString(std::to_string(getSalud()));
+    // Actualizar el texto de vida (contenido y posición)
+    textoVida.setString(std::to_string(getSalud()));
 
 
 // Calcular centrado sobre el sprite
-sf::FloatRect spriteBounds = sprite.getGlobalBounds();
-sf::FloatRect textBounds   = textoVida.getGlobalBounds();
+    sf::FloatRect spriteBounds = sprite.getGlobalBounds();
+    sf::FloatRect textBounds   = textoVida.getGlobalBounds();
 
-float centroX = spriteBounds.left + spriteBounds.width / 2.f;
-float textoOffsetX = textBounds.width / 2.f;
-float arribaY = spriteBounds.top - 5.f;
+    float centroX = spriteBounds.left + spriteBounds.width / 2.f;
+    float textoOffsetX = textBounds.width / 2.f;
+    float arribaY = spriteBounds.top - 10.f;
 
-textoVida.setPosition(centroX - textoOffsetX, arribaY);
+    textoVida.setPosition(centroX - textoOffsetX, arribaY);
 
     // A) Secuencia de ataque ligero
     if (estado == estadoPersonaje::ataqueLigero)
@@ -198,7 +200,8 @@ textoVida.setPosition(centroX - textoOffsetX, arribaY);
         if (!ataqueLlegado)
         {
             // siempre dibuja el primer frame de la fila de ataque:
-            frameActual = {
+            frameActual =
+            {
                 0,
                 filaFrameAtaqueLigero * frameHeight,
                 frameWidth,
@@ -232,7 +235,8 @@ textoVida.setPosition(centroX - textoOffsetX, arribaY);
                 frameTimer -= frameTime;
                 currentFrame++;
             }
-            frameActual = {
+            frameActual =
+            {
                 currentFrame * frameWidth,
                 filaFrameAtaqueLigero * frameHeight,
                 frameWidth,
@@ -287,11 +291,11 @@ textoVida.setPosition(centroX - textoOffsetX, arribaY);
         if (!ataqueLlegado)
         {
             frameActual = sf::IntRect(
-                0,
-                filaFrameAtaquePesado * frameHeight,
-                frameWidth,
-                frameHeight
-            );
+                              0,
+                              filaFrameAtaquePesado * frameHeight,
+                              frameWidth,
+                              frameHeight
+                          );
             sprite.setTextureRect(frameActual);
             sf::Vector2f dir = ataqueTargetPos - sprite.getPosition();
             float dist = std::hypot(dir.x, dir.y);
@@ -317,11 +321,11 @@ textoVida.setPosition(centroX - textoOffsetX, arribaY);
                 currentFrame++;
             }
             frameActual = sf::IntRect(
-                currentFrame * frameWidth,
-                filaFrameAtaquePesado * frameHeight,
-                frameWidth,
-                frameHeight
-            );
+                              currentFrame * frameWidth,
+                              filaFrameAtaquePesado * frameHeight,
+                              frameWidth,
+                              frameHeight
+                          );
             sprite.setTextureRect(frameActual);
         }
         else
@@ -509,10 +513,11 @@ textoVida.setPosition(centroX - textoOffsetX, arribaY);
 
         // Frame fijo de quieto en la fila 6
         sprite.setTextureRect(
-            { 0,
-              filaFrameQuieto * frameHeight,
-              frameWidth,
-              frameHeight }
+        {
+            0,
+            filaFrameQuieto * frameHeight,
+            frameWidth,
+            frameHeight }
         );
 
         // Restaurar escala y origen en la base
@@ -524,10 +529,10 @@ textoVida.setPosition(centroX - textoOffsetX, arribaY);
     }
 
     // D) Respiración / pulso  (opcional, comentado si no se quiere)
-     float t = breathClock.getElapsedTime().asSeconds();
-     float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
-     float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
-     sprite.setScale(signX * baseScaleX * factor, baseScaleY * factor);
+    float t = breathClock.getElapsedTime().asSeconds();
+    float factor = 1.f + breathAmplitude * std::sin(2.f * 3.14159265f * breathSpeed * t);
+    float signX = (sprite.getScale().x < 0) ? -1.f : 1.f;
+    sprite.setScale(signX * baseScaleX * factor, baseScaleY * factor);
 }
 
 void personaje::ataqueLigero(const sf::Vector2f& destino)
@@ -575,25 +580,27 @@ void personaje::habilidadEspecial(const sf::Vector2f& destino)
         proyectilActivo = true;
         projectileFrame = 0;
 
-         //Ajustar el destino del proyectil 100px más arriba
+        //Ajustar el destino del proyectil 100px más arriba
         sf::Vector2f targetProy = { destino.x, destino.y  +200.f };
         ataqueTargetPos = targetProy;
 
         // Fijar el primer frame de la habilidad en el personaje
         sprite.setTextureRect(
-            { 0,
-              filaFrameHabilidadEspecial * frameHeight,
-              frameWidth,
-              frameHeight }
+        {
+            0,
+            filaFrameHabilidadEspecial * frameHeight,
+            frameWidth,
+            frameHeight }
         );
 
         // Asignar textura al proyectil y fijar su frame inicial
         spriteProyectil.setTexture(textura);
         spriteProyectil.setTextureRect(
-            { 0,
-              filaFrameHabilidadEspecial * frameHeight,
-              frameWidth,
-              frameHeight }
+        {
+            0,
+            filaFrameHabilidadEspecial * frameHeight,
+            frameWidth,
+            frameHeight }
         );
 
         // Inicializar el proyectil en la X del personaje, Y=0
@@ -656,7 +663,8 @@ void personaje::setEstado(estadoPersonaje nuevoEstado)
     estado = nuevoEstado;
 }
 
-sf::Sprite& personaje::getSprite() {
+sf::Sprite& personaje::getSprite()
+{
     return sprite;
 }
 
@@ -672,10 +680,12 @@ void personaje::setFrameAtaque(int frame)
     sprite.setTextureRect(frameActual);
 }
 
-sf::Vector2f personaje::getScale() const {
+sf::Vector2f personaje::getScale() const
+{
     return sprite.getScale();
 }
 
-std::string personaje::getNombre() const { ///
+std::string personaje::getNombre() const   ///
+{
     return nombre;
 }

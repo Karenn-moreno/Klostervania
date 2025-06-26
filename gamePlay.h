@@ -10,7 +10,8 @@
 #include <SFML/Audio.hpp>
 #include <memory>
 #include <vector>
-#include <chrono>   // para std::chrono::seconds
+#include "CheckPoint.h"
+#include "ArchivoPuntaje.h"
 
 class gamePlay
 {
@@ -18,6 +19,8 @@ public:
     gamePlay();
     void ejecutar();
     void iniciarNuevaPartida();
+    void continuarPartida();
+    void record();
     void seleccionPersonaje();
     void unlockPersonaje(int id);
 
@@ -97,5 +100,9 @@ private:
 
     sf::Image mascaraColision;
     bool esZonaLibre(const sf::FloatRect& area);
+
+    CheckPoint libroCheckPoint;
+    sf::Texture texturaLibro;
+    ArchivoPuntaje archivoPuntaje{"puntos.dat"};
 
 };

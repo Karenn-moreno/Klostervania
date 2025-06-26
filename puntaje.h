@@ -16,4 +16,5 @@ public:
     void setNombre(const std::string& n);
     void setPuntos(int p);
     void agregarPuntos(int cantidad);
+
 };

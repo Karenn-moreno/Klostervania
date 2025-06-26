@@ -1,7 +1,6 @@
 #include "gamePlay.h"
 #include "batalla.h"
 #include "popUpCartel.h"
-#include <thread>// borrarrrrrrrrrrrrrrrrrrr
 #include <iostream>
 #include <memory>
 #include <algorithm>
@@ -9,9 +8,6 @@
 #include "ArchivoPuntaje.h"
 #include "puntaje.h"
 
-// ====================================================
-//  Constructor y configuración inicial de gamePlay
-// ====================================================
 gamePlay::gamePlay()
     : window        (sf::VideoMode(1500, 900), "KLOSTERVANIA")
     , ejecutando    (true)
@@ -37,7 +33,7 @@ gamePlay::gamePlay()
 
     mascaraColision.loadFromFile("img/mapa_colisiones_escalado.png");
     std::cout << "Intentando cargar máscara de colisión...\n";
-    if (!mascaraColision.loadFromFile("img/mapa_colisiones.png"))
+    if (!mascaraColision.loadFromFile("img/mapa_colisiones_escalado.png"))
     {
         std::cerr << "ERROR: No se pudo cargar la máscara de colisión\n";
     }
@@ -77,6 +73,12 @@ gamePlay::gamePlay()
     castle.setBuffer(buffercastle);
     battle.setBuffer(bufferbattle);
 
+if (!texturaLibro.loadFromFile("img/item_libro.png")){
+    std::cerr << "No se pudo cargar el libro\n";
+}
+    else
+    std::cout << "Libro cargado correctamente\n";
+libroCheckPoint.setPosition(780.f, 350.f);
     ///MODULAR VOLUMEN
     castle.setVolume(15.f);
     battle.setVolume(20.f);
@@ -91,6 +93,15 @@ void gamePlay::procesarEventos()
     sf::Event event;
     while (window.pollEvent(event))
     {
+        // Si el popup está activo, solo permitimos cerrarlo con Enter y salimos
+        if (popupCartel.isActive())
+        {
+            if (popupCartel.handleEvent(event))
+            {
+                // Se cerró el popup: salimos del manejo de eventos para evitar que se procese Enter de nuevo
+            }
+            return;  //detiene el procesamiento después del popup
+        }
         // 1) Salida de la aplicación
         if (event.type == sf::Event::Closed)
         {
@@ -98,6 +109,7 @@ void gamePlay::procesarEventos()
             window.close();
         }
         itemRecolectable.handleEvent(event);
+        libroCheckPoint.handleEvent(event);
 
         // 2) Pausa tras recoger ítem
         if (estado == EstadoJuego::dialogoItem)
@@ -134,11 +146,11 @@ void gamePlay::procesarEventos()
                     break;
                 case 1:  // Continuar Partida
                     std::cout << "\nEntrando a Continuar partida";
-                    // continuarPartida();
+                     continuarPartida();
                     break;
                 case 2:  // Record
                     std::cout << "\nEntrando a records";
-                    // record();
+                    record();
                     break;
                 case 3:  // Créditos
                     std::cout << "\nEntrando a los creditos";
@@ -185,6 +197,8 @@ void gamePlay::updatePersonaje(sf::Time dt)
     // 2) Detectar recogida antes de moverse
     if (estado == EstadoJuego::Exploracion && jugadorActivo)
     {
+        libroCheckPoint.update(*jugadorActivo, window.getSize());
+
         if (itemRecolectable.tryPickup(*jugadorActivo))
         {
             estado = EstadoJuego::dialogoItem;
@@ -305,6 +319,11 @@ void gamePlay::drawMenuPrincipal()
         menuPrincipal.dibujarMenu(window);
     }
 
+    if (popupCartel.isActive())
+    {
+        popupCartel.draw(window);
+    }
+
     window.display();
 }
 
@@ -337,6 +356,7 @@ void gamePlay::drawExploracion()
 
         // Dibujar ítem si corresponde
         itemRecolectable.draw(window);
+        libroCheckPoint.draw(window);
     }
 
     window.display();
@@ -352,6 +372,12 @@ void gamePlay::ejecutar()
         switch (estado)
         {
         case EstadoJuego::MenuPrincipal:
+            // Si hay popup activo, no proceses nada más
+            if (popupCartel.isActive())
+            {
+                drawMenuPrincipal();
+                break;  // Nos quedamos mostrando el popup
+            }
             drawMenuPrincipal();
             break;
 
@@ -433,50 +459,40 @@ void gamePlay::ejecutar()
                 batallaGamePlay   = nullptr;
                 batallaIniciada   = false;
 
-  if (jugadorGano)
-    {
-        if (victoriaFinal)
-        {
-            juegoIniciado = false;
-            estado = EstadoJuego::MenuPrincipal;
-        }
-        else
-        {
-            estado = EstadoJuego::Exploracion;
-            // Nota: dejamos juegoIniciado = true para que siga la partida
-        }
-    }
-}
-if (ambosBossDerrotados)
-{
-    popupCartel.mostrar("¡Has derrotado a los jefes finales!\nEl mal ha sido vencido...\n\nGRACIAS POR JUGAR KLOSTERVANIA.", window.getSize());
-    juegoIniciado = false;
-    estado = EstadoJuego::MenuPrincipal;
-}
- ///REGISTRO PUNTAJE
- // === Actualizar puntaje del personaje activo ===
-    std::string nombrePersonaje = jugadorActivo->getNombre(); // Asegurate de tener este método en personaje
-    ArchivoPuntaje archivo("puntos.dat");
+                if (jugadorGano)
+                {
+                    if (victoriaFinal)
+                    {
+                        juegoIniciado = false;
+                        estado = EstadoJuego::MenuPrincipal;
+                    }
+                    else
+                    {
+                        ///REGISTRO PUNTAJE
+                        // === Actualizar puntaje del personaje activo ===
+                        std::string nombrePersonaje = jugadorActivo->getNombre(); //
+                        ArchivoPuntaje archivo("puntos.dat");
 
-    int pos = archivo.buscarPorNombre(nombrePersonaje);
-    Puntaje puntaje;
+                        int pos = archivo.buscarPorNombre(nombrePersonaje);
+                        Puntaje puntaje;
 
-    if (pos == -1)
-        puntaje = Puntaje(nombrePersonaje, 0); // Crear nuevo puntaje si no existe
-    else
-        puntaje = archivo.leerRegistro(pos);   // Cargar el puntaje existente
+                        if (pos == -1)
+                            puntaje = Puntaje(nombrePersonaje, 0); // Crear nuevo puntaje si no existe
+                        else
+                            puntaje = archivo.leerRegistro(pos);   // Cargar el puntaje existente
 
-    puntaje.agregarPuntos(50); // O los puntos que consideres por victoria
-    std::cout << "El personaje " << nombrePersonaje << " obtuvo 50 puntos. Total actual: " << puntaje.getPuntos() << std::endl;
+                        puntaje.agregarPuntos(50); // O los puntos que consideres por victoria
+                        std::cout << "El personaje " << nombrePersonaje << " obtuvo 50 puntos. Total actual: " << puntaje.getPuntos() << std::endl;
 
-    if (pos == -1)
-        archivo.grabarRegistro(puntaje);
-    else
-        archivo.actualizarRegistro(pos, puntaje);
-
-    // Continuar exploración
-    estado = EstadoJuego::Exploracion;
-     }
+                        if (pos == -1)
+                            archivo.grabarRegistro(puntaje);
+                        else
+                            archivo.actualizarRegistro(pos, puntaje);
+                        // Continuar exploración
+                        estado = EstadoJuego::Exploracion;
+                        // Nota: dejamos juegoIniciado = true para que siga la partida
+                    }
+                }
                 else
                 {
                     // -------- DERROTA --------
@@ -492,26 +508,6 @@ if (ambosBossDerrotados)
         }
     }
 }
-
-
-                    estado = EstadoJuego::Exploracion;
-                    // Nota: dejamos juegoIniciado = true para que siga la partida*/
-                }
-                else
-                {
-                    // -------- DERROTA --------
-                    // Volvemos al menú principal
-                    juegoIniciado = false;
-                    estado = EstadoJuego::MenuPrincipal;
-                }
-            }
-            break;
-
-        default:
-            break;
-        }
-    }
-
 
 bool gamePlay::batallaPopupActive() const
 {
@@ -522,63 +518,53 @@ void gamePlay::inicializarEnemigos()
 {
 
     /////////////////////////////////////////////// murcielagos  ////////////////////////////////////////////////////////////////////
-       sf::Vector2f posMurcielagos1(200.f, 100.f);
-       sf::Vector2f puntoPatrullaMurcielagos1(200.f, 270.f);
-       std::string rutaMurcielagos1 = "img/murcielagos.png";
-       sf::Vector2f escalaMurcielagos1   = {0.12f, 0.12f};
-       enemigo* murcielagos1 = new enemigo(posMurcielagos1, rutaMurcielagos1, escalaMurcielagos1, puntoPatrullaMurcielagos1, 1);
-       murcielagos1->setSalud(50);
-       enemigos.push_back(murcielagos1);
+    sf::Vector2f posMurcielagos1(200.f, 100.f);
+    sf::Vector2f puntoPatrullaMurcielagos1(200.f, 270.f);
+    std::string rutaMurcielagos1 = "img/murcielagos.png";
+    sf::Vector2f escalaMurcielagos1   = {0.12f, 0.12f};
+    enemigo* murcielagos1 = new enemigo(posMurcielagos1, rutaMurcielagos1, escalaMurcielagos1, puntoPatrullaMurcielagos1, 1);
+    murcielagos1->setSalud(50);
+    enemigos.push_back(murcielagos1);
 
 
     ////////////////////////////////////////////  esqueletos verde solo 2 atq ///////////////////////////////////////////////////////////
-
-       sf::Vector2f posEsqueletoVerde1(300.f, 200.f);
-       sf::Vector2f puntoPatrullaEsqueletoVerde1(300.f, 150.f);
-       std::string rutaEsqueletoVerde1 = "img/esqueleto_verde.png";
-       sf::Vector2f escalaEsqueletoVerde1   = {0.12f, 0.12f};
-       enemigo* esqueletoVerde1 = new enemigo(posEsqueletoVerde1, rutaEsqueletoVerde1, escalaEsqueletoVerde1, puntoPatrullaEsqueletoVerde1, 2);
-       esqueletoVerde1->setSalud(1580);
-       enemigos.push_back(esqueletoVerde1);
-
-
-    ///////////////////////////////////////////// Esqueletos 2 ataques  /////////////////////////////////////////////////////////////////
-       sf::Vector2f posEsqueleto1(500.f, 280.f);
-       sf::Vector2f puntoPatrullaEsqueleto1(550.f, 250.f);
-       std::string rutaEsqueleto1 = "img/esqueleto.png";
-       sf::Vector2f escalaEsqueleto1   = {0.12f, 0.12f};
-       enemigo* esqueleto1 = new enemigo(posEsqueleto1, rutaEsqueleto1, escalaEsqueleto1, puntoPatrullaEsqueleto1, 2);
-       esqueleto1->setSalud(2501);
-       enemigos.push_back(esqueleto1);
+/*
+    sf::Vector2f posEsqueletoVerde1(300.f, 200.f);
+    sf::Vector2f puntoPatrullaEsqueletoVerde1(300.f, 150.f);
+    std::string rutaEsqueletoVerde1 = "img/esqueleto_verde.png";
+    sf::Vector2f escalaEsqueletoVerde1   = {0.12f, 0.12f};
+    enemigo* esqueletoVerde1 = new enemigo(posEsqueletoVerde1, rutaEsqueletoVerde1, escalaEsqueletoVerde1, puntoPatrullaEsqueletoVerde1, 2);
+    esqueletoVerde1->setSalud(100);
+    enemigos.push_back(esqueletoVerde1);
 
     ////////////////////////////////////////////// vampiros 2 ataques  //////////////////////////////////////////////////////////////////
-       sf::Vector2f posVampiro1(300.f, 280.f);
-       sf::Vector2f puntoPatrullaVampiro1(450.f, 200.f);
-       std::string rutaVampiro1 = "img/vampiro.png";
-       sf::Vector2f escalaVampiro1   = {0.12f, 0.12f};
-       enemigo* vampiro1 = new enemigo(posVampiro1, rutaVampiro1, escalaVampiro1, puntoPatrullaVampiro1, 2);
-       vampiro1->setSalud(15500);
-       enemigos.push_back(vampiro1);
+    sf::Vector2f posVampiro1(300.f, 280.f);
+    sf::Vector2f puntoPatrullaVampiro1(450.f, 200.f);
+    std::string rutaVampiro1 = "img/vampiro.png";
+    sf::Vector2f escalaVampiro1   = {0.12f, 0.12f};
+    enemigo* vampiro1 = new enemigo(posVampiro1, rutaVampiro1, escalaVampiro1, puntoPatrullaVampiro1, 2);
+    vampiro1->setSalud(1500);
+    enemigos.push_back(vampiro1);
 
     ///////////////////////////////////////////// Esqueletos 3 ataques  //////////////////////////////////////////////////////////////
-       sf::Vector2f posEsqueleto10(500.f, 280.f);
-       sf::Vector2f puntoPatrullaEsqueleto10(550.f, 250.f);
-       std::string rutaEsqueleto10 = "img/esqueleto.png";
-       sf::Vector2f escalaEsqueleto10   = {0.12f, 0.12f};
-       enemigo* esqueleto10 = new enemigo(posEsqueleto10, rutaEsqueleto10, escalaEsqueleto10, puntoPatrullaEsqueleto10, 3);
-       esqueleto10->setSalud(100);
-       enemigos.push_back(esqueleto10);
+    sf::Vector2f posEsqueleto10(500.f, 280.f);
+    sf::Vector2f puntoPatrullaEsqueleto10(550.f, 250.f);
+    std::string rutaEsqueleto10 = "img/esqueleto.png";
+    sf::Vector2f escalaEsqueleto10   = {0.12f, 0.12f};
+    enemigo* esqueleto10 = new enemigo(posEsqueleto10, rutaEsqueleto10, escalaEsqueleto10, puntoPatrullaEsqueleto10, 3);
+    esqueleto10->setSalud(20);
+    enemigos.push_back(esqueleto10);
 
     ////////////////////////////////////////////// vampiros 3 ataques  //////////////////////////////////////////////////////////////
-       sf::Vector2f posVampiro10(300.f, 680.f);
-       sf::Vector2f puntoPatrullaVampiro10(450.f, 650.f);
-       std::string rutaVampiro10 = "img/vampiro.png";
-       sf::Vector2f escalaVampiro10   = {0.12f, 0.12f};
-       enemigo* vampiro10 = new enemigo(posVampiro10, rutaVampiro10, escalaVampiro10, puntoPatrullaVampiro10, 3);
-       vampiro10->setSalud(150);
-       enemigos.push_back(vampiro10);
+    sf::Vector2f posVampiro10(300.f, 680.f);
+    sf::Vector2f puntoPatrullaVampiro10(450.f, 650.f);
+    std::string rutaVampiro10 = "img/vampiro.png";
+    sf::Vector2f escalaVampiro10   = {0.12f, 0.12f};
+    enemigo* vampiro10 = new enemigo(posVampiro10, rutaVampiro10, escalaVampiro10, puntoPatrullaVampiro10, 3);
+    vampiro10->setSalud(3000);
+    enemigos.push_back(vampiro10);
 
-
+*/
 
 
 /////////////////////////////////////////////////////////  BOSSES  ///////////////////////////////////////////////////////////
@@ -588,7 +574,7 @@ void gamePlay::inicializarEnemigos()
     std::string rutaLaranas = "img/spritesheet_laranas.png";
     sf::Vector2f escalaLar  = {0.2f, 0.2f};
     Boss* laranas = new Boss(posLaranas, rutaLaranas, escalaLar, puntoPatrullaLaranas,5);
-    laranas->setSalud(13000);
+    laranas->setSalud(50000);
     enemigos.push_back(laranas);
 
     // 2) Boss “Klosferatu”
@@ -597,7 +583,7 @@ void gamePlay::inicializarEnemigos()
     std::string rutaKlosferatu = "img/spritesheet_klosferatu.png";
     sf::Vector2f escalaKlosferatu  = {0.2f, 0.2f};
     Boss* klosferatu = new Boss(posKlosferatu, rutaKlosferatu, escalaKlosferatu, puntoPatrullaKlosferatu,5);
-    klosferatu->setSalud(50000);
+    klosferatu->setSalud(13000);
     enemigos.push_back(klosferatu);
 }
 
@@ -616,7 +602,6 @@ void gamePlay::unlockPersonaje(int prototipoIndex)//nose si llegamosss
     roster.push_back(nuevo);
     popupCartel.mostrar("¡Has encontrado un nuevo personaje!", window.getSize());
 }
-
 void gamePlay::mostrarGameOver()
 {
     // 1) Texto de derrota
@@ -834,26 +819,9 @@ void gamePlay::seleccionPersonaje()
     estado = EstadoJuego::Exploracion;
 }
 
-void gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ruta)
-{
-    std::cout << "Intentando cargar textura: " << ruta << "\n";
-
-    auto personajePtr = std::make_shared<personaje>(sf::Vector2f{0.f, 0.f}, ruta, sf::Vector2f{0.5f, 0.5f});
-    if (!personajePtr->getSprite().getTexture())
-    {
-        std::cout << "Error al cargar personaje: " << nombre << "\n";
-        return;
-    }
-
-    std::cout << "Textura cargada OK: " << ruta << "\n";
-    std::cout << "Agregado personaje " << nombre << " correctamente.\n";
-
-    prototipos.push_back(personajePtr);
-}
-
 void gamePlay::inicializarPrototipos()
 {
-     // ——— Personajes iniciales desbloqueados ———
+    // ——— Personajes iniciales desbloqueados ———
     auto simon     = agregarPersonaje("Arcangel Simon", "img/spritesheet_Arcangel.png");
     auto wennering = agregarPersonaje("Wennering",      "img/spritesheet_Wennering.png");
     auto taparia   = agregarPersonaje("Taparia",        "img/spritesheet_Taparia.png");
@@ -864,39 +832,20 @@ void gamePlay::inicializarPrototipos()
     roster.push_back(wennering);
     roster.push_back(taparia);
     roster.push_back(vernary);
-    /*// ——— Personajes iniciales desbloqueados ———
-    agregarPersonaje("Arcangel Simon", "img/spritesheet_Arcangel.png");
-    agregarPersonaje("Wennering",      "img/spritesheet_Wennering.png");
-    agregarPersonaje("Taparia",        "img/spritesheet_Taparia.png");
-    agregarPersonaje("Vernary",        "img/spritesheet_Vernary.png");
-
-    // Agregar al roster los jugables desde el inicio
-    roster.push_back(prototipos[0]);
-    roster.push_back(prototipos[1]);
-    roster.push_back(prototipos[2]);
-    roster.push_back(prototipos[3]);*/
 
     // ——— Bosses que aparecen como bloqueados ———
     agregarPersonaje("Klosferatu",     "img/spritesheet_klosferatu.png");
     agregarPersonaje("Laranas",        "img/spritesheet_laranas.png");
+
 }
 
 std::shared_ptr<personaje> gamePlay::agregarPersonaje(const std::string& nombre, const std::string& ruta)///agregue
 {
-    auto personajeNuevo = std::make_shared<personaje>(
-        sf::Vector2f{0.f, 0.f},
-        ruta,
-        sf::Vector2f{0.3f, 0.3f},
-        nombre
-    );
+    auto personajeNuevo = std::make_shared<personaje>(sf::Vector2f{0.f, 0.f}, ruta, sf::Vector2f{0.3f, 0.3f}, nombre );
 
     prototipos.push_back(personajeNuevo);
     return personajeNuevo;
 }
-
-
-
-
 
 void gamePlay::iniciarNuevaPartida()
 {
@@ -1007,3 +956,104 @@ bool gamePlay::esZonaLibre(const sf::FloatRect& area)                   ///recib
     return true;
 }
 
+void gamePlay::record()
+{
+
+    static bool recursosCargados = false;
+    if (!recursosCargados)
+    {
+        try
+        {
+            popupCartel.cargarRecursos("img/panel_item.png", "fonts/Rochester-Regular.ttf");
+            recursosCargados = true;
+            std::cout << " popupCartel recursos cargados en record()\n";
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Error cargando recursos del popupCartel: " << e.what() << "\n";
+            return; // Salimos si no podemos mostrar el ranking
+        }
+    }
+
+    ArchivoPuntaje archivo("puntos.dat");
+    std::vector<Puntaje> lista = archivo.leerTodos();
+
+    std::cout << ">> record() ejecutado, lista tiene: " << lista.size() << " elementos\n";
+
+    std::sort(lista.begin(), lista.end(), [](const Puntaje& a, const Puntaje& b)
+    {
+        return a.getPuntos() > b.getPuntos();
+    });
+
+    std::string textoRanking = "🏆 RANKING DE PUNTOS 🏆\n\n";
+    int limite = std::min(5, static_cast<int>(lista.size()));
+
+    for (int i = 0; i < limite; ++i)
+    {
+        textoRanking += std::to_string(i + 1) + ") ";
+        textoRanking += lista[i].getNombre() + ": ";
+        textoRanking += std::to_string(lista[i].getPuntos()) + " pts\n";
+    }
+
+    if (lista.empty())
+        textoRanking += "Sin registros aún.\n";
+
+    popupCartel.mostrar(textoRanking, window.getSize());
+}
+
+void gamePlay::continuarPartida()
+{
+    std::cout << "\nEntrando a Continuar partida\n";
+    std::cout << "Cargando partida...\n";
+
+    // Abrimos manualmente partida.dat para leer el nombre
+    std::ifstream in("partida.dat");
+    if (!in.is_open()) {
+        std::cerr << "No se pudo abrir partida.dat\n";
+        return;
+    }
+
+    std::string nombre;
+    std::getline(in, nombre);  // Primera línea = nombre del personaje
+
+    // Seleccionamos la ruta del sprite según el nombre
+    std::string rutaSprite;
+    if (nombre == "Arcangel Simon")
+        rutaSprite = "img/spritesheet_Arcangel.png";
+    else if (nombre == "Wennering")
+        rutaSprite = "img/spritesheet_Wennering.png";
+    else if (nombre == "Taparia")
+        rutaSprite = "img/spritesheet_Taparia.png";
+    else if (nombre == "Vernary")
+        rutaSprite = "img/spritesheet_Vernary.png";
+    else {
+        std::cerr << "Nombre no reconocido en el guardado: " << nombre << "\n";
+        return;
+    }
+
+    // Creamos al jugadorActivo con sus valores iniciales
+    jugadorActivo = agregarPersonaje(nombre, rutaSprite);
+    std::cout << "ESCALA jugadorActivo: "
+          << jugadorActivo->getScale().x << ", "
+          << jugadorActivo->getScale().y << "\n";
+    jugadorActivo->setScale(0.1f, 0.1f);
+    jugadorActivo->setNombre(nombre);
+
+    // Cargamos el resto de los datos del archivo
+    int salud, al, ap, he;
+    float posX, posY;
+    in >> salud >> al >> ap >> he >> posX >> posY;
+    in.close();
+
+    jugadorActivo->setSalud(salud);
+    jugadorActivo->setAtaqueLigero(al);
+    jugadorActivo->setAtaquePesado(ap);
+    jugadorActivo->setHabilidadEspecial(he);
+    jugadorActivo->setPosition({posX+70.f, posY+50.f});
+
+    inicializarEnemigos();
+    juegoIniciado = true;
+    estado = EstadoJuego::Exploracion;
+
+    std::cout << "Partida cargada correctamente: " << nombre << "\n";
+}

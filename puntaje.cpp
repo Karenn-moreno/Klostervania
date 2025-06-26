@@ -30,3 +30,5 @@ void Puntaje::setPuntos(int p) {
 void Puntaje::agregarPuntos(int cantidad) {
     puntos += cantidad;
 }
+
+

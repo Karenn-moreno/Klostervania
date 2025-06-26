@@ -81,10 +81,12 @@ void batalla::iniciarBatalla(sf::RenderWindow& window)
         e->setPosition(posX, pisoY);
         sf::Vector2f esc = e->getScale();
         e->setScale(esc.x * 3.f, esc.y * 3.f);
+        e->getTextoVida().setScale(0.3f, 0.3f); // Escalar su texto de vida
         e->setModoBatalla(true);
     }
     sf::Vector2f esc = _jugador.getScale();
     _jugador.setScale(esc.x * 3.f, esc.y * 3.f);
+    _jugador.getTextoVida().setScale(0.3f, 0.3f); // Escalar el texto de vida también
 
     // 5) Resetear flags y datos de turno
     terminado         = false;
@@ -126,54 +128,68 @@ void batalla::manejarInput()
         switch (_opcionSeleccionada)
         {
         case 0:  // Ataque Ligero
-            vidaAdversario -= _jugador.getAtaqueLigero();
-            msj += "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "
-                   + std::to_string(vidaAdversario) + " de salud";
-            mostrarMensaje(msj);
-            std::cout << "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene " << vidaAdversario << " de vida\n";
-            _jugador.ataqueLigero({1100.f, 740.f});
-            turnoActual = Turno::Enemigo;
-            _rondaCarga++;
-            break;
+{
+    enemigo* enemigoActual = _adversarios[0];
+    int nuevaVida = enemigoActual->getSalud() - _jugador.getAtaqueLigero();
+    enemigoActual->setSalud(nuevaVida);
 
-        case 1:  // Ataque Pesado
-            if (_rondaCarga >= 2)
-            {
-                vidaAdversario -= _jugador.getAtaquePesado();
-                msj += "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene "
-                    + std::to_string(vidaAdversario) + " de salud";
-                mostrarMensaje(msj);
-                std::cout << "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene " << vidaAdversario << " de vida\n";
-                _jugador.ataquePesado({1100.f, 740.f});
-                _rondaCarga = 0;
-                turnoActual = Turno::Enemigo;
-            }
-            else
-            {
-                msj += "\nNo se cargó el golpe pesado";
-                mostrarMensaje(msj);
-            }
-            break;
+    msj += "\n¡Jugador golpea con Ataque Ligero! Enemigo tiene "
+           + std::to_string(nuevaVida) + " de salud";
+    mostrarMensaje(msj);
 
-        case 2:  // Habilidad Especial
-            if (_rondaCarga >= 3)
-            {
-                vidaAdversario -= _jugador.getHabilidadEspecial();
-                msj += "\nEl jugador ha usado Habilidad Especial. Enemigo tiene "
-                    + std::to_string(vidaAdversario) + " de salud";
-                mostrarMensaje(msj);
-                std::cout << "\nEl jugador ha usado la habilida especial! Enemigo tiene " << vidaAdversario << " de vida\n";
-                _jugador.habilidadEspecial({1000.f, 740.f});
-                _rondaCarga = 0;
-                turnoActual = Turno::Enemigo;
-            }
-            else
-            {
-                msj += "\nNo se cargó la Habilidad Especial";
-                mostrarMensaje(msj);
-            }
-            break;
+    _jugador.ataqueLigero({1100.f, 740.f});
+    turnoActual = Turno::Enemigo;
+    _rondaCarga++;
+    break;
+}
 
+case 1:  // Ataque Pesado
+{
+    if (_rondaCarga >= 2)
+    {
+        enemigo* enemigoActual = _adversarios[0];
+        int nuevaVida = enemigoActual->getSalud() - _jugador.getAtaquePesado();
+        enemigoActual->setSalud(nuevaVida);
+
+        msj += "\n¡Jugador golpea con Ataque Pesado! Enemigo tiene "
+             + std::to_string(nuevaVida) + " de salud";
+        mostrarMensaje(msj);
+
+        _jugador.ataquePesado({1100.f, 740.f});
+        _rondaCarga = 0;
+        turnoActual = Turno::Enemigo;
+    }
+    else
+    {
+        msj += "\nNo se cargó el golpe pesado";
+        mostrarMensaje(msj);
+    }
+    break;
+}
+
+case 2:  // Habilidad Especial
+{
+    if (_rondaCarga >= 3)
+    {
+        enemigo* enemigoActual = _adversarios[0];
+        int nuevaVida = enemigoActual->getSalud() - _jugador.getHabilidadEspecial();
+        enemigoActual->setSalud(nuevaVida);
+
+        msj += "\nEl jugador ha usado Habilidad Especial. Enemigo tiene "
+             + std::to_string(nuevaVida) + " de salud";
+        mostrarMensaje(msj);
+
+        _jugador.habilidadEspecial({1000.f, 740.f});
+        _rondaCarga = 0;
+        turnoActual = Turno::Enemigo;
+    }
+    else
+    {
+        msj += "\nNo se cargó la Habilidad Especial";
+        mostrarMensaje(msj);
+    }
+    break;
+}
         default:
             break;
         }
@@ -207,12 +223,14 @@ void batalla::actualizar(float deltaTime)
             // Escala actual
             sf::Vector2f esc = e->getSprite().getScale();
             e->setScale(esc.x / 3.f, esc.y / 3.f);
+            e->getTextoVida().setScale(0.09f, 0.09f);
         }
             enemigo* e = _adversarios[0];
             e->setActivo(false);
             terminado = true;
             sf::Vector2f esc = _jugador.getScale();
             _jugador.setScale(esc.x / 3.f, esc.y / 3.f);
+            _jugador.getTextoVida().setScale(0.09f, 0.09f);
         }
         return;
     }
@@ -222,7 +240,7 @@ void batalla::actualizar(float deltaTime)
         return;
     }
     // Verificar si el enemigo murió
-    if (vidaAdversario <= 0)
+    if (_adversarios[0]->getSalud() <= 0)
     {
         // 1) Victoria del jugador: solo la primera vez que entra aquí
         if (!victoriaIniciada)
@@ -273,13 +291,14 @@ void batalla::actualizar(float deltaTime)
     if (!_jugador.estaAtacando())
     {
         sf::Vector2f posJugador = _jugador.getSprite().getPosition();
-        int danio = e->ataque(posJugador);
-        vidaJugador -= danio;
-        msj += "\n¡Enemigo ataca! Jugador recibe " + std::to_string(danio) + " de danio";
-        mostrarMensaje(msj);
-        std::cout << msj << "\n   Vida jugador: " << vidaJugador << "\n";
+int danio = e->ataque(posJugador);
+int nuevaVida = _jugador.getSalud() - danio;
+_jugador.setSalud(nuevaVida);
+msj += "\n¡Enemigo ataca! Jugador tiene "
+     + std::to_string(nuevaVida) + " de salud restante";
+mostrarMensaje(msj);
         // Verificar fin por derrota del jugador
-        if (vidaJugador <= 0)
+        if (_jugador.getSalud() <= 0)
         {
             // Solo la primera vez que detectamos vida <= 0:
             if (!desvaneciendo)
